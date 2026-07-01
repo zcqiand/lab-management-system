@@ -1,4 +1,4 @@
-import type { FlowState, FlowAction, FlowStatus, FlowHistory } from './types'
+import type { FlowState, FlowAction, FlowHistory } from './types'
 import { TRANSITIONS, ACTION_TARGET, ACTION_REQUIRED_ROLE } from './transitions'
 
 export const initialState: FlowState = {

@@ -65,10 +65,11 @@ describe('router 路由配置（含认证守卫）', () => {
     expect(await screen.findByRole('button', { name: '新增样品' })).toBeInTheDocument()
   })
 
-  it('登录后访问 /flow 渲染检测流程页', () => {
+  it('登录后访问 /flow 渲染检测流程页', async () => {
     useAuthStore.setState({ user: adminUser, token: 't', status: 'authenticated', error: null })
     renderAt('/flow')
-    expect(screen.getByText('检测流程配置与状态跟踪')).toBeInTheDocument()
+    // ch37：flow 路由接入 FlowPanel，初始状态渲染"提交检测"按钮
+    expect(await screen.findByRole('button', { name: '提交检测' })).toBeInTheDocument()
   })
 
   it('未登录访问 /login 渲染登录表单（无布局侧边栏）', () => {

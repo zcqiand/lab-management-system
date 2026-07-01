@@ -1,8 +1,12 @@
+import FlowPanel from '../features/flow/FlowPanel'
+import { useAuthStore } from '../features/auth/authStore'
+
 export default function Flow() {
+  const user = useAuthStore((s) => s.user)
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">检测流程</h2>
-      <p className="text-gray-600">检测流程配置与状态跟踪</p>
-    </div>
+    <FlowPanel
+      operatorId={user?.id ?? 'anonymous'}
+      operatorRole={user?.role.name ?? 'technician'}
+    />
   )
 }

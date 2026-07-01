@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { flowReducer, initialState } from '../../../src/features/flow/flowReducer'
-import type { FlowState, FlowAction } from '../../../src/features/flow/types'
+import type { FlowState } from '../../../src/features/flow/types'
 import { TRANSITIONS } from '../../../src/features/flow/transitions'
 
 describe('flowReducer 状态机', () => {

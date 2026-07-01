@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import type { User, Role, Permission, Project, Sample, ProjectCreateInput, ProjectUpdateInput, SampleCreateInput, SampleUpdateInput } from '../src/types/api'
 import { signJwt, verifyJwt } from './jwt'
-import { projectTable, sampleTable } from './db'
+import { projectTable, sampleTable, flowStore } from './db'
 
 // —— mock 用户库（仅 mock 层，非真实凭证）——
 const ADMIN_PERMISSIONS: Permission[] = [
@@ -204,5 +204,20 @@ export const handlers = [
     const ok = sampleTable.remove(String(params.id))
     if (!ok) return HttpResponse.json({ message: '样品不存在' }, { status: 404 })
     return new HttpResponse(null, { status: 204 })
+  }),
+
+  // —— ch37：flow 状态持久化（mock 内存 Map，可选）——
+  http.get('*/flow/:id', ({ params }) => {
+    const id = String(params.id)
+    const saved = flowStore.get(id)
+    // 未保存返回默认 draft 状态
+    return HttpResponse.json(saved ?? { status: 'draft', history: [] })
+  }),
+
+  http.post('*/flow/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const body = (await request.json()) as { status: string; history: unknown[] }
+    flowStore.set(id, body)
+    return HttpResponse.json(body)
   }),
 ]

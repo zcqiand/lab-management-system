@@ -116,8 +116,12 @@ export class MockTable<T extends { id: string } & Timestamped> {
 export const projectTable = new MockTable<{ id: string; name: string; code: string; status: string; ownerId: string; createdAt: string; updatedAt: string }>('p')
 export const sampleTable = new MockTable<{ id: string; projectId: string; name: string; code: string; status: string; receivedAt: string; createdAt: string; updatedAt: string }>('s')
 
+/** ch37：流程状态持久化（mock 内存 Map，按 flow id 存储） */
+export const flowStore = new Map<string, { status: string; history: unknown[] }>()
+
 /** 测试隔离：重置所有 mock 表 */
 export function resetMockDb() {
   projectTable.reset()
   sampleTable.reset()
+  flowStore.clear()
 }
