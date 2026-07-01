@@ -52,16 +52,17 @@ describe('router 路由配置（含认证守卫）', () => {
     expect(screen.getByText('检测流程')).toBeInTheDocument()
   })
 
-  it('登录后访问 /projects 渲染项目管理页', () => {
+  it('登录后访问 /projects 渲染项目管理页', async () => {
     useAuthStore.setState({ user: adminUser, token: 't', status: 'authenticated', error: null })
     renderAt('/projects')
-    expect(screen.getByText('检测项目列表')).toBeInTheDocument()
+    // ch36：projects 路由接入 ProjectList，含"新增项目"按钮
+    expect(await screen.findByRole('button', { name: '新增项目' })).toBeInTheDocument()
   })
 
-  it('登录后访问 /samples 渲染样品管理页', () => {
+  it('登录后访问 /samples 渲染样品管理页', async () => {
     useAuthStore.setState({ user: adminUser, token: 't', status: 'authenticated', error: null })
     renderAt('/samples')
-    expect(screen.getByText('样品登记与流转记录')).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: '新增样品' })).toBeInTheDocument()
   })
 
   it('登录后访问 /flow 渲染检测流程页', () => {
