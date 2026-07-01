@@ -1,0 +1,30 @@
+# 依赖
+node_modules/
+.pnpm-store/
+
+# 构建产物
+dist/
+dist-ssr/
+
+# 缓存
+.cache/
+.vite/
+coverage/
+
+# 本地环境
+.env
+.env.local
+.env.*.local
+
+# 编辑器
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 日志
+*.log
+npm-debug.log*
