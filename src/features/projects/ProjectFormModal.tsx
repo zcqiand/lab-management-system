@@ -18,13 +18,6 @@ interface ProjectFormModalProps {
   loading?: boolean
 }
 
-const EMPTY_VALUES: ProjectFormValues = {
-  name: '',
-  code: '',
-  status: 'active',
-  ownerId: '',
-}
-
 /**
  * 项目表单弹窗：create 与 edit 复用同一组件，由 mode 区分标题与提交载荷。
  *
