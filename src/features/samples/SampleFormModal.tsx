@@ -1,0 +1,150 @@
+import { useEffect, useState, type FormEvent } from 'react'
+import type { Sample, SampleStatus } from '../../types/api'
+
+export interface SampleFormValues {
+  id?: string
+  projectId: string
+  name: string
+  code: string
+  status: SampleStatus
+}
+
+interface SampleFormModalProps {
+  open: boolean
+  mode: 'create' | 'edit'
+  initialValues?: Partial<Sample>
+  onSubmit: (values: SampleFormValues) => void
+  onCancel: () => void
+  loading?: boolean
+}
+
+/**
+ * 样品表单弹窗：create 与 edit 复用同一组件，由 mode 区分。
+ * 与 ProjectFormModal 同构，字段为 projectId/name/code/status。
+ */
+export function SampleFormModal({
+  open,
+  mode,
+  initialValues,
+  onSubmit,
+  onCancel,
+  loading = false,
+}: SampleFormModalProps) {
+  const [projectId, setProjectId] = useState(initialValues?.projectId ?? '')
+  const [name, setName] = useState(initialValues?.name ?? '')
+  const [code, setCode] = useState(initialValues?.code ?? '')
+  const [status, setStatus] = useState<SampleStatus>(initialValues?.status ?? 'pending')
+  const [errors, setErrors] = useState<{ projectId?: string; name?: string; code?: string }>({})
+
+  useEffect(() => {
+    if (open) {
+      setProjectId(initialValues?.projectId ?? '')
+      setName(initialValues?.name ?? '')
+      setCode(initialValues?.code ?? '')
+      setStatus(initialValues?.status ?? 'pending')
+      setErrors({})
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialValues])
+
+  if (!open) return null
+
+  const title = mode === 'create' ? '新建样品' : '编辑样品'
+
+  const validate = (): boolean => {
+    const next: typeof errors = {}
+    if (!projectId.trim()) next.projectId = '请输入所属项目'
+    if (!name.trim()) next.name = '请输入样品名称'
+    if (!code.trim()) next.code = '请输入样品编号'
+    setErrors(next)
+    return Object.keys(next).length === 0
+  }
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    if (!validate()) return
+    const values: SampleFormValues = {
+      ...(mode === 'edit' && initialValues?.id ? { id: initialValues.id } : {}),
+      projectId: projectId.trim(),
+      name: name.trim(),
+      code: code.trim(),
+      status,
+    }
+    onSubmit(values)
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-xl w-[480px] max-w-[90vw]">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold">{title}</h3>
+        </div>
+        <div className="px-6 py-4 space-y-4">
+          <div>
+            <label htmlFor="sample-project" className="block text-sm mb-1 font-medium">所属项目</label>
+            <input
+              id="sample-project"
+              value={projectId}
+              onChange={(e) => setProjectId(e.target.value)}
+              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.projectId && <p className="text-red-600 text-xs mt-1">{errors.projectId}</p>}
+          </div>
+          <div>
+            <label htmlFor="sample-name" className="block text-sm mb-1 font-medium">样品名称</label>
+            <input
+              id="sample-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.name && <p className="text-red-600 text-xs mt-1">{errors.name}</p>}
+          </div>
+          <div>
+            <label htmlFor="sample-code" className="block text-sm mb-1 font-medium">样品编号</label>
+            <input
+              id="sample-code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.code && <p className="text-red-600 text-xs mt-1">{errors.code}</p>}
+          </div>
+          <div>
+            <label htmlFor="sample-status" className="block text-sm mb-1 font-medium">状态</label>
+            <select
+              id="sample-status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as SampleStatus)}
+              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="pending">待检</option>
+              <option value="testing">检测中</option>
+              <option value="completed">已完成</option>
+              <option value="rejected">已拒收</option>
+            </select>
+          </div>
+        </div>
+        <div className="px-6 py-3 flex justify-end gap-2 border-t border-gray-200">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={loading}
+            className="px-4 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          >
+            取消
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+          >
+            {loading ? '保存中...' : '保存'}
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+export default SampleFormModal
