@@ -1,0 +1,10 @@
+# .dockerignore：排除不需要的文件，加速构建
+node_modules/
+dist/
+coverage/
+.git/
+.gitignore
+*.log
+.env
+.env.local
+.tsbuildinfo
