@@ -45,14 +45,14 @@ npm run preview  # 预览构建产物
 
 ## 章节映射
 
-> 书稿每个代码块可据此定位到本仓真实文件。ch36-38 待后续实现。
+> 书稿每个代码块可据此定位到本仓真实文件。ch38 待后续实现。
 
 | 章 | 主题 | 对应模块 / 源文件 |
 |----|------|------------------|
 | 第34章 | 架构与路由 | `src/types/api.ts`、`src/types/store.ts`、`src/app/router.tsx`、`src/app/layouts/Layout.tsx`、`src/pages/` |
 | 第35章 | JWT 认证 + RBAC | `src/api/client.ts`、`src/features/auth/authStore.ts`、`src/features/auth/Login.tsx`、`src/app/guards/ProtectedRoute.tsx`、`src/features/auth/usePermission.ts`、`src/features/auth/hasPermission.tsx`、`msw/handlers.ts`、`msw/jwt.ts` |
-| 第36章 | （待后续实现）项目/样品业务模块 | — |
-| 第37章 | （待后续实现）检测流程与报告 | — |
+| 第36章 | 数据管理与业务模块 | `src/features/projects/projectStore.ts`、`src/features/projects/ProjectList.tsx`、`src/features/projects/ProjectFormModal.tsx`、`src/features/samples/sampleStore.ts`、`src/features/samples/SampleList.tsx`、`src/features/samples/SampleFormModal.tsx`、`src/components/ConfirmModal.tsx`、`src/hooks/useFetch.ts`、`msw/db.ts` |
+| 第37章 | 流程引擎与状态机 | `src/features/flow/types.ts`、`src/features/flow/transitions.ts`、`src/features/flow/flowReducer.ts`、`src/features/flow/flowStore.ts`、`src/features/flow/FlowPanel.tsx` |
 | 第38章 | （待后续实现）测试策略与部署 | — |
 
 ## 目录结构
@@ -76,6 +76,6 @@ tests/                # 与 src/ 一一对应的测试
 
 ## 版本
 
-- 当前状态：**building**（ch34-35 已完成，ch36-38 待后续实现，未打 tag）
+- 当前状态：**building**（ch34-37 已完成，ch38 待后续实现，未打 tag）
 - 技术栈：见 `package.json`（与书稿 `version-lock.json` 一致）
 - 仓内开发约定：见 `CLAUDE.md`

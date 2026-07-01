@@ -72,10 +72,10 @@ describe('SampleList 列表+搜索+分页+CRUD', () => {
     await user.click(screen.getByRole('button', { name: '新增样品' }))
     expect(screen.getByText('新建样品')).toBeInTheDocument()
     await user.type(screen.getByLabelText(/所属项目/), 'p-002')
-    await user.type(screen.getByLabelText(/样品名称/), '新增样品')
+    await user.type(screen.getByLabelText(/样品名称/), '刚创建的样品XYZ')
     await user.type(screen.getByLabelText(/样品编号/), 'NEW-S')
     await user.click(screen.getByRole('button', { name: '保存' }))
-    await waitFor(() => expect(screen.getByText('新增样品')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('刚创建的样品XYZ')).toBeInTheDocument())
   })
 
   it('编辑样品：打开表单（填值）→修改→保存→列表更新', async () => {
