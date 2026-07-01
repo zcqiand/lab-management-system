@@ -81,3 +81,53 @@ export interface PageQuery {
   pageSize: number
   keyword?: string
 }
+
+/** 日期范围筛选 */
+export interface DateRangeFilter {
+  dateFrom?: string
+  dateTo?: string
+}
+
+/** 项目列表查询参数（ch36：在 PageQuery 基础上只增 status/ownerId/日期范围） */
+export interface ProjectQuery extends PageQuery, DateRangeFilter {
+  status?: ProjectStatus
+  ownerId?: string
+}
+
+/** 样品列表查询参数（ch36：在 PageQuery 基础上只增 status/projectId） */
+export interface SampleQuery extends PageQuery {
+  status?: SampleStatus
+  projectId?: string
+}
+
+/** 项目新建载荷 */
+export interface ProjectCreateInput {
+  name: string
+  code: string
+  status?: ProjectStatus
+  ownerId: string
+}
+
+/** 项目更新载荷（所有字段可选） */
+export interface ProjectUpdateInput {
+  name?: string
+  code?: string
+  status?: ProjectStatus
+  ownerId?: string
+}
+
+/** 样品新建载荷 */
+export interface SampleCreateInput {
+  projectId: string
+  name: string
+  code: string
+  status?: SampleStatus
+}
+
+/** 样品更新载荷 */
+export interface SampleUpdateInput {
+  projectId?: string
+  name?: string
+  code?: string
+  status?: SampleStatus
+}
