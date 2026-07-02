@@ -49,7 +49,7 @@ describe('router 路由配置（含认证守卫）', () => {
     useAuthStore.setState({ user: adminUser, token: 't', status: 'authenticated', error: null })
     renderAt('/dashboard')
     expect(screen.getByText('实验室概览与待办事项')).toBeInTheDocument()
-    expect(screen.getByText('检测流程')).toBeInTheDocument()
+    expect(screen.getByText('业务管理')).toBeInTheDocument()
   })
 
   it('登录后访问 /projects 渲染项目管理页', async () => {

@@ -37,7 +37,7 @@ describe('认证集成测试：App 全链路登录→Dashboard', () => {
     // 登录成功后跳 /dashboard（或 /，默认重定向到 /dashboard）
     expect(await screen.findByText('实验室概览与待办事项')).toBeInTheDocument()
     // 侧边栏也在（布局已渲染）
-    expect(screen.getByText('检测流程')).toBeInTheDocument()
+    expect(screen.getByText('合同管理')).toBeInTheDocument()
   })
 
   it('输入错误凭证不跳转，显示错误', async () => {
