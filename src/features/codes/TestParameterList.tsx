@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { apiClient } from '../../api/client'
 import type { TestParameter, MaterialType } from '../../types/api'
+import { TestParameterFormModal, type TestParameterFormValues } from './TestParameterFormModal'
 
 const MATERIAL_TABS: { label: string; value: MaterialType | 'all' }[] = [
   { label: '全部', value: 'all' },
@@ -20,6 +21,11 @@ export function TestParameterList() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [materialType, setMaterialType] = useState<MaterialType | 'all'>('all')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create')
+  const [editingItem, setEditingItem] = useState<Partial<TestParameter> | undefined>(undefined)
+  const [submitting, setSubmitting] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
 
   const fetchParams = (mt: MaterialType | 'all') => {
     setLoading(true)
@@ -40,10 +46,73 @@ export function TestParameterList() {
 
   useEffect(() => { fetchParams(materialType) }, [materialType])
 
+  const openCreate = () => {
+    setEditingItem(undefined)
+    setModalMode('create')
+    setModalOpen(true)
+  }
+
+  const openEdit = (item: TestParameter) => {
+    setEditingItem(item)
+    setModalMode('edit')
+    setModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setModalOpen(false)
+    setEditingItem(undefined)
+  }
+
+  const handleCreate = async (values: TestParameterFormValues) => {
+    setSubmitting(true)
+    try {
+      await apiClient.post('/test-parameters', values)
+      closeModal()
+      fetchParams(materialType)
+    } catch {
+      setError('新建参数失败')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleUpdate = async (values: TestParameterFormValues) => {
+    if (!editingItem?.code) return
+    setSubmitting(true)
+    try {
+      await apiClient.put(`/test-parameters/${editingItem.code}`, values)
+      closeModal()
+      fetchParams(materialType)
+    } catch {
+      setError('更新参数失败')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleDelete = async (code: string) => {
+    if (!confirm('确认删除该参数？')) return
+    setDeleteLoading(code)
+    try {
+      await apiClient.delete(`/test-parameters/${code}`)
+      fetchParams(materialType)
+    } catch {
+      setError('删除参数失败')
+    } finally {
+      setDeleteLoading(null)
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">参数管理</h2>
+        <button
+          onClick={openCreate}
+          className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700"
+        >
+          新增参数
+        </button>
       </div>
 
       <div className="flex gap-1 bg-white rounded shadow p-1">
@@ -78,19 +147,20 @@ export function TestParameterList() {
               <th className="px-4 py-2 text-left">分类</th>
               <th className="px-4 py-2 text-left">单位</th>
               <th className="px-4 py-2 text-left">说明</th>
+              <th className="px-4 py-2 text-left">操作</th>
             </tr>
           </thead>
           <tbody>
             {loading && list.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
                   加载中...
                 </td>
               </tr>
             )}
             {!loading && list.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
                   暂无数据
                 </td>
               </tr>
@@ -107,11 +177,37 @@ export function TestParameterList() {
                 <td className="px-4 py-2">{p.category}</td>
                 <td className="px-4 py-2">{p.unit ?? '-'}</td>
                 <td className="px-4 py-2 text-gray-500">{p.description ?? '-'}</td>
+                <td className="px-4 py-2">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openEdit(p)}
+                      className="text-blue-600 hover:text-blue-800 text-xs"
+                    >
+                      编辑
+                    </button>
+                    <button
+                      onClick={() => handleDelete(p.code)}
+                      disabled={deleteLoading === p.code}
+                      className="text-red-600 hover:text-red-800 text-xs disabled:opacity-50"
+                    >
+                      {deleteLoading === p.code ? '删除中...' : '删除'}
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <TestParameterFormModal
+        open={modalOpen}
+        mode={modalMode}
+        initialValues={editingItem}
+        onSubmit={modalMode === 'create' ? handleCreate : handleUpdate}
+        onCancel={closeModal}
+        loading={submitting}
+      />
     </div>
   )
 }

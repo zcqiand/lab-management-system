@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { apiClient } from '../../api/client'
 import type { TechnicalRequirement, MaterialType } from '../../types/api'
+import { TechnicalRequirementFormModal, type TechnicalRequirementFormValues } from './TechnicalRequirementFormModal'
 
 const MATERIAL_TABS: { label: string; value: MaterialType | 'all' }[] = [
   { label: '全部', value: 'all' },
@@ -20,6 +21,11 @@ export function TechnicalRequirementList() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [materialType, setMaterialType] = useState<MaterialType | 'all'>('all')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create')
+  const [editingItem, setEditingItem] = useState<Partial<TechnicalRequirement> | undefined>(undefined)
+  const [submitting, setSubmitting] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
 
   const fetchRequirements = (mt: MaterialType | 'all') => {
     setLoading(true)
@@ -40,10 +46,73 @@ export function TechnicalRequirementList() {
 
   useEffect(() => { fetchRequirements(materialType) }, [materialType])
 
+  const openCreate = () => {
+    setEditingItem(undefined)
+    setModalMode('create')
+    setModalOpen(true)
+  }
+
+  const openEdit = (item: TechnicalRequirement) => {
+    setEditingItem(item)
+    setModalMode('edit')
+    setModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setModalOpen(false)
+    setEditingItem(undefined)
+  }
+
+  const handleCreate = async (values: TechnicalRequirementFormValues) => {
+    setSubmitting(true)
+    try {
+      await apiClient.post('/technical-requirements', values)
+      closeModal()
+      fetchRequirements(materialType)
+    } catch {
+      setError('新建技术要求失败')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleUpdate = async (values: TechnicalRequirementFormValues) => {
+    if (!editingItem?.code) return
+    setSubmitting(true)
+    try {
+      await apiClient.put(`/technical-requirements/${editingItem.code}`, values)
+      closeModal()
+      fetchRequirements(materialType)
+    } catch {
+      setError('更新技术要求失败')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleDelete = async (code: string) => {
+    if (!confirm('确认删除该技术要求？')) return
+    setDeleteLoading(code)
+    try {
+      await apiClient.delete(`/technical-requirements/${code}`)
+      fetchRequirements(materialType)
+    } catch {
+      setError('删除技术要求失败')
+    } finally {
+      setDeleteLoading(null)
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">技术要求</h2>
+        <button
+          onClick={openCreate}
+          className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700"
+        >
+          新增技术要求
+        </button>
       </div>
 
       <div className="flex gap-1 bg-white rounded shadow p-1">
@@ -81,19 +150,20 @@ export function TechnicalRequirementList() {
               <th className="px-4 py-2 text-left">比较方式</th>
               <th className="px-4 py-2 text-left">要求值</th>
               <th className="px-4 py-2 text-left">单位</th>
+              <th className="px-4 py-2 text-left">操作</th>
             </tr>
           </thead>
           <tbody>
             {loading && list.length === 0 && (
               <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={10} className="px-4 py-8 text-center text-gray-400">
                   加载中...
                 </td>
               </tr>
             )}
             {!loading && list.length === 0 && (
               <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={10} className="px-4 py-8 text-center text-gray-400">
                   暂无数据
                 </td>
               </tr>
@@ -115,11 +185,37 @@ export function TechnicalRequirementList() {
                 </td>
                 <td className="px-4 py-2 font-medium">{r.value}</td>
                 <td className="px-4 py-2">{r.unit ?? '-'}</td>
+                <td className="px-4 py-2">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openEdit(r)}
+                      className="text-blue-600 hover:text-blue-800 text-xs"
+                    >
+                      编辑
+                    </button>
+                    <button
+                      onClick={() => handleDelete(r.code)}
+                      disabled={deleteLoading === r.code}
+                      className="text-red-600 hover:text-red-800 text-xs disabled:opacity-50"
+                    >
+                      {deleteLoading === r.code ? '删除中...' : '删除'}
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <TechnicalRequirementFormModal
+        open={modalOpen}
+        mode={modalMode}
+        initialValues={editingItem}
+        onSubmit={modalMode === 'create' ? handleCreate : handleUpdate}
+        onCancel={closeModal}
+        loading={submitting}
+      />
     </div>
   )
 }

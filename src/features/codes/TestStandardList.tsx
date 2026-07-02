@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { apiClient } from '../../api/client'
 import type { TestStandard } from '../../types/api'
+import { TestStandardFormModal, type TestStandardFormValues } from './TestStandardFormModal'
 
 const TYPE_LABELS: Record<TestStandard['type'], string> = {
   national: '国标',
@@ -25,6 +26,11 @@ export function TestStandardList() {
   const [list, setList] = useState<TestStandard[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create')
+  const [editingItem, setEditingItem] = useState<Partial<TestStandard> | undefined>(undefined)
+  const [submitting, setSubmitting] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
 
   const fetchStandards = () => {
     setLoading(true)
@@ -45,10 +51,73 @@ export function TestStandardList() {
 
   useEffect(() => { fetchStandards() }, [])
 
+  const openCreate = () => {
+    setEditingItem(undefined)
+    setModalMode('create')
+    setModalOpen(true)
+  }
+
+  const openEdit = (item: TestStandard) => {
+    setEditingItem(item)
+    setModalMode('edit')
+    setModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setModalOpen(false)
+    setEditingItem(undefined)
+  }
+
+  const handleCreate = async (values: TestStandardFormValues) => {
+    setSubmitting(true)
+    try {
+      await apiClient.post('/test-standards', values)
+      closeModal()
+      fetchStandards()
+    } catch {
+      setError('新建标准失败')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleUpdate = async (values: TestStandardFormValues) => {
+    if (!editingItem?.code) return
+    setSubmitting(true)
+    try {
+      await apiClient.put(`/test-standards/${editingItem.code}`, values)
+      closeModal()
+      fetchStandards()
+    } catch {
+      setError('更新标准失败')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleDelete = async (code: string) => {
+    if (!confirm('确认删除该标准？')) return
+    setDeleteLoading(code)
+    try {
+      await apiClient.delete(`/test-standards/${code}`)
+      fetchStandards()
+    } catch {
+      setError('删除标准失败')
+    } finally {
+      setDeleteLoading(null)
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">标准管理</h2>
+        <button
+          onClick={openCreate}
+          className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700"
+        >
+          新增标准
+        </button>
       </div>
 
       {error && (
@@ -66,19 +135,20 @@ export function TestStandardList() {
               <th className="px-4 py-2 text-left">类型</th>
               <th className="px-4 py-2 text-left">适用材料</th>
               <th className="px-4 py-2 text-left">适用参数</th>
+              <th className="px-4 py-2 text-left">操作</th>
             </tr>
           </thead>
           <tbody>
             {loading && list.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
                   加载中...
                 </td>
               </tr>
             )}
             {!loading && list.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
                   暂无数据
                 </td>
               </tr>
@@ -109,11 +179,37 @@ export function TestStandardList() {
                 <td className="px-4 py-2 text-gray-500 text-xs">
                   {s.applicableParameters.join(', ') || '-'}
                 </td>
+                <td className="px-4 py-2">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openEdit(s)}
+                      className="text-blue-600 hover:text-blue-800 text-xs"
+                    >
+                      编辑
+                    </button>
+                    <button
+                      onClick={() => handleDelete(s.code)}
+                      disabled={deleteLoading === s.code}
+                      className="text-red-600 hover:text-red-800 text-xs disabled:opacity-50"
+                    >
+                      {deleteLoading === s.code ? '删除中...' : '删除'}
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <TestStandardFormModal
+        open={modalOpen}
+        mode={modalMode}
+        initialValues={editingItem}
+        onSubmit={modalMode === 'create' ? handleCreate : handleUpdate}
+        onCancel={closeModal}
+        loading={submitting}
+      />
     </div>
   )
 }

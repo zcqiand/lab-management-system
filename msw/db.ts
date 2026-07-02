@@ -785,3 +785,14 @@ export function seedLegacyData() {
 
 /** 测试隔离：清空所有表（含 batch3-A2 新表） */
 export const __resetDb__ = resetMockDb
+
+/** dev 模式种子：浏览器首次访问时给单例表（OrgInfo 等）灌入可用的展示数据。
+ * 注意：测试 setup 在 afterEach 会调 resetMockDb 清空所有表，所以本函数不能影响测试隔离——
+ * 仅在 dev 浏览器首次启动时由 msw/browser.ts 调一次。
+ * 与 seedBatch3Data 的区别：本函数是幂等的 dev 启动 hook，不假设任何表为空；调用方在使用前应避免重复触发。
+ */
+export function seedDevData() {
+  if (orgInfoTable.query({ page: 1, pageSize: 1 }).total === 0) {
+    seedOrgInfo()
+  }
+}

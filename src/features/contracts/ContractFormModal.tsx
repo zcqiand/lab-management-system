@@ -228,7 +228,7 @@ export function ContractFormModal({
           </div>
           <div>
             <label htmlFor="entrusted-date" className="block text-sm mb-1 font-medium">
-              委托日期
+              合同日期
             </label>
             <input
               id="entrusted-date"
