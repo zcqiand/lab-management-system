@@ -2,6 +2,7 @@
 // ch34：为 Zustand store 提供状态契约（authStore 在 ch35 实现）
 
 import type { User, Project, Sample, Report } from './api'
+import type { SampleReceipt } from './api'
 
 /** 认证状态机：空闲 → 加载中 → 已认证 / 出错 */
 export type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'error'
@@ -37,6 +38,15 @@ export interface ReportState {
   list: Report[]
   total: number
   current: Report | null
+  loading: boolean
+  error: string | null
+}
+
+/** 接样 store 状态切片 */
+export interface ReceiptState {
+  list: SampleReceipt[]
+  total: number
+  current: SampleReceipt | null
   loading: boolean
   error: string | null
 }
