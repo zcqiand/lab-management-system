@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw'
-import type { User, Role, Permission, Project, Sample, ProjectCreateInput, ProjectUpdateInput, SampleCreateInput, SampleUpdateInput } from '../src/types/api'
+import type { User, Role, Permission, Project, Sample, ProjectCreateInput, ProjectUpdateInput, SampleCreateInput, SampleUpdateInput, Report, ReportCreateInput, ReportUpdateInput, ReviewAction, UserRecord, UserCreateInput, UserUpdateInput, RoleRecord, RoleCreateInput, RoleUpdateInput } from '../src/types/api'
 import { signJwt, verifyJwt } from './jwt'
-import { projectTable, sampleTable, flowStore } from './db'
+import { projectTable, sampleTable, flowStore, reportTable, userTable, roleTable, reviewReportRecord } from './db'
 
 // —— mock 用户库（仅 mock 层，非真实凭证）——
 const ADMIN_PERMISSIONS: Permission[] = [
@@ -219,5 +219,169 @@ export const handlers = [
     const body = (await request.json()) as { status: string; history: unknown[] }
     flowStore.set(id, body)
     return HttpResponse.json(body)
+  }),
+
+  // —— extend 批1：reports CRUD + 审核 ——
+  http.get('*/reports', ({ request }) => {
+    const url = new URL(request.url)
+    const page = Number(url.searchParams.get('page') ?? '1')
+    const pageSize = Number(url.searchParams.get('pageSize') ?? '10')
+    const keyword = url.searchParams.get('keyword') ?? undefined
+    const sampleId = url.searchParams.get('sampleId') ?? undefined
+    const status = url.searchParams.get('status') ?? undefined
+    const result = reportTable.query({
+      page,
+      pageSize,
+      keyword,
+      keywordFields: ['title'],
+      filters: { sampleId, status },
+    })
+    return HttpResponse.json(result)
+  }),
+
+  http.post('*/reports', async ({ request }) => {
+    const body = (await request.json()) as Partial<ReportCreateInput>
+    if (!body.sampleId || !body.title) {
+      return HttpResponse.json({ message: 'sampleId/title 必填' }, { status: 400 })
+    }
+    const created = reportTable.insert({
+      sampleId: body.sampleId,
+      title: body.title,
+      status: 'draft',
+      conclusion: body.conclusion ?? '',
+      issuedAt: null,
+    })
+    return HttpResponse.json(created as unknown as Report, { status: 201 })
+  }),
+
+  http.get('*/reports/:id', ({ params }) => {
+    const found = reportTable.findById(String(params.id))
+    if (!found) return HttpResponse.json({ message: '报告不存在' }, { status: 404 })
+    return HttpResponse.json(found as unknown as Report)
+  }),
+
+  http.put('*/reports/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const body = (await request.json()) as ReportUpdateInput
+    const updated = reportTable.update(id, body as Record<string, unknown>)
+    if (!updated) return HttpResponse.json({ message: '报告不存在' }, { status: 404 })
+    return HttpResponse.json(updated as unknown as Report)
+  }),
+
+  http.delete('*/reports/:id', ({ params }) => {
+    const ok = reportTable.remove(String(params.id))
+    if (!ok) return HttpResponse.json({ message: '报告不存在' }, { status: 404 })
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  http.post('*/reports/:id/review', async ({ params, request }) => {
+    const id = String(params.id)
+    const body = (await request.json()) as { action: ReviewAction }
+    const result = reviewReportRecord(id, body.action)
+    if (!result.ok) {
+      return HttpResponse.json({ message: result.message }, { status: 400 })
+    }
+    return HttpResponse.json(result.report as Report)
+  }),
+
+  // —— extend 批1：users CRUD ——
+  http.get('*/users', ({ request }) => {
+    const url = new URL(request.url)
+    const page = Number(url.searchParams.get('page') ?? '1')
+    const pageSize = Number(url.searchParams.get('pageSize') ?? '10')
+    const keyword = url.searchParams.get('keyword') ?? undefined
+    const role = url.searchParams.get('role') ?? undefined
+    const status = url.searchParams.get('status') ?? undefined
+    const result = userTable.query({
+      page,
+      pageSize,
+      keyword,
+      keywordFields: ['username', 'displayName', 'email'],
+      filters: { roleId: role, status },
+    })
+    return HttpResponse.json(result)
+  }),
+
+  http.post('*/users', async ({ request }) => {
+    const body = (await request.json()) as Partial<UserCreateInput>
+    if (!body.username || !body.displayName || !body.email || !body.roleId) {
+      return HttpResponse.json({ message: 'username/displayName/email/roleId 必填' }, { status: 400 })
+    }
+    const created = userTable.insert({
+      username: body.username,
+      displayName: body.displayName,
+      email: body.email,
+      roleId: body.roleId,
+      status: body.status ?? 'active',
+    })
+    return HttpResponse.json(created as unknown as UserRecord, { status: 201 })
+  }),
+
+  http.get('*/users/:id', ({ params }) => {
+    const found = userTable.findById(String(params.id))
+    if (!found) return HttpResponse.json({ message: '用户不存在' }, { status: 404 })
+    return HttpResponse.json(found as unknown as UserRecord)
+  }),
+
+  http.put('*/users/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const body = (await request.json()) as UserUpdateInput
+    const updated = userTable.update(id, body as Record<string, unknown>)
+    if (!updated) return HttpResponse.json({ message: '用户不存在' }, { status: 404 })
+    return HttpResponse.json(updated as unknown as UserRecord)
+  }),
+
+  http.delete('*/users/:id', ({ params }) => {
+    const ok = userTable.remove(String(params.id))
+    if (!ok) return HttpResponse.json({ message: '用户不存在' }, { status: 404 })
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // —— extend 批1：roles CRUD ——
+  http.get('*/roles', ({ request }) => {
+    const url = new URL(request.url)
+    const page = Number(url.searchParams.get('page') ?? '1')
+    const pageSize = Number(url.searchParams.get('pageSize') ?? '50')
+    const keyword = url.searchParams.get('keyword') ?? undefined
+    const result = roleTable.query({
+      page,
+      pageSize,
+      keyword,
+      keywordFields: ['name', 'description'],
+    })
+    return HttpResponse.json(result)
+  }),
+
+  http.post('*/roles', async ({ request }) => {
+    const body = (await request.json()) as Partial<RoleCreateInput>
+    if (!body.name || !body.permissions) {
+      return HttpResponse.json({ message: 'name/permissions 必填' }, { status: 400 })
+    }
+    const created = roleTable.insert({
+      name: body.name,
+      description: body.description ?? '',
+      permissions: body.permissions,
+    })
+    return HttpResponse.json(created as unknown as RoleRecord, { status: 201 })
+  }),
+
+  http.get('*/roles/:id', ({ params }) => {
+    const found = roleTable.findById(String(params.id))
+    if (!found) return HttpResponse.json({ message: '角色不存在' }, { status: 404 })
+    return HttpResponse.json(found as unknown as RoleRecord)
+  }),
+
+  http.put('*/roles/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const body = (await request.json()) as RoleUpdateInput
+    const updated = roleTable.update(id, body as Record<string, unknown>)
+    if (!updated) return HttpResponse.json({ message: '角色不存在' }, { status: 404 })
+    return HttpResponse.json(updated as unknown as RoleRecord)
+  }),
+
+  http.delete('*/roles/:id', ({ params }) => {
+    const ok = roleTable.remove(String(params.id))
+    if (!ok) return HttpResponse.json({ message: '角色不存在' }, { status: 404 })
+    return new HttpResponse(null, { status: 204 })
   }),
 ]

@@ -131,3 +131,84 @@ export interface SampleUpdateInput {
   code?: string
   status?: SampleStatus
 }
+
+/** 报告列表查询参数（extend 批1：在 PageQuery 基础上只增 sampleId/status） */
+export interface ReportQuery extends PageQuery {
+  sampleId?: string
+  status?: ReportStatus
+}
+
+/** 报告新建载荷 */
+export interface ReportCreateInput {
+  sampleId: string
+  title: string
+  conclusion?: string
+}
+
+/** 报告更新载荷 */
+export interface ReportUpdateInput {
+  title?: string
+  conclusion?: string
+  status?: ReportStatus
+}
+
+/** 审核动作类型 */
+export type ReviewAction = 'submit' | 'approve' | 'reject'
+
+/** 用户管理类型（extend 批1：RBAC 落地） */
+export interface UserRecord {
+  id: string
+  username: string
+  displayName: string
+  email: string
+  roleId: string
+  status: 'active' | 'disabled'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UserQuery extends PageQuery {
+  role?: string
+  status?: 'active' | 'disabled'
+}
+
+export interface UserCreateInput {
+  username: string
+  displayName: string
+  email: string
+  roleId: string
+  status?: 'active' | 'disabled'
+}
+
+export interface UserUpdateInput {
+  displayName?: string
+  email?: string
+  roleId?: string
+  status?: 'active' | 'disabled'
+}
+
+/** 角色管理类型（extend 批1） */
+export interface RoleRecord {
+  id: string
+  name: string
+  description: string
+  permissions: Permission[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface RoleQuery extends PageQuery {
+  name?: string
+}
+
+export interface RoleCreateInput {
+  name: string
+  description?: string
+  permissions: Permission[]
+}
+
+export interface RoleUpdateInput {
+  name?: string
+  description?: string
+  permissions?: Permission[]
+}

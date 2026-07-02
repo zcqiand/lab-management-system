@@ -119,9 +119,52 @@ export const sampleTable = new MockTable<{ id: string; projectId: string; name: 
 /** ch37：流程状态持久化（mock 内存 Map，按 flow id 存储） */
 export const flowStore = new Map<string, { status: string; history: unknown[] }>()
 
+/** extend 批1：报告表（关联 sampleId，含审核状态流转） */
+export const reportTable = new MockTable<{ id: string; sampleId: string; title: string; status: string; conclusion: string; issuedAt: string | null; createdAt: string; updatedAt: string }>('r')
+
+/** extend 批1：用户表 */
+export const userTable = new MockTable<{ id: string; username: string; displayName: string; email: string; roleId: string; status: string; createdAt: string; updatedAt: string }>('u')
+
+/** extend 批1：角色表（种子数据） */
+export const roleTable = new MockTable<{ id: string; name: string; description: string; permissions: string[]; createdAt: string; updatedAt: string }>('role')
+
+/** 报告审核状态转换表（draft→reviewing→issued/draft） */
+const REPORT_REVIEW_TRANSITIONS: Record<string, string[]> = {
+  draft: ['reviewing'],
+  reviewing: ['issued', 'draft'],
+  issued: [],
+}
+
+/** 报告审核动作到目标状态映射 */
+const REVIEW_ACTION_TARGET: Record<string, string> = {
+  submit: 'reviewing',
+  approve: 'issued',
+  reject: 'draft',
+}
+
+/** 执行报告审核动作，返回更新后的报告或 null（非法转换） */
+export function reviewReportRecord(id: string, action: string): { ok: boolean; report?: unknown; message?: string } {
+  const report = reportTable.findById(id)
+  if (!report) return { ok: false, message: '报告不存在' }
+  const target = REVIEW_ACTION_TARGET[action]
+  if (!target) return { ok: false, message: '未知审核动作' }
+  const allowed = REPORT_REVIEW_TRANSITIONS[report.status] ?? []
+  if (!allowed.includes(target)) {
+    return { ok: false, message: `非法转换：${report.status} → ${target}` }
+  }
+  const updated = reportTable.update(id, {
+    status: target,
+    issuedAt: target === 'issued' ? new Date().toISOString() : null,
+  })
+  return { ok: true, report: updated }
+}
+
 /** 测试隔离：重置所有 mock 表 */
 export function resetMockDb() {
   projectTable.reset()
   sampleTable.reset()
+  reportTable.reset()
+  userTable.reset()
+  roleTable.reset()
   flowStore.clear()
 }
