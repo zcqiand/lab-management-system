@@ -50,3 +50,12 @@ export interface ReceiptState {
   loading: boolean
   error: string | null
 }
+
+/** 合同 store 状态切片 */
+export interface ContractState {
+  list: import('./api').Contract[]
+  total: number
+  current: import('./api').Contract | null
+  loading: boolean
+  error: string | null
+}
