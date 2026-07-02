@@ -31,4 +31,13 @@ export const routes: RouteObject[] = [
   { path: '*', element: <Navigate to="/dashboard" replace /> },
 ]
 
-export const router = createBrowserRouter(routes)
+// lazy 创建 browserRouter：避免 module 级别调用 createBrowserRouter
+// 在 jsdom 测试环境下的副作用（Navigate 触发 undici AbortSignal 兼容问题）。
+// 测试用 createMemoryRouter(routes) 直接复用 routes 数组，不依赖此实例。
+let _router: ReturnType<typeof createBrowserRouter> | null = null
+export function getRouter(): ReturnType<typeof createBrowserRouter> {
+  if (!_router) {
+    _router = createBrowserRouter(routes)
+  }
+  return _router
+}
