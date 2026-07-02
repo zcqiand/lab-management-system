@@ -4,6 +4,7 @@ import { ProtectedRoute } from './guards/ProtectedRoute'
 import { Login } from '../features/auth/Login'
 import Dashboard from '../pages/Dashboard'
 import Projects from '../pages/Projects'
+import Contracts from '../pages/Contracts'
 import Samples from '../pages/Samples'
 import Flow from '../pages/Flow'
 import Forbidden from '../pages/Forbidden'
@@ -31,7 +32,7 @@ export const routes: RouteObject[] = [
       { path: 'samples', element: <Samples /> },
       { path: 'flow', element: <Flow /> },
       // v1.3-001: new routes (placeholder components reuse existing pages)
-      { path: 'contracts', element: <Projects /> },
+      { path: 'contracts', element: <Contracts /> },
       { path: 'receipts', element: <Samples /> },
       { path: 'test-records', element: <Flow /> },
       { path: 'reports', element: <Reports /> },
