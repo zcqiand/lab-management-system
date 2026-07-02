@@ -13,9 +13,13 @@ import Reports from '../pages/Reports'
 import Users from '../pages/Users'
 import Roles from '../pages/Roles'
 import OrgInfo from '../pages/OrgInfo'
+import { TestParameterList } from '../features/codes/TestParameterList'
+import { TestStandardList } from '../features/codes/TestStandardList'
+import { TechnicalRequirementList } from '../features/codes/TechnicalRequirementList'
 
 // ch35: ProtectedRoute wraps Layout; unauthenticated → /login; /login → features/auth/Login
 // extend batch1: add reports/settings/users settings/roles child routes (only add, don't modify existing routes)
+// v1.3-001: add /test-parameters /test-standards /technical-requirements routes
 export const routes: RouteObject[] = [
   { path: '/login', element: <Login /> },
   {
@@ -38,6 +42,9 @@ export const routes: RouteObject[] = [
       { path: 'test-records', element: <Flow /> },
       { path: 'reports', element: <Reports /> },
       { path: 'org-info', element: <OrgInfo /> },
+      { path: 'test-parameters', element: <TestParameterList /> },
+      { path: 'test-standards', element: <TestStandardList /> },
+      { path: 'technical-requirements', element: <TechnicalRequirementList /> },
       {
         path: 'settings',
         children: [

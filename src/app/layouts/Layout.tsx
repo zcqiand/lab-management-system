@@ -30,6 +30,9 @@ const BASIC_MENU: MenuGroup = {
   title: '基础管理',
   items: [
     { to: '/org-info', label: '机构信息', permission: 'user:read' },
+    { to: '/test-parameters', label: '参数管理', permission: 'user:read' },
+    { to: '/test-standards', label: '标准管理', permission: 'user:read' },
+    { to: '/technical-requirements', label: '技术要求', permission: 'user:read' },
     { to: '/settings/roles', label: '角色管理', permission: 'role:read' },
     { to: '/settings/users', label: '用户管理', permission: 'user:read' },
   ],
