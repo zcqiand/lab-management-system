@@ -68,3 +68,12 @@ export interface SampleStateV2 {
   loading: boolean
   error: string | null
 }
+
+/** 报告 store 状态切片（新 Report 四层模型版本：sampleIds[]/reportCode/materialType） */
+export interface ReportStateV2 {
+  list: import('./api').Report[]
+  total: number
+  current: import('./api').Report | null
+  loading: boolean
+  error: string | null
+}
