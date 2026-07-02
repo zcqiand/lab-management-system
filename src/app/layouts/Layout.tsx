@@ -10,6 +10,9 @@ const navItems: NavItem[] = [
   { to: '/projects', label: '项目管理' },
   { to: '/samples', label: '样品管理' },
   { to: '/flow', label: '检测流程' },
+  { to: '/reports', label: '报告管理' },
+  { to: '/settings/users', label: '用户管理' },
+  { to: '/settings/roles', label: '角色管理' },
 ]
 
 export default function Layout() {

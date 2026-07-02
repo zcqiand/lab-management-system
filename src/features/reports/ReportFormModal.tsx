@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import type { Report, ReportCreateInput, ReportUpdateInput } from '../../types/api'
+import type { Report } from '../../types/api'
 
 export interface ReportFormValues {
   id?: string
