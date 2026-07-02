@@ -59,3 +59,12 @@ export interface ContractState {
   loading: boolean
   error: string | null
 }
+
+/** 样品 store 状态切片（新 SampleReceipt 四层模型版本） */
+export interface SampleStateV2 {
+  list: import('./api').Sample[]
+  total: number
+  current: import('./api').Sample | null
+  loading: boolean
+  error: string | null
+}

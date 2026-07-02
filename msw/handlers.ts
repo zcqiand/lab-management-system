@@ -393,6 +393,9 @@ export const handlers = [
         materialType: url.searchParams.get('materialType') ?? undefined,
         // 兼容旧字段 projectId（ch36 tests 用）
         projectId: url.searchParams.get('projectId') ?? undefined,
+        // batch3-A2 + v1.2-001：新增 receiptId/contractId 过滤
+        receiptId: url.searchParams.get('receiptId') ?? undefined,
+        contractId: url.searchParams.get('contractId') ?? undefined,
       },
     })
     return HttpResponse.json(result)
