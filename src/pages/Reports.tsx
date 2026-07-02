@@ -1,5 +1,5 @@
-import ReportList from '../features/reports/ReportList'
+import ReportWorkflowList from '../features/reports/ReportWorkflowList'
 
 export default function Reports() {
-  return <ReportList />
+  return <ReportWorkflowList />
 }

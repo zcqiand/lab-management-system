@@ -325,7 +325,27 @@ export interface LegacyTestItem {
 }
 
 // ----- 5. Report 状态 -----
-export type ReportStatus = 'draft' | 'reviewing' | 'issued'
+export type ReportStatus = 'draft' | 'reviewing' | 'issued' | 'printed' | 'archived'
+
+// ----- 5.1 ReportRecord（v2 报告实体：sampleIds[]/reportCode/materialType，四层模型） -----
+export interface ReportRecord {
+  id: string
+  contractId: string
+  receiptId: string
+  reportCode: string
+  reportDate: string
+  materialType: MaterialType
+  sampleIds: string[]
+  conclusion: string
+  result: 'pass' | 'fail'
+  remark: string
+  status: ReportStatus
+  issuedAt: string | null
+  createdAt: string
+  updatedAt: string
+  sampleId?: string
+  title?: string
+}
 
 // =============================================================================
 // 7. 码表（检测参数/标准/技术要求）

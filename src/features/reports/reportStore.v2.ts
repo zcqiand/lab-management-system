@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { ReportStateV2 } from '../../types/store'
+import type { ReportRecord } from '../../types/api'
 import { apiClient } from '../../api/client'
 
 interface ReportActionsV2 {
@@ -11,25 +12,6 @@ interface ReportActionsV2 {
 }
 
 export type ReportStoreV2 = ReportStateV2 & ReportActionsV2
-
-interface ReportRecord {
-  id: string
-  contractId: string
-  receiptId: string
-  reportCode: string
-  reportDate: string
-  materialType: string
-  sampleIds: string[]
-  conclusion: string
-  result: 'pass' | 'fail'
-  remark: string
-  status: string
-  issuedAt: string | null
-  createdAt: string
-  updatedAt: string
-  sampleId?: string
-  title?: string
-}
 
 export interface ReportQueryV2 {
   page: number
