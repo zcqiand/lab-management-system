@@ -122,11 +122,14 @@ export const flowStore = new Map<string, { status: string; history: unknown[] }>
 /** extend 批1：报告表（关联 sampleId，含审核状态流转） */
 export const reportTable = new MockTable<{ id: string; sampleId: string; title: string; status: string; conclusion: string; issuedAt: string | null; createdAt: string; updatedAt: string }>('r')
 
-/** extend 批1：用户表 */
-export const userTable = new MockTable<{ id: string; username: string; displayName: string; email: string; roleId: string; status: string; createdAt: string; updatedAt: string }>('u')
+/** extend 批1：用户表（批2 追加 password 字段，用于密码修改） */
+export const userTable = new MockTable<{ id: string; username: string; displayName: string; email: string; roleId: string; status: string; password: string; createdAt: string; updatedAt: string }>('u')
 
 /** extend 批1：角色表（种子数据） */
 export const roleTable = new MockTable<{ id: string; name: string; description: string; permissions: string[]; createdAt: string; updatedAt: string }>('role')
+
+/** extend 批2：检测任务表（关联 sampleId/assigneeId） */
+export const taskTable = new MockTable<{ id: string; sampleId: string; assigneeId: string; testItems: string; status: string; resultData: string; conclusion: string; createdAt: string; updatedAt: string }>('task')
 
 /** 报告审核状态转换表（draft→reviewing→issued/draft） */
 const REPORT_REVIEW_TRANSITIONS: Record<string, string[]> = {
@@ -159,6 +162,29 @@ export function reviewReportRecord(id: string, action: string): { ok: boolean; r
   return { ok: true, report: updated }
 }
 
+/** extend 批2：Dashboard 聚合统计（从现有表聚合，只读不改） */
+export function computeStats() {
+  const samples = sampleTable.query({ page: 1, pageSize: 99999 }).items
+  const reports = reportTable.query({ page: 1, pageSize: 99999 }).items
+  const tasks = taskTable.query({ page: 1, pageSize: 99999 }).items
+  const projectCount = projectTable.query({ page: 1, pageSize: 1 }).total
+  return {
+    projectCount,
+    sampleCountByStatus: {
+      pending: samples.filter((s) => s.status === 'pending').length,
+      testing: samples.filter((s) => s.status === 'testing').length,
+      completed: samples.filter((s) => s.status === 'completed').length,
+      rejected: samples.filter((s) => s.status === 'rejected').length,
+    },
+    reportCountByStatus: {
+      draft: reports.filter((r) => r.status === 'draft').length,
+      reviewing: reports.filter((r) => r.status === 'reviewing').length,
+      issued: reports.filter((r) => r.status === 'issued').length,
+    },
+    pendingTaskCount: tasks.filter((t) => t.status === 'pending').length,
+  }
+}
+
 /** 测试隔离：重置所有 mock 表 */
 export function resetMockDb() {
   projectTable.reset()
@@ -166,5 +192,6 @@ export function resetMockDb() {
   reportTable.reset()
   userTable.reset()
   roleTable.reset()
+  taskTable.reset()
   flowStore.clear()
 }

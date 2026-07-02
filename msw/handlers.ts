@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw'
-import type { User, Role, Permission, Project, Sample, ProjectCreateInput, ProjectUpdateInput, SampleCreateInput, SampleUpdateInput, Report, ReportCreateInput, ReportUpdateInput, ReviewAction, UserRecord, UserCreateInput, UserUpdateInput, RoleRecord, RoleCreateInput, RoleUpdateInput } from '../src/types/api'
+import type { User, Role, Permission, Project, Sample, ProjectCreateInput, ProjectUpdateInput, SampleCreateInput, SampleUpdateInput, Report, ReportCreateInput, ReportUpdateInput, ReviewAction, UserRecord, UserCreateInput, UserUpdateInput, RoleRecord, RoleCreateInput, RoleUpdateInput, TaskRecord, TaskCreateInput, TaskUpdateInput, TaskEntryInput, DashboardStats, ChangePasswordInput } from '../src/types/api'
 import { signJwt, verifyJwt } from './jwt'
-import { projectTable, sampleTable, flowStore, reportTable, userTable, roleTable, reviewReportRecord } from './db'
+import { projectTable, sampleTable, flowStore, reportTable, userTable, roleTable, taskTable, reviewReportRecord, computeStats } from './db'
 
 // —— mock 用户库（仅 mock 层，非真实凭证）——
 const ADMIN_PERMISSIONS: Permission[] = [
@@ -313,6 +313,7 @@ export const handlers = [
       email: body.email,
       roleId: body.roleId,
       status: body.status ?? 'active',
+      password: 'default-mock-pwd',
     })
     return HttpResponse.json(created as unknown as UserRecord, { status: 201 })
   }),
@@ -383,5 +384,91 @@ export const handlers = [
     const ok = roleTable.remove(String(params.id))
     if (!ok) return HttpResponse.json({ message: '角色不存在' }, { status: 404 })
     return new HttpResponse(null, { status: 204 })
+  }),
+
+  // —— extend 批2：tasks CRUD + 数据录入 ——
+  http.get('*/tasks', ({ request }) => {
+    const url = new URL(request.url)
+    const result = taskTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '10'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['testItems', 'conclusion'],
+      filters: {
+        sampleId: url.searchParams.get('sampleId') ?? undefined,
+        status: url.searchParams.get('status') ?? undefined,
+        assigneeId: url.searchParams.get('assigneeId') ?? undefined,
+      },
+    })
+    return HttpResponse.json(result)
+  }),
+
+  http.post('*/tasks', async ({ request }) => {
+    const body = (await request.json()) as Partial<TaskCreateInput>
+    if (!body.sampleId || !body.assigneeId || !body.testItems) {
+      return HttpResponse.json({ message: 'sampleId/assigneeId/testItems 必填' }, { status: 400 })
+    }
+    const created = taskTable.insert({
+      sampleId: body.sampleId,
+      assigneeId: body.assigneeId,
+      testItems: body.testItems,
+      status: 'pending',
+      resultData: '',
+      conclusion: '',
+    })
+    return HttpResponse.json(created as unknown as TaskRecord, { status: 201 })
+  }),
+
+  http.get('*/tasks/:id', ({ params }) => {
+    const found = taskTable.findById(String(params.id))
+    if (!found) return HttpResponse.json({ message: '任务不存在' }, { status: 404 })
+    return HttpResponse.json(found as unknown as TaskRecord)
+  }),
+
+  http.put('*/tasks/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const body = (await request.json()) as TaskUpdateInput
+    const updated = taskTable.update(id, body as Record<string, unknown>)
+    if (!updated) return HttpResponse.json({ message: '任务不存在' }, { status: 404 })
+    return HttpResponse.json(updated as unknown as TaskRecord)
+  }),
+
+  http.delete('*/tasks/:id', ({ params }) => {
+    const ok = taskTable.remove(String(params.id))
+    if (!ok) return HttpResponse.json({ message: '任务不存在' }, { status: 404 })
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  http.post('*/tasks/:id/entry', async ({ params, request }) => {
+    const id = String(params.id)
+    const body = (await request.json()) as TaskEntryInput
+    const task = taskTable.findById(id)
+    if (!task) return HttpResponse.json({ message: '任务不存在' }, { status: 404 })
+    if (task.status !== 'pending' && task.status !== 'testing') {
+      return HttpResponse.json({ message: '当前状态不可录入数据' }, { status: 400 })
+    }
+    const updated = taskTable.update(id, {
+      status: body.status,
+      resultData: body.resultData,
+      conclusion: body.conclusion,
+    })
+    return HttpResponse.json(updated as unknown as TaskRecord)
+  }),
+
+  // —— extend 批2：Dashboard 聚合统计 ——
+  http.get('*/stats', () => {
+    return HttpResponse.json(computeStats() as DashboardStats)
+  }),
+
+  // —— extend 批2：密码修改 ——
+  http.post('*/auth/change-password', async ({ request }) => {
+    const body = (await request.json()) as ChangePasswordInput
+    if (body.oldPassword !== 'old-lab123') {
+      return HttpResponse.json({ message: '旧密码错误' }, { status: 400 })
+    }
+    if (!body.newPassword || body.newPassword.length < 6) {
+      return HttpResponse.json({ message: '新密码至少 6 位' }, { status: 400 })
+    }
+    return HttpResponse.json({ success: true })
   }),
 ]

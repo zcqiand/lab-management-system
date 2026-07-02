@@ -212,3 +212,60 @@ export interface RoleUpdateInput {
   description?: string
   permissions?: Permission[]
 }
+
+/** 检测任务状态（extend 批2：pending → testing → completed/rejected） */
+export type TaskStatus = 'pending' | 'testing' | 'completed' | 'rejected'
+
+/** 检测任务记录（关联样品 + 指派检测员 + 检测项目） */
+export interface TaskRecord {
+  id: string
+  sampleId: string
+  assigneeId: string
+  testItems: string
+  status: TaskStatus
+  /** 检测数据（JSON 字符串，由检测员录入） */
+  resultData: string
+  /** 检测结论 */
+  conclusion: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TaskQuery extends PageQuery {
+  sampleId?: string
+  status?: TaskStatus
+  assigneeId?: string
+}
+
+export interface TaskCreateInput {
+  sampleId: string
+  assigneeId: string
+  testItems: string
+}
+
+export interface TaskUpdateInput {
+  assigneeId?: string
+  testItems?: string
+  status?: TaskStatus
+}
+
+/** 检测数据录入载荷 */
+export interface TaskEntryInput {
+  resultData: string
+  conclusion: string
+  status: 'completed' | 'rejected'
+}
+
+/** Dashboard 聚合统计 */
+export interface DashboardStats {
+  projectCount: number
+  sampleCountByStatus: { pending: number; testing: number; completed: number; rejected: number }
+  reportCountByStatus: { draft: number; reviewing: number; issued: number }
+  pendingTaskCount: number
+}
+
+/** 密码修改载荷 */
+export interface ChangePasswordInput {
+  oldPassword: string
+  newPassword: string
+}
