@@ -24,6 +24,7 @@ export function ReceiptList() {
   const [deleteTarget, setDeleteTarget] = useState<SampleReceipt | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [detailReceiptId, setDetailReceiptId] = useState<string | null>(null)
+  const [detailContractId, setDetailContractId] = useState<string>('')
 
   const buildQuery = (p: number) => ({
     page: p,
@@ -243,7 +244,7 @@ export function ReceiptList() {
                 <td className="px-4 py-2">{statusLabel(r.status)}</td>
                 <td className="px-4 py-2 text-right space-x-2">
                   <button
-                    onClick={() => setDetailReceiptId(r.id)}
+                    onClick={() => { setDetailReceiptId(r.id); setDetailContractId(r.contractId) }}
                     className="px-2 py-1 text-green-600 hover:underline"
                   >
                     详情
@@ -269,8 +270,9 @@ export function ReceiptList() {
 
       {detailReceiptId && (
         <ReceiptDetail
-          receiptId={detailReceiptId}
-          onClose={() => setDetailReceiptId(null)}
+          receiptId={detailReceiptId!}
+          contractId={detailContractId}
+          onClose={() => { setDetailReceiptId(null); setDetailContractId('') }}
         />
       )}
 
