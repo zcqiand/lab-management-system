@@ -77,3 +77,12 @@ export interface ReportStateV2 {
   loading: boolean
   error: string | null
 }
+
+/** 任务 store 状态切片 */
+export interface TaskState {
+  list: import('./api').TaskRecord[]
+  total: number
+  current: import('./api').TaskRecord | null
+  loading: boolean
+  error: string | null
+}
