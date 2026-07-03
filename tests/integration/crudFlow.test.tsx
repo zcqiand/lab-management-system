@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { ProjectList } from '../../src/features/projects/ProjectList'
 import { useProjectStore } from '../../src/features/projects/projectStore'
 import { resetApiClient } from '../../src/api/client'
+import { resetMockDb } from '../../msw/db'
 
 const API_BASE = 'http://localhost/api'
 
@@ -21,6 +22,7 @@ beforeEach(() => {
   localStorage.clear()
   useProjectStore.setState({ list: [], total: 0, current: null, loading: false, error: null })
   resetApiClient()
+  resetMockDb()
 })
 
 describe('CRUD 集成测试：ProjectList 新增→列表更新全流程', () => {

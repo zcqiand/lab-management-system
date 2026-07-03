@@ -4,6 +4,7 @@ import { server } from '../../../msw/server'
 import { useUserStore } from '../../../src/features/users/userStore'
 import { useRoleStore } from '../../../src/features/roles/roleStore'
 import { resetApiClient, setToken } from '../../../src/api/client'
+import { resetMockDb } from '../../../msw/db'
 
 const API_BASE = 'http://localhost/api'
 
@@ -36,6 +37,7 @@ beforeEach(() => {
   useRoleStore.setState({ list: [], total: 0, current: null, loading: false, error: null })
   resetApiClient()
   setToken('mock-token')
+  resetMockDb()
 })
 
 describe('userStore', () => {
