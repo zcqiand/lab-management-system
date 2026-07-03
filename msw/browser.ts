@@ -5,11 +5,13 @@ import { handlers } from './handlers'
 // Node 测试环境见 msw/server.ts。handlers 与 server 共用，保证行为一致。
 export const worker = setupWorker(...handlers)
 
-/** dev / preview 启动入口：seed 单例表（OrgInfo 等）→ 启动 worker。
+/** dev / preview 启动入口：reset 全表 → seed 全表数据 → 启动 worker。
+ * 幂等：resetMockDb 清空后再 seed，保证刷新页面不重复插入。
  * 测试不调用本函数，因此不影响测试隔离语义。
  */
 export async function startDevWorker() {
-  const { seedDevData } = await import('./db')
-  seedDevData()
+  const { resetMockDb, seedBatch3Data } = await import('./db')
+  resetMockDb()
+  seedBatch3Data()
   await worker.start({ onUnhandledRequest: 'bypass' })
 }
