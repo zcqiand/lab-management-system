@@ -70,43 +70,55 @@ export function UserFormModal({ open, mode, initialValues, roles, onSubmit, onCa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-xl w-[480px] max-w-[90vw]">
-        <div className="px-6 py-4 border-b border-gray-200"><h3 className="text-lg font-semibold">{title}</h3></div>
-        <div className="px-6 py-4 space-y-3">
-          <div>
-            <label htmlFor="user-username" className="block text-sm mb-1 font-medium">用户名</label>
-            <input id="user-username" value={username} onChange={(e) => setUsername(e.target.value)} disabled={mode === 'edit'} className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100" />
-            {errors.username && <p className="text-red-600 text-xs mt-1">{errors.username}</p>}
+      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-xl w-[900px] max-w-[95vw] max-h-[92vh] overflow-y-auto">
+        <div className="px-8 py-5 border-b border-gray-200"><h3 className="text-lg font-semibold">{title}</h3></div>
+        <div className="px-8 py-5 space-y-4">
+          {/* Row 1: 用户名 | 显示名 | 邮箱 */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="user-username" className="block text-sm font-medium mb-1">用户名 <span className="text-red-600">*</span></label>
+              <input id="user-username" value={username} onChange={(e) => setUsername(e.target.value)}
+                disabled={mode === 'edit'}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100" />
+              {errors.username && <p className="text-red-600 text-xs mt-1">{errors.username}</p>}
+            </div>
+            <div>
+              <label htmlFor="user-display" className="block text-sm font-medium mb-1">显示名 <span className="text-red-600">*</span></label>
+              <input id="user-display" value={displayName} onChange={(e) => setDisplayName(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              {errors.displayName && <p className="text-red-600 text-xs mt-1">{errors.displayName}</p>}
+            </div>
+            <div>
+              <label htmlFor="user-email" className="block text-sm font-medium mb-1">邮箱 <span className="text-red-600">*</span></label>
+              <input id="user-email" value={email} onChange={(e) => setEmail(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              {errors.email && <p className="text-red-600 text-xs mt-1">{errors.email}</p>}
+            </div>
           </div>
-          <div>
-            <label htmlFor="user-display" className="block text-sm mb-1 font-medium">显示名</label>
-            <input id="user-display" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            {errors.displayName && <p className="text-red-600 text-xs mt-1">{errors.displayName}</p>}
-          </div>
-          <div>
-            <label htmlFor="user-email" className="block text-sm mb-1 font-medium">邮箱</label>
-            <input id="user-email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            {errors.email && <p className="text-red-600 text-xs mt-1">{errors.email}</p>}
-          </div>
-          <div>
-            <label htmlFor="user-role" className="block text-sm mb-1 font-medium">角色</label>
-            <select id="user-role" value={roleId} onChange={(e) => setRoleId(e.target.value)} className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">请选择</option>
-              {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-            </select>
-            {errors.roleId && <p className="text-red-600 text-xs mt-1">{errors.roleId}</p>}
-          </div>
-          <div>
-            <label htmlFor="user-status" className="block text-sm mb-1 font-medium">状态</label>
-            <select id="user-status" value={status} onChange={(e) => setStatus(e.target.value as 'active' | 'disabled')} className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="active">活跃</option>
-              <option value="disabled">禁用</option>
-            </select>
+          {/* Row 2: 角色 | 状态 */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="user-role" className="block text-sm font-medium mb-1">角色 <span className="text-red-600">*</span></label>
+              <select id="user-role" value={roleId} onChange={(e) => setRoleId(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">请选择</option>
+                {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+              </select>
+              {errors.roleId && <p className="text-red-600 text-xs mt-1">{errors.roleId}</p>}
+            </div>
+            <div>
+              <label htmlFor="user-status" className="block text-sm font-medium mb-1">状态</label>
+              <select id="user-status" value={status} onChange={(e) => setStatus(e.target.value as 'active' | 'disabled')}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="active">活跃</option>
+                <option value="disabled">禁用</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div className="px-6 py-3 flex justify-end gap-2 border-t border-gray-200">
-          <button type="button" onClick={onCancel} disabled={loading} className="px-4 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50">取消</button>
-          <button type="submit" disabled={loading} className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50">{loading ? '保存中...' : '保存'}</button>
+        <div className="px-8 py-4 flex justify-end gap-3 border-t border-gray-200">
+          <button type="button" onClick={onCancel} disabled={loading} className="px-5 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50">取消</button>
+          <button type="submit" disabled={loading} className="px-5 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50">{loading ? '保存中...' : '保存'}</button>
         </div>
       </form>
     </div>

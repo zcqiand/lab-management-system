@@ -115,170 +115,196 @@ export function ContractFormModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-lg shadow-xl w-[560px] max-w-[90vw] max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-lg shadow-xl w-[900px] max-w-[95vw] max-h-[92vh] overflow-y-auto"
       >
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-8 py-5 border-b border-gray-200">
           <h3 className="text-lg font-semibold">{title}</h3>
         </div>
-        <div className="px-6 py-4 space-y-4">
-          <div>
-            <label htmlFor="contract-code" className="block text-sm mb-1 font-medium">
-              合同编号 <span className="text-red-600">*</span>
-            </label>
-            <input
-              id="contract-code"
-              value={contractCode}
-              onChange={(e) => setContractCode(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.contractCode && <p className="text-red-600 text-xs mt-1">{errors.contractCode}</p>}
-          </div>
-          <div>
-            <label htmlFor="project-name" className="block text-sm mb-1 font-medium">
-              工程名称 <span className="text-red-600">*</span>
-            </label>
-            <input
-              id="project-name"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.projectName && <p className="text-red-600 text-xs mt-1">{errors.projectName}</p>}
-          </div>
-          <div>
-            <label htmlFor="client-unit" className="block text-sm mb-1 font-medium">
-              委托单位 <span className="text-red-600">*</span>
-            </label>
-            <input
-              id="client-unit"
-              value={clientUnit}
-              onChange={(e) => setClientUnit(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.clientUnit && <p className="text-red-600 text-xs mt-1">{errors.clientUnit}</p>}
-          </div>
-          <div>
-            <label htmlFor="construction-unit" className="block text-sm mb-1 font-medium">
-              施工单位 <span className="text-red-600">*</span>
-            </label>
-            <input
-              id="construction-unit"
-              value={constructionUnit}
-              onChange={(e) => setConstructionUnit(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.constructionUnit && <p className="text-red-600 text-xs mt-1">{errors.constructionUnit}</p>}
-          </div>
-          <div>
-            <label htmlFor="witness-unit" className="block text-sm mb-1 font-medium">
-              见证单位 <span className="text-red-600">*</span>
-            </label>
-            <input
-              id="witness-unit"
-              value={witnessUnit}
-              onChange={(e) => setWitnessUnit(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.witnessUnit && <p className="text-red-600 text-xs mt-1">{errors.witnessUnit}</p>}
-          </div>
-          <div>
-            <label htmlFor="witness" className="block text-sm mb-1 font-medium">
-              见证人 <span className="text-red-600">*</span>
-            </label>
-            <input
-              id="witness"
-              value={witness}
-              onChange={(e) => setWitness(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.witness && <p className="text-red-600 text-xs mt-1">{errors.witness}</p>}
-          </div>
-          <div>
-            <label htmlFor="witness-phone" className="block text-sm mb-1 font-medium">
-              见证人电话
-            </label>
-            <input
-              id="witness-phone"
-              value={witnessPhone}
-              onChange={(e) => setWitnessPhone(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label htmlFor="contact-person" className="block text-sm mb-1 font-medium">
-              联系人
-            </label>
-            <input
-              id="contact-person"
-              value={contactPerson}
-              onChange={(e) => setContactPerson(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label htmlFor="contact-phone" className="block text-sm mb-1 font-medium">
-              联系电话
-            </label>
-            <input
-              id="contact-phone"
-              value={contactPhone}
-              onChange={(e) => setContactPhone(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label htmlFor="entrusted-date" className="block text-sm mb-1 font-medium">
-              合同日期
-            </label>
-            <input
-              id="entrusted-date"
-              type="date"
-              value={entrustedDate}
-              onChange={(e) => setEntrustedDate(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label htmlFor="project-location" className="block text-sm mb-1 font-medium">
-              工程地点
-            </label>
-            <input
-              id="project-location"
-              value={projectLocation}
-              onChange={(e) => setProjectLocation(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          {mode === 'edit' && (
+
+        {/* 3-column grid layout */}
+        <div className="px-8 py-5 space-y-4">
+          {/* Row 1: 合同编号 | 工程名称 | 合同日期 */}
+          <div className="grid grid-cols-3 gap-4">
             <div>
-              <label htmlFor="contract-status" className="block text-sm mb-1 font-medium">
-                状态
+              <label htmlFor="contract-code" className="block text-sm font-medium mb-1">
+                合同编号 <span className="text-red-600">*</span>
               </label>
-              <select
-                id="contract-status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value as ContractStatus)}
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="active">进行中</option>
-                <option value="archived">已归档</option>
-              </select>
+              <input
+                id="contract-code"
+                value={contractCode}
+                onChange={(e) => setContractCode(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.contractCode && <p className="text-red-600 text-xs mt-1">{errors.contractCode}</p>}
             </div>
-          )}
+
+            <div>
+              <label htmlFor="project-name" className="block text-sm font-medium mb-1">
+                工程名称 <span className="text-red-600">*</span>
+              </label>
+              <input
+                id="project-name"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.projectName && <p className="text-red-600 text-xs mt-1">{errors.projectName}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="entrusted-date" className="block text-sm font-medium mb-1">
+                合同日期
+              </label>
+              <input
+                id="entrusted-date"
+                type="date"
+                value={entrustedDate}
+                onChange={(e) => setEntrustedDate(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          {/* Row 2: 委托单位 | 施工单位 | 工程地点 */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="client-unit" className="block text-sm font-medium mb-1">
+                委托单位 <span className="text-red-600">*</span>
+              </label>
+              <input
+                id="client-unit"
+                value={clientUnit}
+                onChange={(e) => setClientUnit(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.clientUnit && <p className="text-red-600 text-xs mt-1">{errors.clientUnit}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="construction-unit" className="block text-sm font-medium mb-1">
+                施工单位 <span className="text-red-600">*</span>
+              </label>
+              <input
+                id="construction-unit"
+                value={constructionUnit}
+                onChange={(e) => setConstructionUnit(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.constructionUnit && <p className="text-red-600 text-xs mt-1">{errors.constructionUnit}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="project-location" className="block text-sm font-medium mb-1">
+                工程地点
+              </label>
+              <input
+                id="project-location"
+                value={projectLocation}
+                onChange={(e) => setProjectLocation(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          {/* Row 3: 见证单位 | 见证人 | 见证人电话 */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="witness-unit" className="block text-sm font-medium mb-1">
+                见证单位 <span className="text-red-600">*</span>
+              </label>
+              <input
+                id="witness-unit"
+                value={witnessUnit}
+                onChange={(e) => setWitnessUnit(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.witnessUnit && <p className="text-red-600 text-xs mt-1">{errors.witnessUnit}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="witness" className="block text-sm font-medium mb-1">
+                见证人 <span className="text-red-600">*</span>
+              </label>
+              <input
+                id="witness"
+                value={witness}
+                onChange={(e) => setWitness(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.witness && <p className="text-red-600 text-xs mt-1">{errors.witness}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="witness-phone" className="block text-sm font-medium mb-1">
+                见证人电话
+              </label>
+              <input
+                id="witness-phone"
+                value={witnessPhone}
+                onChange={(e) => setWitnessPhone(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          {/* Row 4: 联系人 | 联系电话 | 状态 */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="contact-person" className="block text-sm font-medium mb-1">
+                联系人
+              </label>
+              <input
+                id="contact-person"
+                value={contactPerson}
+                onChange={(e) => setContactPerson(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="contact-phone" className="block text-sm font-medium mb-1">
+                联系电话
+              </label>
+              <input
+                id="contact-phone"
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {mode === 'edit' && (
+              <div>
+                <label htmlFor="contract-status" className="block text-sm font-medium mb-1">
+                  状态
+                </label>
+                <select
+                  id="contract-status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as ContractStatus)}
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="active">进行中</option>
+                  <option value="archived">已归档</option>
+                </select>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="px-6 py-3 flex justify-end gap-2 border-t border-gray-200">
+
+        <div className="px-8 py-4 flex justify-end gap-3 border-t border-gray-200">
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            className="px-5 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
           >
             取消
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+            className="px-5 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
           >
             {loading ? '保存中...' : '保存'}
           </button>

@@ -130,128 +130,160 @@ export function ReceiptFormModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-lg shadow-xl w-[560px] max-w-[90vw] max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-lg shadow-xl w-[900px] max-w-[95vw] max-h-[92vh] overflow-y-auto"
       >
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-8 py-5 border-b border-gray-200">
           <h3 className="text-lg font-semibold">{title}</h3>
         </div>
-        <div className="px-6 py-4 space-y-4">
-          <div>
-            <label htmlFor="receipt-code" className="block text-sm mb-1 font-medium">
-              接样编号 <span className="text-red-600">*</span>
-            </label>
-            <input
-              id="receipt-code"
-              value={receiptCode}
-              onChange={(e) => setReceiptCode(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.receiptCode && <p className="text-red-600 text-xs mt-1">{errors.receiptCode}</p>}
+
+        {/* 3-column grid layout */}
+        <div className="px-8 py-5 space-y-4">
+          {/* Row 1: 接样编号 | 关联合同 | 收样日期 */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="receipt-code" className="block text-sm font-medium mb-1">
+                接样编号 <span className="text-red-600">*</span>
+              </label>
+              <input
+                id="receipt-code"
+                value={receiptCode}
+                onChange={(e) => setReceiptCode(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.receiptCode && <p className="text-red-600 text-xs mt-1">{errors.receiptCode}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="receipt-contract" className="block text-sm font-medium mb-1">
+                关联合同 <span className="text-red-600">*</span>
+              </label>
+              <select
+                id="receipt-contract"
+                value={contractId}
+                onChange={(e) => setContractId(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">请选择合同</option>
+                {contracts.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.contractCode} - {c.projectName}
+                  </option>
+                ))}
+              </select>
+              {errors.contractId && <p className="text-red-600 text-xs mt-1">{errors.contractId}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="received-date" className="block text-sm font-medium mb-1">
+                收样日期 <span className="text-red-600">*</span>
+              </label>
+              <input
+                id="received-date"
+                type="date"
+                value={receivedDate}
+                onChange={(e) => setReceivedDate(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.receivedDate && <p className="text-red-600 text-xs mt-1">{errors.receivedDate}</p>}
+            </div>
           </div>
-          <div>
-            <label htmlFor="receipt-contract" className="block text-sm mb-1 font-medium">
-              关联合同 <span className="text-red-600">*</span>
-            </label>
-            <select
-              id="receipt-contract"
-              value={contractId}
-              onChange={(e) => setContractId(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">请选择合同</option>
-              {contracts.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.contractCode} - {c.projectName}
-                </option>
-              ))}
-            </select>
-            {errors.contractId && <p className="text-red-600 text-xs mt-1">{errors.contractId}</p>}
+
+          {/* Row 2: 收样人 | 样品来源 | 检测类别 */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="received-by" className="block text-sm font-medium mb-1">
+                收样人 <span className="text-red-600">*</span>
+              </label>
+              <input
+                id="received-by"
+                value={receivedBy}
+                onChange={(e) => setReceivedBy(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.receivedBy && <p className="text-red-600 text-xs mt-1">{errors.receivedBy}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="sample-source" className="block text-sm font-medium mb-1">
+                样品来源
+              </label>
+              <select
+                id="sample-source"
+                value={sampleSource}
+                onChange={(e) => setSampleSource(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {SAMPLE_SOURCES.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="test-category" className="block text-sm font-medium mb-1">
+                检测类别
+              </label>
+              <select
+                id="test-category"
+                value={testCategory}
+                onChange={(e) => setTestCategory(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {TEST_CATEGORIES.map((t) => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div>
-            <label htmlFor="received-date" className="block text-sm mb-1 font-medium">
-              收样日期 <span className="text-red-600">*</span>
-            </label>
-            <input
-              id="received-date"
-              type="date"
-              value={receivedDate}
-              onChange={(e) => setReceivedDate(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.receivedDate && <p className="text-red-600 text-xs mt-1">{errors.receivedDate}</p>}
+
+          {/* Row 3: 检测环境 | 主要检测设备 | 状态 */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="test-environment" className="block text-sm font-medium mb-1">
+                检测环境
+              </label>
+              <input
+                id="test-environment"
+                value={testEnvironment}
+                onChange={(e) => setTestEnvironment(e.target.value)}
+                placeholder="如：温度 20°C，湿度 60%RH"
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="main-equipment" className="block text-sm font-medium mb-1">
+                主要检测设备
+              </label>
+              <input
+                id="main-equipment"
+                value={mainEquipment}
+                onChange={(e) => setMainEquipment(e.target.value)}
+                placeholder="如：万能试验机、干燥箱"
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="receipt-status" className="block text-sm font-medium mb-1">
+                状态
+              </label>
+              <select
+                id="receipt-status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as ReceiptStatus)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {STATUS_OPTIONS.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            </div>
           </div>
+
+          {/* Row 4: 代表批量汇总 (full width) */}
           <div>
-            <label htmlFor="received-by" className="block text-sm mb-1 font-medium">
-              收样人 <span className="text-red-600">*</span>
-            </label>
-            <input
-              id="received-by"
-              value={receivedBy}
-              onChange={(e) => setReceivedBy(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.receivedBy && <p className="text-red-600 text-xs mt-1">{errors.receivedBy}</p>}
-          </div>
-          <div>
-            <label htmlFor="sample-source" className="block text-sm mb-1 font-medium">
-              样品来源
-            </label>
-            <select
-              id="sample-source"
-              value={sampleSource}
-              onChange={(e) => setSampleSource(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {SAMPLE_SOURCES.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="test-category" className="block text-sm mb-1 font-medium">
-              检测类别
-            </label>
-            <select
-              id="test-category"
-              value={testCategory}
-              onChange={(e) => setTestCategory(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {TEST_CATEGORIES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="test-environment" className="block text-sm mb-1 font-medium">
-              检测环境
-            </label>
-            <input
-              id="test-environment"
-              value={testEnvironment}
-              onChange={(e) => setTestEnvironment(e.target.value)}
-              placeholder="如：温度 20°C，湿度 60%"
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label htmlFor="main-equipment" className="block text-sm mb-1 font-medium">
-              主要检测设备
-            </label>
-            <input
-              id="main-equipment"
-              value={mainEquipment}
-              onChange={(e) => setMainEquipment(e.target.value)}
-              placeholder="如：万能试验机、干燥箱"
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label htmlFor="represent-batch" className="block text-sm mb-1 font-medium">
+            <label htmlFor="represent-batch" className="block text-sm font-medium mb-1">
               代表批量汇总
             </label>
             <textarea
@@ -259,11 +291,14 @@ export function ReceiptFormModal({
               value={representBatchSummary}
               onChange={(e) => setRepresentBatchSummary(e.target.value)}
               rows={2}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="如：C30 混凝土 120m³，HRB400 钢筋 60t"
+              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
+
+          {/* Row 5: 备注 (full width) */}
           <div>
-            <label htmlFor="receipt-remark" className="block text-sm mb-1 font-medium">
+            <label htmlFor="receipt-remark" className="block text-sm font-medium mb-1">
               备注
             </label>
             <textarea
@@ -271,40 +306,25 @@ export function ReceiptFormModal({
               value={remark}
               onChange={(e) => setRemark(e.target.value)}
               rows={2}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="其他说明"
+              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
-          <div>
-            <label htmlFor="receipt-status" className="block text-sm mb-1 font-medium">
-              状态
-            </label>
-            <select
-              id="receipt-status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value as ReceiptStatus)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {STATUS_OPTIONS.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
-        <div className="px-6 py-3 flex justify-end gap-2 border-t border-gray-200">
+
+        <div className="px-8 py-4 flex justify-end gap-3 border-t border-gray-200">
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            className="px-5 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
           >
             取消
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+            className="px-5 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
           >
             {loading ? '保存中...' : '保存'}
           </button>
