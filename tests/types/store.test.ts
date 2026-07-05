@@ -1,17 +1,16 @@
 import { describe, it, expect } from 'vitest'
-import type { AuthState, ProjectState, SampleState } from '../../src/types/store'
+import type { AuthState, ContractState, ReceiptState, SampleState } from '../../src/types/store'
 
-describe('types/store store 状态类型', () => {
-  it('AuthState 类型可构造且字段符合预期', () => {
+describe('types/store store 状态类型（v3）', () => {
+  it('AuthState 未登录态可构造', () => {
     const auth: AuthState = {
       user: null,
       token: null,
       status: 'idle',
       error: null,
     }
-    expect(auth.user).toBeNull()
-    expect(auth.token).toBeNull()
     expect(auth.status).toBe('idle')
+    expect(auth.user).toBeNull()
   })
 
   it('AuthState 已登录态可构造', () => {
@@ -19,11 +18,11 @@ describe('types/store store 状态类型', () => {
       user: {
         id: 'u-001',
         username: 'labadmin',
-        displayName: '实验室管理员',
-        role: { id: 'role-admin', name: 'admin', permissions: ['project:read'] },
-        permissions: ['project:read'],
+        displayName: '管理员',
+        role: { id: 'role-admin', name: 'admin', permissions: [] },
+        permissions: [],
       },
-      token: 'mock.jwt.token',
+      token: 'jwt-token',
       status: 'authenticated',
       error: null,
     }
@@ -31,27 +30,12 @@ describe('types/store store 状态类型', () => {
     expect(auth.user?.username).toBe('labadmin')
   })
 
-  it('ProjectState 类型可构造且字段符合预期', () => {
-    const project: ProjectState = {
-      list: [],
-      total: 0,
-      current: null,
-      loading: false,
-      error: null,
-    }
-    expect(project.loading).toBe(false)
-    expect(project.current).toBeNull()
-  })
-
-  it('SampleState 类型可构造且字段符合预期', () => {
-    const sample: SampleState = {
-      list: [],
-      total: 0,
-      current: null,
-      loading: false,
-      error: null,
-    }
-    expect(sample.list).toEqual([])
-    expect(sample.total).toBe(0)
+  it('ContractState / ReceiptState / SampleState 结构一致', () => {
+    const contracts: ContractState = { list: [], total: 0, current: null, loading: false, error: null }
+    const receipts: ReceiptState = { list: [], total: 0, current: null, loading: false, error: null }
+    const samples: SampleState = { list: [], total: 0, current: null, loading: false, error: null }
+    expect(contracts.total).toBe(0)
+    expect(receipts.loading).toBe(false)
+    expect(samples.current).toBeNull()
   })
 })

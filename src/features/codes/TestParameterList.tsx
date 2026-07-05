@@ -1,37 +1,28 @@
 import { useEffect, useState } from 'react'
 import { apiClient } from '../../api/client'
-import type { TestParameter, MaterialType } from '../../types/api'
+import type { TestParameter } from '../../types/api'
 import { TestParameterFormModal, type TestParameterFormValues } from './TestParameterFormModal'
-
-const MATERIAL_TABS: { label: string; value: MaterialType | 'all' }[] = [
-  { label: '全部', value: 'all' },
-  { label: '钢材', value: 'steel' },
-  { label: '水泥', value: 'cement' },
-  { label: '混凝土', value: 'concrete' },
-  { label: '砂', value: 'sand' },
-  { label: '碎石', value: 'gravel' },
-  { label: '钢筋机械连接', value: 'rebar_mech' },
-  { label: '钢筋焊接连接', value: 'rebar_weld' },
-]
+import { useCategories, categoryName } from '../categories/useCategories'
 
 const PAGE_SIZE = 100
 
 export function TestParameterList() {
+  const { categories } = useCategories()
   const [list, setList] = useState<TestParameter[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [materialType, setMaterialType] = useState<MaterialType | 'all'>('all')
+  const [categoryCode, setCategoryCode] = useState<string>('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create')
   const [editingItem, setEditingItem] = useState<Partial<TestParameter> | undefined>(undefined)
   const [submitting, setSubmitting] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
 
-  const fetchParams = (mt: MaterialType | 'all') => {
+  const fetchParams = (cat: string) => {
     setLoading(true)
     setError(null)
     const params: Record<string, string> = { page: '1', pageSize: String(PAGE_SIZE) }
-    if (mt !== 'all') params.materialType = mt
+    if (cat !== 'all') params.categoryCode = cat
     apiClient
       .get<{ items: TestParameter[]; total: number }>('/test-parameters', { params })
       .then((res) => {
@@ -44,7 +35,7 @@ export function TestParameterList() {
       })
   }
 
-  useEffect(() => { fetchParams(materialType) }, [materialType])
+  useEffect(() => { fetchParams(categoryCode) }, [categoryCode])
 
   const openCreate = () => {
     setEditingItem(undefined)
@@ -68,7 +59,7 @@ export function TestParameterList() {
     try {
       await apiClient.post('/test-parameters', values)
       closeModal()
-      fetchParams(materialType)
+      fetchParams(categoryCode)
     } catch {
       setError('新建参数失败')
     } finally {
@@ -82,7 +73,7 @@ export function TestParameterList() {
     try {
       await apiClient.put(`/test-parameters/${editingItem.code}`, values)
       closeModal()
-      fetchParams(materialType)
+      fetchParams(categoryCode)
     } catch {
       setError('更新参数失败')
     } finally {
@@ -95,7 +86,7 @@ export function TestParameterList() {
     setDeleteLoading(code)
     try {
       await apiClient.delete(`/test-parameters/${code}`)
-      fetchParams(materialType)
+      fetchParams(categoryCode)
     } catch {
       setError('删除参数失败')
     } finally {
@@ -115,18 +106,18 @@ export function TestParameterList() {
         </button>
       </div>
 
-      <div className="flex gap-1 bg-white rounded shadow p-1">
-        {MATERIAL_TABS.map((tab) => (
+      <div className="flex gap-1 bg-white rounded shadow p-1 flex-wrap">
+        {[{ code: 'all', name: '全部' }, ...categories].map((tab) => (
           <button
-            key={tab.value}
-            onClick={() => setMaterialType(tab.value)}
+            key={tab.code}
+            onClick={() => setCategoryCode(tab.code)}
             className={`px-3 py-1.5 rounded text-sm transition-colors ${
-              materialType === tab.value
+              categoryCode === tab.code
                 ? 'bg-blue-600 text-white'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            {tab.label}
+            {tab.name}
           </button>
         ))}
       </div>
@@ -143,7 +134,7 @@ export function TestParameterList() {
             <tr>
               <th className="px-4 py-2 text-left">参数代码</th>
               <th className="px-4 py-2 text-left">参数名称</th>
-              <th className="px-4 py-2 text-left">适用材料</th>
+              <th className="px-4 py-2 text-left">报告类别</th>
               <th className="px-4 py-2 text-left">分类</th>
               <th className="px-4 py-2 text-left">单位</th>
               <th className="px-4 py-2 text-left">说明</th>
@@ -171,10 +162,10 @@ export function TestParameterList() {
                 <td className="px-4 py-2">{p.name}</td>
                 <td className="px-4 py-2">
                   <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-blue-50 text-blue-700">
-                    {MATERIAL_TABS.find((t) => t.value === p.materialType)?.label ?? p.materialType}
+                    {categoryName(categories, p.categoryCode)}
                   </span>
                 </td>
-                <td className="px-4 py-2">{p.category}</td>
+                <td className="px-4 py-2">{p.group ?? '-'}</td>
                 <td className="px-4 py-2">{p.unit ?? '-'}</td>
                 <td className="px-4 py-2 text-gray-500">{p.description ?? '-'}</td>
                 <td className="px-4 py-2">

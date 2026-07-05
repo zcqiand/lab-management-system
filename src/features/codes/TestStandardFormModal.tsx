@@ -1,12 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import type { TestStandard, MaterialType } from '../../types/api'
+import type { TestStandard, StandardType } from '../../types/api'
 
 export interface TestStandardFormValues {
   code: string
   name: string
-  type: TestStandard['type']
-  applicableMaterials: MaterialType[]
-  applicableParameters: string[]
+  type: StandardType
+  remark?: string
 }
 
 interface TestStandardFormModalProps {
@@ -18,23 +17,14 @@ interface TestStandardFormModalProps {
   loading?: boolean
 }
 
-const TYPE_OPTIONS: { label: string; value: TestStandard['type'] }[] = [
-  { label: '国标', value: 'national' },
-  { label: '行标', value: 'industry' },
-  { label: '地标', value: 'local' },
-  { label: '企标', value: 'enterprise' },
+const TYPE_OPTIONS: { label: string; value: StandardType }[] = [
+  { label: '国家标准', value: 'national' },
+  { label: '行业标准', value: 'industry' },
+  { label: '地方标准', value: 'local' },
+  { label: '企业标准', value: 'enterprise' },
 ]
 
-const MATERIAL_OPTIONS: { label: string; value: MaterialType }[] = [
-  { label: '钢材', value: 'steel' },
-  { label: '水泥', value: 'cement' },
-  { label: '混凝土', value: 'concrete' },
-  { label: '砂', value: 'sand' },
-  { label: '碎石', value: 'gravel' },
-  { label: '钢筋机械连接', value: 'rebar_mech' },
-  { label: '钢筋焊接连接', value: 'rebar_weld' },
-]
-
+/** 检测标准表单（v3）——标准与报告类别的关联在「报告类别标准」中维护 */
 export function TestStandardFormModal({
   open,
   mode,
@@ -43,64 +33,39 @@ export function TestStandardFormModal({
   onCancel,
   loading = false,
 }: TestStandardFormModalProps) {
-  const [code, setCode] = useState(initialValues?.code ?? '')
-  const [name, setName] = useState(initialValues?.name ?? '')
-  const [type, setType] = useState<TestStandard['type']>(initialValues?.type ?? 'national')
-  const [applicableMaterials, setApplicableMaterials] = useState<MaterialType[]>(initialValues?.applicableMaterials ?? [])
-  const [applicableParameters, setApplicableParameters] = useState(initialValues?.applicableParameters?.join(', ') ?? '')
-  const [errors, setErrors] = useState<{ code?: string; name?: string; type?: string }>({})
+  const [code, setCode] = useState('')
+  const [name, setName] = useState('')
+  const [type, setType] = useState<StandardType>('national')
+  const [remark, setRemark] = useState('')
+  const [errors, setErrors] = useState<{ code?: string; name?: string }>({})
 
   useEffect(() => {
     if (open) {
       setCode(initialValues?.code ?? '')
       setName(initialValues?.name ?? '')
       setType(initialValues?.type ?? 'national')
-      setApplicableMaterials(initialValues?.applicableMaterials ?? [])
-      setApplicableParameters(initialValues?.applicableParameters?.join(', ') ?? '')
+      setRemark(initialValues?.remark ?? '')
       setErrors({})
     }
   }, [open, initialValues])
 
   if (!open) return null
 
-  const title = mode === 'create' ? '新建标准' : '编辑标准'
-
-  const toggleMaterial = (mat: MaterialType) => {
-    setApplicableMaterials((prev) =>
-      prev.includes(mat) ? prev.filter((m) => m !== mat) : [...prev, mat],
-    )
-  }
-
-  const validate = (): boolean => {
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
     const next: typeof errors = {}
     if (!code.trim()) next.code = '请输入标准编号'
     if (!name.trim()) next.name = '请输入标准名称'
     setErrors(next)
-    return Object.keys(next).length === 0
-  }
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    if (!validate()) return
-    const params = applicableParameters
-      .split(',')
-      .map((p) => p.trim())
-      .filter(Boolean)
-    const values: TestStandardFormValues = {
-      code: code.trim(),
-      name: name.trim(),
-      type,
-      applicableMaterials,
-      applicableParameters: params,
-    }
-    onSubmit(values)
+    if (Object.keys(next).length > 0) return
+    onSubmit({ code: code.trim(), name: name.trim(), type, remark: remark.trim() || undefined })
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-xl w-[520px] max-w-[90vw] max-h-[90vh] overflow-y-auto">
+      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-xl w-[480px] max-w-[90vw] max-h-[90vh] overflow-y-auto">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold">{title}</h3>
+          <h3 className="text-lg font-semibold">{mode === 'create' ? '新建标准' : '编辑标准'}</h3>
         </div>
         <div className="px-6 py-4 space-y-4">
           <div>
@@ -112,80 +77,39 @@ export function TestStandardFormModal({
               value={code}
               onChange={(e) => setCode(e.target.value)}
               disabled={mode === 'edit'}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+              placeholder="如 GB 1499.2-2024"
+              className="w-full border rounded px-3 py-2 disabled:bg-gray-100 disabled:text-gray-500"
             />
-            {errors.code && <p className="text-red-600 text-xs mt-1">{errors.code}</p>}
+            {errors.code && <p role="alert" className="text-red-600 text-xs mt-1">{errors.code}</p>}
           </div>
           <div>
             <label htmlFor="ts-name" className="block text-sm mb-1 font-medium">
               标准名称 <span className="text-red-600">*</span>
             </label>
-            <input
-              id="ts-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.name && <p className="text-red-600 text-xs mt-1">{errors.name}</p>}
+            <input id="ts-name" value={name} onChange={(e) => setName(e.target.value)} className="w-full border rounded px-3 py-2" />
+            {errors.name && <p role="alert" className="text-red-600 text-xs mt-1">{errors.name}</p>}
           </div>
           <div>
-            <label htmlFor="ts-type" className="block text-sm mb-1 font-medium">
-              类型 <span className="text-red-600">*</span>
-            </label>
-            <select
-              id="ts-type"
-              value={type}
-              onChange={(e) => setType(e.target.value as TestStandard['type'])}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {TYPE_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+            <label htmlFor="ts-type" className="block text-sm mb-1 font-medium">标准类型</label>
+            <select id="ts-type" value={type} onChange={(e) => setType(e.target.value as StandardType)} className="w-full border rounded px-3 py-2">
+              {TYPE_OPTIONS.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-sm mb-2 font-medium">适用材料</label>
-            <div className="flex flex-wrap gap-2">
-              {MATERIAL_OPTIONS.map((opt) => (
-                <label key={opt.value} className="flex items-center gap-1.5 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={applicableMaterials.includes(opt.value)}
-                    onChange={() => toggleMaterial(opt.value)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  {opt.label}
-                </label>
-              ))}
-            </div>
+            <label htmlFor="ts-remark" className="block text-sm mb-1 font-medium">备注</label>
+            <input id="ts-remark" value={remark} onChange={(e) => setRemark(e.target.value)} className="w-full border rounded px-3 py-2" />
           </div>
-          <div>
-            <label htmlFor="ts-params" className="block text-sm mb-1 font-medium">
-              适用参数
-            </label>
-            <input
-              id="ts-params"
-              value={applicableParameters}
-              onChange={(e) => setApplicableParameters(e.target.value)}
-              placeholder="参数代码，多个用逗号分隔"
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <p className="text-xs text-gray-500 bg-gray-50 rounded p-2">
+            标准与报告类别的关联关系请在「基础管理 → 报告类别标准」中维护。
+          </p>
         </div>
         <div className="px-6 py-3 flex justify-end gap-2 border-t border-gray-200">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={loading}
-            className="px-4 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-          >
+          <button type="button" onClick={onCancel} disabled={loading} className="px-4 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50">
             取消
           </button>
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-          >
+          <button type="submit" disabled={loading} className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50">
             {loading ? '保存中...' : '保存'}
           </button>
         </div>

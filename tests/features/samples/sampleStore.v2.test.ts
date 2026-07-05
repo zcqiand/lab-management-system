@@ -5,8 +5,6 @@ import { useSampleStoreV2 } from '../../../src/features/samples/sampleStore.v2'
 import { resetApiClient } from '../../../src/api/client'
 import { contractTable, receiptTable, sampleTable, resetMockDb } from '../../../msw/db'
 
-const API_BASE = 'http://localhost/api'
-
 beforeEach(() => {
   localStorage.clear()
   resetMockDb()
@@ -30,6 +28,9 @@ beforeEach(() => {
     testCategory: '委托检验',
     remark: '',
     status: 'received',
+    flowStatus: 'receiving',
+    flowHistory: [],
+    lastSubmittedBy: null,
   })
   sampleTable.insert({
     id: 'sample-steel-001',
@@ -130,6 +131,9 @@ describe('sampleStore.v2 状态流转', () => {
       testCategory: '委托检验',
       remark: '',
       status: 'received',
+      flowStatus: 'receiving',
+      flowHistory: [],
+      lastSubmittedBy: null,
     })
     sampleTable.insert({
       id: 'sample-concrete-001',

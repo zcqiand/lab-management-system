@@ -17,12 +17,15 @@ const BUSINESS_MENU: MenuGroup = {
   title: '业务管理',
   items: [
     { to: '/contracts', label: '合同管理', permission: 'project:read' },
+    // 流程线：接样 → 任务安排 → 数据录入 → 报告审核 → 报告批准 → 报告发放 → 报告归档
     { to: '/receipts', label: '接样管理', permission: 'sample:read' },
-    { to: '/test-records', label: '数据录入', permission: 'report:write' },
-    { to: '/reports?status=draft', label: '报告编制', permission: 'report:write' },
-    { to: '/reports?status=reviewing', label: '报告审核', permission: 'report:read' },
-    { to: '/reports?status=issued', label: '报告批准', permission: 'report:issue' },
-    { to: '/reports?status=archived', label: '报告归档', permission: 'report:read' },
+    { to: '/task-assignment', label: '任务安排', permission: 'report:write' },
+    { to: '/data-entry', label: '数据录入', permission: 'report:write' },
+    { to: '/report-review', label: '报告审核', permission: 'report:read' },
+    { to: '/report-approve', label: '报告批准', permission: 'report:issue' },
+    { to: '/report-issue', label: '报告发放', permission: 'report:read' },
+    { to: '/report-archive', label: '报告归档', permission: 'report:read' },
+    { to: '/summary', label: '统计汇总', permission: 'report:read' },
   ],
 }
 
@@ -30,11 +33,18 @@ const BASIC_MENU: MenuGroup = {
   title: '基础管理',
   items: [
     { to: '/org-info', label: '机构信息', permission: 'user:read' },
+    { to: '/settings/roles', label: '角色管理', permission: 'role:read' },
+    { to: '/settings/users', label: '用户管理', permission: 'user:read' },
+    { to: '/report-categories', label: '报告类别', permission: 'user:read' },
     { to: '/test-parameters', label: '参数管理', permission: 'user:read' },
     { to: '/test-standards', label: '标准管理', permission: 'user:read' },
     { to: '/technical-requirements', label: '技术要求', permission: 'user:read' },
-    { to: '/settings/roles', label: '角色管理', permission: 'role:read' },
-    { to: '/settings/users', label: '用户管理', permission: 'user:read' },
+    { to: '/category-standards', label: '报告类别标准', permission: 'user:read' },
+    { to: '/models', label: '型号管理', permission: 'user:read' },
+    { to: '/specifications', label: '规格管理', permission: 'user:read' },
+    { to: '/grades', label: '等级管理', permission: 'user:read' },
+    { to: '/brands', label: '牌号管理', permission: 'user:read' },
+    { to: '/report-templates', label: '报告模板', permission: 'user:read' },
   ],
 }
 

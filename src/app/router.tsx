@@ -3,23 +3,28 @@ import Layout from './layouts/Layout'
 import { ProtectedRoute } from './guards/ProtectedRoute'
 import { Login } from '../features/auth/Login'
 import Dashboard from '../pages/Dashboard'
-import Projects from '../pages/Projects'
 import Contracts from '../pages/Contracts'
 import Receipts from '../pages/Receipts'
-import Samples from '../pages/Samples'
-import Flow from '../pages/Flow'
 import Forbidden from '../pages/Forbidden'
-import Reports from '../pages/Reports'
 import Users from '../pages/Users'
 import Roles from '../pages/Roles'
 import OrgInfo from '../pages/OrgInfo'
 import { TestParameterList } from '../features/codes/TestParameterList'
 import { TestStandardList } from '../features/codes/TestStandardList'
 import { TechnicalRequirementList } from '../features/codes/TechnicalRequirementList'
+import { ReportCategoryList } from '../features/categories/ReportCategoryList'
+import { CategoryStandardList } from '../features/categories/CategoryStandardList'
+import { CategoryDictList } from '../features/dicts/CategoryDictList'
+import { ReportTemplateList } from '../features/templates/ReportTemplateList'
+import { TaskAssignmentPage } from '../features/task-assignment/TaskAssignmentPage'
+import { ReportReviewPage } from '../features/reports/ReportReviewPage'
+import { ReportApprovePage } from '../features/reports/ReportApprovePage'
+import { ReportArchivePage } from '../features/reports/ReportArchivePage'
+import { ReportIssuePage } from '../features/reports/ReportIssuePage'
+import { DataEntryPage } from '../features/data-entry/DataEntryPage'
+import { SummaryPage } from '../features/summary/SummaryPage'
 
-// ch35: ProtectedRoute wraps Layout; unauthenticated → /login; /login → features/auth/Login
-// extend batch1: add reports/settings/users settings/roles child routes (only add, don't modify existing routes)
-// v1.3-001: add /test-parameters /test-standards /technical-requirements routes
+// v3: single flow pipeline — receiving → task-assignment → data-entry → review → approve → issue → archive
 export const routes: RouteObject[] = [
   { path: '/login', element: <Login /> },
   {
@@ -32,19 +37,28 @@ export const routes: RouteObject[] = [
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <Dashboard /> },
-      // v1.3-001: old routes kept for ch36 compatibility; Layout menu no longer shows them
-      { path: 'projects', element: <Projects /> },
-      { path: 'samples', element: <Samples /> },
-      { path: 'flow', element: <Flow /> },
-      // v1.3-001: new routes (placeholder components reuse existing pages)
+      // ----- 业务管理（流程线）-----
       { path: 'contracts', element: <Contracts /> },
       { path: 'receipts', element: <Receipts /> },
-      { path: 'test-records', element: <Flow /> },
-      { path: 'reports', element: <Reports /> },
+      { path: 'task-assignment', element: <TaskAssignmentPage /> },
+      { path: 'data-entry', element: <DataEntryPage /> },
+      { path: 'report-review', element: <ReportReviewPage /> },
+      { path: 'report-approve', element: <ReportApprovePage /> },
+      { path: 'report-issue', element: <ReportIssuePage /> },
+      { path: 'report-archive', element: <ReportArchivePage /> },
+      { path: 'summary', element: <SummaryPage /> },
+      // ----- 基础管理 -----
       { path: 'org-info', element: <OrgInfo /> },
+      { path: 'report-categories', element: <ReportCategoryList /> },
       { path: 'test-parameters', element: <TestParameterList /> },
       { path: 'test-standards', element: <TestStandardList /> },
       { path: 'technical-requirements', element: <TechnicalRequirementList /> },
+      { path: 'category-standards', element: <CategoryStandardList /> },
+      { path: 'models', element: <CategoryDictList key="models" endpoint="models" title="型号管理" hint="指品种/型号：热轧带肋 / P·O 42.5 / C30 / 中砂 / 直螺纹套筒 / 闪光对焊" /> },
+      { path: 'specifications', element: <CategoryDictList key="specifications" endpoint="specifications" title="规格管理" hint="指尺寸/粒径/直径：Φ22 / 150×150×150mm / 5-25mm；无尺寸的类别留空" /> },
+      { path: 'grades', element: <CategoryDictList key="grades" endpoint="grades" title="等级管理" hint="指机械连接接头等级Ⅰ/Ⅱ/Ⅲ级、砂石用途类别Ⅰ/Ⅱ/Ⅲ类；型号已含等级的钢材/水泥/混凝土留空" /> },
+      { path: 'brands', element: <CategoryDictList key="brands" endpoint="brands" title="牌号管理" hint="指钢筋牌号：HRB400 等" /> },
+      { path: 'report-templates', element: <ReportTemplateList /> },
       {
         path: 'settings',
         children: [

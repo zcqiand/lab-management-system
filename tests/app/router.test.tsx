@@ -52,24 +52,34 @@ describe('router 路由配置（含认证守卫）', () => {
     expect(screen.getByText('业务管理')).toBeInTheDocument()
   })
 
-  it('登录后访问 /projects 渲染项目管理页', async () => {
+  it('登录后访问 /contracts 渲染合同管理页', async () => {
     useAuthStore.setState({ user: adminUser, token: 't', status: 'authenticated', error: null })
-    renderAt('/projects')
-    // ch36：projects 路由接入 ProjectList，含"新增项目"按钮
-    expect(await screen.findByRole('button', { name: '新增项目' })).toBeInTheDocument()
+    renderAt('/contracts')
+    expect(await screen.findByText('合同管理', { selector: 'h2' })).toBeInTheDocument()
   })
 
-  it('登录后访问 /samples 渲染样品管理页', async () => {
+  it('登录后访问 /report-categories 渲染报告类别页', async () => {
     useAuthStore.setState({ user: adminUser, token: 't', status: 'authenticated', error: null })
-    renderAt('/samples')
-    expect(await screen.findByRole('button', { name: '新增样品' })).toBeInTheDocument()
+    renderAt('/report-categories')
+    expect(await screen.findByRole('button', { name: '新建类别' })).toBeInTheDocument()
   })
 
-  it('登录后访问 /flow 渲染检测流程页', async () => {
+  it('登录后访问 /models 渲染型号管理页', async () => {
     useAuthStore.setState({ user: adminUser, token: 't', status: 'authenticated', error: null })
-    renderAt('/flow')
-    // ch37：flow 路由接入 FlowPanel，初始状态渲染"提交检测"按钮
-    expect(await screen.findByRole('button', { name: '提交检测' })).toBeInTheDocument()
+    renderAt('/models')
+    expect(await screen.findByText('型号管理', { selector: 'h2' })).toBeInTheDocument()
+  })
+
+  it('登录后访问 /summary 渲染统计汇总页', async () => {
+    useAuthStore.setState({ user: adminUser, token: 't', status: 'authenticated', error: null })
+    renderAt('/summary')
+    expect(await screen.findByText('统计汇总', { selector: 'h2' })).toBeInTheDocument()
+  })
+
+  it('登录后访问 /report-templates 渲染报告模板页', async () => {
+    useAuthStore.setState({ user: adminUser, token: 't', status: 'authenticated', error: null })
+    renderAt('/report-templates')
+    expect(await screen.findByRole('button', { name: '保存模板' })).toBeInTheDocument()
   })
 
   it('未登录访问 /login 渲染登录表单（无布局侧边栏）', () => {

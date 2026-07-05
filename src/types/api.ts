@@ -1,11 +1,13 @@
-// 业务实体类型定义（建筑工程实验室管理系统）
-// ch34：架构与路由章节的基础类型契约
-// batch3-A1：按 FIELD-ALIGNMENT-SPEC.md 第 0.5~7 节重写四层模型；保留旧字段名作为
-//            @deprecated 兼容字段，避免破坏 291 tests 的字段引用
-//            （components/store/tests 字段同步在批3-A3/A4）
+// 业务实体类型定义（建筑工程实验室管理系统 v3）
+// 领域模型：
+//   合同 Contract → 接样单 SampleReceipt（含报告类别 categoryCode、合并报告字段、流程状态）
+//     → 样品 Sample（归属接样单，型号/规格/等级/牌号 + 按报告类别的扩展属性 ext）
+//       → 单项检测记录 TestItem（归属样品，自动评定 + 手工修正）
+// 基础码表：报告类别 / 类别↔标准关联 / 检测参数 / 检测标准 / 技术要求 /
+//           型号 / 规格 / 等级 / 牌号 / 报告模板
 
 // =============================================================================
-// 通用基础（保留，ch34/ch35/ch36/ch37 引用）
+// 通用基础
 // =============================================================================
 
 /** 权限码：资源:操作（如 project:read、user:delete） */
@@ -53,20 +55,9 @@ export interface DateRangeFilter {
 }
 
 // =============================================================================
-// batch3-A1：四层模型权威定义（FIELD-ALIGNMENT-SPEC.md 第 0.5~7 节）
+// OrgInfo（系统级单例配置：检测单位信息）
 // =============================================================================
 
-/** 材料种类（7 种） */
-export type MaterialType =
-  | 'steel'
-  | 'cement'
-  | 'concrete'
-  | 'sand'
-  | 'gravel'
-  | 'rebar_mech'
-  | 'rebar_weld'
-
-// ----- 0.5 OrgInfo（系统级单例配置：检测单位信息） -----
 export interface OrgInfo {
   orgName: string
   registeredAddress: string
@@ -78,7 +69,10 @@ export interface OrgInfo {
   updatedAt: string
 }
 
-// ----- 1. Contract（合同/委托，取代原 Project） -----
+// =============================================================================
+// Contract（合同/委托）
+// =============================================================================
+
 export type ContractStatus = 'active' | 'archived'
 
 export interface Contract {
@@ -94,385 +88,297 @@ export interface Contract {
   contactPerson?: string
   contactPhone?: string
   entrustedDate?: string
-  selfCheckConclusion?: { operator: string; conclusion: string; date: string; sealed: boolean }
-  recheckConclusion?: { operator: string; conclusion: string; date: string; sealed: boolean }
   status: ContractStatus
   createdAt: string
   updatedAt: string
 }
 
-// ----- 2. SampleReceipt（接样信息，一次接样 N 个样品共享） -----
-export type ReceiptStatus = 'received' | 'testing' | 'completed' | 'rejected'
+// =============================================================================
+// 报告类别（原「材料种类」，可维护码表）
+// =============================================================================
+
+/** 报告类别扩展属性定义：新建样品时按类别动态渲染扩展属性输入项 */
+export interface ExtFieldDef {
+  key: string
+  label: string
+}
+
+/** 汇总表口径：material=原材料汇总 / concrete=混凝土抗压汇总 / connection=连接接头汇总 */
+export type SummaryType = 'material' | 'concrete' | 'connection'
+
+export interface ReportCategory {
+  id: string
+  code: string
+  name: string
+  /** 报告文档大标题，如「钢筋力学性能、工艺性能、重量偏差检测报告」 */
+  reportTitle: string
+  summaryType: SummaryType
+  /** 汇总表名称，如「钢材试验报告汇总表」 */
+  summaryName: string
+  /** 样品扩展属性定义（可维护） */
+  extFields: ExtFieldDef[]
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}
+
+/** 报告类别 ↔ 检测标准 关联 */
+export interface CategoryStandard {
+  id: string
+  categoryCode: string
+  standardCode: string
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}
+
+/** 型号/规格/等级/牌号 码表条目（均归属报告类别） */
+export interface CategoryDictItem {
+  id: string
+  categoryCode: string
+  name: string
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}
+
+// =============================================================================
+// 流程管线（接样表与报告表合并为一张表，单一流程线）
+// =============================================================================
+
+/** 流程阶段：接样 → 任务安排 → 数据录入 → 报告审核 → 报告批准 → 报告发放 → 报告归档 */
+export type FlowStage =
+  | 'receiving'
+  | 'task_assignment'
+  | 'data_entry'
+  | 'review'
+  | 'approval'
+  | 'issuance'
+  | 'archived'
+
+/** 流程阶段顺序（前进 = 提交，后退 = 退回/撤回） */
+export const FLOW_STAGE_ORDER: FlowStage[] = [
+  'receiving',
+  'task_assignment',
+  'data_entry',
+  'review',
+  'approval',
+  'issuance',
+  'archived',
+]
+
+/** 流程阶段中文名 */
+export const FLOW_STAGE_LABELS: Record<FlowStage, string> = {
+  receiving: '接样',
+  task_assignment: '任务安排',
+  data_entry: '数据录入',
+  review: '报告审核',
+  approval: '报告批准',
+  issuance: '报告发放',
+  archived: '已归档',
+}
+
+/** 流程动作：submit=提交（前进）、return=退回（后退）、withdraw=撤回（提交人主动收回） */
+export type FlowAction = 'submit' | 'return' | 'withdraw'
+
+/** 流程历史条目 */
+export interface FlowHistoryEntry {
+  action: FlowAction
+  from: FlowStage
+  to: FlowStage
+  operator: string
+  at: string
+  reason?: string
+}
+
+/** 批量流程操作的单条结果 */
+export interface FlowActionResult {
+  id: string
+  ok: boolean
+  message?: string
+  flowStatus?: FlowStage
+}
+
+// =============================================================================
+// SampleReceipt（接样单：接样表与报告表合并为一张表）
+// =============================================================================
 
 export interface SampleReceipt {
   id: string
   contractId: string
   receiptCode: string
+  /** 报告类别——样品扩展属性、报告模板、汇总口径均由此决定 */
+  categoryCode: string
   receivedDate: string
   receivedBy: string
   sampleSource: string
   testCategory: string
-  /** 此次接样的检测环境（温度/湿度）——接样层业务属性 */
   testEnvironment?: string
-  /** 此次接样用到的设备 */
   mainEquipment?: string
-  representBatchSummary?: string
-  remark: string
-  status: ReceiptStatus
+  remark?: string
+  // ----- 流程管线 -----
+  flowStatus: FlowStage
+  flowHistory: FlowHistoryEntry[]
+  /** 最近一次提交的操作人（撤回权限校验：仅提交人可撤回） */
+  lastSubmittedBy: string | null
+  /** 任务安排：检测人员 / 计划检测日期 */
+  assigneeId?: string
+  assigneeName?: string
+  plannedTestDate?: string
+  // ----- 合并自报告表 -----
+  reportCode?: string
+  reportDate?: string
+  conclusion?: string
+  result?: 'pass' | 'fail' | ''
+  issuedAt?: string | null
   createdAt: string
   updatedAt: string
 }
 
-// ----- 3. Sample 状态 -----
-export type SampleStatus = 'pending' | 'testing' | 'completed' | 'rejected'
+// =============================================================================
+// Sample（样品，归属接样单 receiptId；合同经接样单间接得到）
+// =============================================================================
 
-// ----- 3.1 SampleMaterialDetails（样品端——材料专属属性联合，字段全 ?） -----
-export type SampleMaterialDetails =
-  | { kind: 'steel'; steelGrade?: string; nominalDiameter?: number; heatNumber?: string }
-  | { kind: 'cement'; cementType?: string; factoryBatchNo?: string; productionDate?: string }
-  | {
-      kind: 'concrete'
-      pourDate?: string
-      volume?: number
-      specimenSize?: string
-      curingCondition?: string
-      ageDays?: number
-      groupIndex?: number
-    }
-  | { kind: 'sand' }
-  | { kind: 'gravel' }
-  | { kind: 'rebar_mech'; spliceType?: string; steelGrade?: string; groupIndex?: number }
-  | { kind: 'rebar_weld'; weldMethod?: string; steelGrade?: string; welderName?: string; welderCertNo?: string; groupIndex?: number }
-
-// ----- 4. TestItemMaterialDetails（检测端——材料专属属性联合） -----
-export type TestItemMaterialDetails =
-  | { kind: 'steel' }
-  | { kind: 'cement' }
-  | { kind: 'sand' }
-  | { kind: 'gravel' }
-  | { kind: 'concrete'; specimenPositionInGroup?: number }
-  | { kind: 'rebar_mech'; specimenPositionInGroup?: number }
-  | { kind: 'rebar_weld'; specimenPositionInGroup?: number }
-
-// ----- 4. TestRecordSheet（检测记录单——原始检测任务记录） -----
-export interface TestRecordSheet {
+export interface Sample {
   id: string
-  contractId: string
-  receiptId?: string
-  /** 本记录单归属的样品/试件列表（N ↔ M） */
-  sampleIds: string[]
-  sheetCode: string
-  testDate: string
-  operatorId?: string
-  reviewerId?: string
-  equipment?: string
-  environment?: string
+  receiptId: string
+  sampleCode: string
+  sampleName?: string
+  /** 型号：热轧带肋 / P·O 42.5 / C30 / 中砂 / 直螺纹套筒 / 闪光对焊 */
+  model?: string
+  /** 规格（尺寸/粒径/直径）：Φ22 / 150×150×150mm / 5-25mm；无尺寸的类别留空 */
+  specification?: string
+  /** 等级：接头Ⅰ/Ⅱ/Ⅲ级、砂石Ⅰ/Ⅱ/Ⅲ类；型号已含等级的类别留空 */
+  grade?: string
+  /** 牌号：HRB400 等 */
+  brand?: string
+  sampleQuantity?: string
+  /** 按报告类别 extFields 定义的扩展属性 */
+  ext: Record<string, string>
   remark?: string
   createdAt: string
+  updatedAt: string
 }
 
-// ----- 4. TestItem（单项检测记录——归属 sheet/report） -----
+// =============================================================================
+// TestItem（单项检测记录，归属样品 sampleId）
+// =============================================================================
+
 export interface TestItem {
   id: string
-  sheetId: string
   sampleId: string
-  /** 归属的报告（未出报告时 null；一旦绑定不可改） */
-  reportId: string | null
   parameterCode: string
   standardCode?: string
   requirementCode?: string
-  /** 技术要求显示文本（冗余存以兼容离线/历史快照） */
+  /** 技术要求显示文本，如「≥ 400 MPa」 */
   requirement: string
   result: string
   unit?: string
+  /** 系统按技术要求自动评定的结果（null = 无法自动评定，需人工判定） */
+  autoPassed: boolean | null
+  /** 最终评定结果（默认取 autoPassed，可手工修正） */
   passed: boolean
-  materialDetails: TestItemMaterialDetails
   remark?: string
   createdAt: string
-}
-
-// =============================================================================
-// 兼容层：保留旧类型与旧字段名（避免破坏 291 tests 字段引用）
-// =============================================================================
-
-// ----- 兼容层 1: 旧 ProjectStatus（ch36 旧组件引用，含 'paused' 扩展） -----
-/** @deprecated batch3-A 后由 ContractStatus 取代；保留旧状态值（含 'paused'，Contract 不含此值）供既有 store/tests 引用 */
-export type ProjectStatus = 'active' | 'archived' | 'paused'
-
-// ----- 兼容层 2: 旧 Project（ch36 项目文件字段引用：name/code/status/ownerId） -----
-/** @deprecated batch3-A 后由 Contract 取代。保留旧字段名供既有 store/components/tests 引用；批3-A3 同步后删除 */
-export interface Project {
-  id: string
-  name: string
-  code: string
-  status: ProjectStatus
-  ownerId: string
-  createdAt: string
   updatedAt: string
 }
 
-// ----- 兼容层 3: 旧 Sample（ch36 样品文件字段引用：name/code/projectId/status） -----
-/** @deprecated batch3-A 后由新 Sample（materialType/materialDetails/sampleCode/通用层）取代。保留旧字段名供既有 store/components/tests 引用；批3-A3 同步后删除 */
-export interface Sample {
-  id: string
-  projectId: string
-  name: string
-  code: string
-  status: SampleStatus
-  receivedAt: string
-  createdAt: string
-}
-
-// ----- 兼容层 4: 旧 Report（extend 批1 报告文件字段引用：sampleId/title） -----
-/** @deprecated batch3-A 后由新 Report（contractId/receiptId/sampleIds[]/materialType）取代。保留旧字段名供既有 ReportFormModal/ReportList/tests 引用；批3-A3 同步后删除 */
-export interface Report {
-  id: string
-  sampleId: string
-  title: string
-  status: ReportStatus
-  conclusion: string
-  /** 签发时间，未签发为 null */
-  issuedAt: string | null
-  createdAt: string
-}
-
-// ----- 旧 ReportTestItems 联合类型（钢材/水泥/混凝土/砂石/钢筋连接检测项，兼容层） -----
-// @deprecated 规格 11.1 ADR：检测项迁到独立 TestItem 实体的 reportId 反查，
-// 旧 ReportTestItems 联合类型仅供既有 tests 兼容，迁移后删除。
-
-/** 钢材检测项（兼容层） */
-export interface SteelTestItems {
-  yieldStrength?: number
-  tensileStrength?: number
-  elongation?: number
-  bendAngle?: number
-  mandrelDiameter?: number
-  surfaceCrack?: string
-}
-
-/** 水泥检测项（兼容层） */
-export interface CementTestItems {
-  specificSurface?: number
-  settingTimeInitial?: number
-  settingTimeFinal?: number
-  soundness?: string
-  so3?: number
-  mgo?: number
-  cl?: number
-  alkali?: number
-  compressive3d?: number
-  compressive28d?: number
-  flexural3d?: number
-  flexural28d?: number
-}
-
-/** 混凝土试件检测项（兼容层） */
-export interface ConcreteTestItems {
-  compressiveStrength?: number
-  compressiveRepresentative?: number
-  ageDays?: number
-}
-
-/** 砂石检测项（兼容层） */
-export interface AggregateTestItems {
-  mudContent?: number
-  clayLump?: number
-  methyleneBlue?: number
-  stonePowder?: number
-  crushIndex?: number
-  soundness?: number
-  flakyParticle?: number
-  apparentDensity?: number
-  bulkDensity?: number
-  voidRatio?: number
-  waterContent?: number
-  shellContent?: number
-  chlorideIon?: number
-  finenessModulus?: number
-}
-
-/** 钢筋机械连接检测项（兼容层） */
-export interface RebarMechTestItems {
-  nominalDiameter?: number
-  ultimateTensileStrength?: number
-  fracturePosition?: string
-}
-
-/** 钢筋焊接连接检测项（兼容层） */
-export interface RebarWeldTestItems {
-  nominalDiameter?: number
-  tensileStrength?: number
-  fractureDistanceFromWeld?: number
-  fractureFeature?: string
-  bend90Test?: string
-}
-
-/** 旧 Report.testItems 联合类型（兼容层） */
-export type ReportTestItems =
-  | SteelTestItems
-  | CementTestItems
-  | ConcreteTestItems
-  | AggregateTestItems
-  | RebarMechTestItems
-  | RebarWeldTestItems
-
-// ----- LegacyTestItem（兼容层：旧 TestItem 形态） -----
-/** @deprecated 用 TestItem 替代；此类型仅供既有 tests 兼容 */
-export interface LegacyTestItem {
-  requirement: string
-  result: string
-  passed: boolean
-}
-
-// ----- 5. Report 状态 -----
-export type ReportStatus = 'draft' | 'reviewing' | 'issued' | 'printed' | 'archived'
-
-// ----- 5.1 ReportRecord（v2 报告实体：sampleIds[]/reportCode/materialType，四层模型） -----
-export interface ReportRecord {
-  id: string
-  contractId: string
-  receiptId: string
-  reportCode: string
-  reportDate: string
-  materialType: MaterialType
-  sampleIds: string[]
-  conclusion: string
-  result: 'pass' | 'fail'
-  remark: string
-  status: ReportStatus
-  issuedAt: string | null
-  createdAt: string
-  updatedAt: string
-  sampleId?: string
-  title?: string
-}
-
 // =============================================================================
-// 7. 码表（检测参数/标准/技术要求）
+// 检测码表
 // =============================================================================
 
 export interface TestParameter {
+  id: string
   code: string
   name: string
-  materialType: MaterialType
-  category: string
+  /** 归属报告类别 */
+  categoryCode: string
+  group?: string
   unit?: string
   description?: string
+  createdAt: string
+  updatedAt: string
 }
+
+export type StandardType = 'national' | 'industry' | 'local' | 'enterprise'
 
 export interface TestStandard {
+  id: string
   code: string
   name: string
-  type: 'national' | 'industry' | 'local' | 'enterprise'
-  applicableMaterials: MaterialType[]
-  applicableParameters: string[]
+  type: StandardType
+  remark?: string
+  createdAt: string
+  updatedAt: string
 }
 
+export type ComparisonOp = '≥' | '≤' | '=' | 'range' | 'eq'
+
 export interface TechnicalRequirement {
+  id: string
   code: string
   standardCode: string
   parameterCode: string
-  materialType: MaterialType
-  materialGrade?: string
+  /** 归属报告类别 */
+  categoryCode: string
+  /** 匹配维度：技术要求上填写了的维度必须与样品一致；空 = 不限 */
+  brand?: string
+  model?: string
+  grade?: string
   specification?: string
-  comparison: '≥' | '≤' | '=' | 'range' | 'eq'
+  comparison: ComparisonOp
   value: string
   unit?: string
   remark?: string
+  createdAt: string
+  updatedAt: string
 }
 
 // =============================================================================
-// 6. SummaryRow：钢材汇总表行（其余材料各自 SummaryRow 在批3-A5 路由接入时按需补）
+// 报告模板（每个报告类别对应一份，内容为带 {{标签}} 的 HTML）
 // =============================================================================
 
-export interface SteelSummaryRow {
-  seq: number
-  spec: string
-  steelGrade: string
-  qualityCertNo: string
-  manufacturer: string
-  representQuantity: string
-  reportCode: string
-  testDate: string
-  result: 'pass' | 'fail'
-}
-
-// =============================================================================
-// Query / Input 类型（每个实体的 CRUD 参数，保留旧字段名 + 按需扩展）
-// =============================================================================
-
-/** 项目列表查询参数（ch36 旧 + 兼容层） */
-export interface ProjectQuery extends PageQuery, DateRangeFilter {
-  status?: ProjectStatus
-  ownerId?: string
-}
-
-/** 样品列表查询参数（ch36 旧 + 兼容层扩展 receiptId/materialType） */
-export interface SampleQuery extends PageQuery {
-  status?: SampleStatus
-  projectId?: string
-  receiptId?: string
-  materialType?: MaterialType
-}
-
-/** 项目新建载荷（兼容层） */
-export interface ProjectCreateInput {
+export interface ReportTemplate {
+  id: string
+  categoryCode: string
   name: string
-  code: string
-  status?: ProjectStatus
-  ownerId: string
+  content: string
+  createdAt: string
+  updatedAt: string
 }
-
-/** 项目更新载荷（兼容层） */
-export interface ProjectUpdateInput {
-  name?: string
-  code?: string
-  status?: ProjectStatus
-  ownerId?: string
-}
-
-/** 样品新建载荷（兼容层——保留旧 name/code/projectId 字段供既有组件引用） */
-export interface SampleCreateInput {
-  projectId: string
-  name: string
-  code: string
-  status?: SampleStatus
-}
-
-/** 样品更新载荷（兼容层） */
-export interface SampleUpdateInput {
-  projectId?: string
-  name?: string
-  code?: string
-  status?: SampleStatus
-}
-
-/** 报告列表查询参数（兼容层 + 扩展 contractId） */
-export interface ReportQuery extends PageQuery {
-  sampleId?: string
-  status?: ReportStatus
-  contractId?: string
-}
-
-/** 报告新建载荷（兼容层——保留旧 sampleId/title 字段供既有组件引用） */
-export interface ReportCreateInput {
-  sampleId: string
-  title: string
-  conclusion?: string
-}
-
-/** 报告更新载荷（兼容层——保留旧 title/status 字段） */
-export interface ReportUpdateInput {
-  title?: string
-  conclusion?: string
-  status?: ReportStatus
-}
-
-/** 审核动作类型（extend 批1） */
-export type ReviewAction = 'submit' | 'approve' | 'reject'
 
 // =============================================================================
-// extend 批1：用户管理类型（RBAC 落地）
+// 统计：仪表盘 + 试验报告汇总表
+// =============================================================================
+
+export interface DashboardStats {
+  contractCount: number
+  receiptCount: number
+  sampleCount: number
+  /** 由接样单 flowStatus 推导（draft=审核前阶段 / reviewing=审核+批准 / issued=发放+归档） */
+  reportCountByStatus: { draft: number; reviewing: number; issued: number }
+  /** 处于「任务安排」阶段的接样单数量 */
+  pendingTaskCount: number
+  /** 各流程阶段的接样单数量 */
+  receiptCountByStage: Record<FlowStage, number>
+  /** 各报告类别的接样单数量与已出报告数 */
+  receiptCountByCategory: { categoryCode: string; categoryName: string; count: number; reported: number }[]
+}
+
+export interface SummaryColumn {
+  key: string
+  label: string
+}
+
+/** 试验报告汇总表（对应各类汇总表：钢材/水泥/混凝土/砂/碎石/机械连接/焊接连接） */
+export interface SummaryData {
+  summaryName: string
+  columns: SummaryColumn[]
+  rows: Record<string, string>[]
+}
+
+// =============================================================================
+// 用户管理（RBAC）
 // =============================================================================
 
 export interface UserRecord {
@@ -507,7 +413,7 @@ export interface UserUpdateInput {
 }
 
 // =============================================================================
-// extend 批1：角色管理类型
+// 角色管理
 // =============================================================================
 
 export interface RoleRecord {
@@ -536,66 +442,7 @@ export interface RoleUpdateInput {
 }
 
 // =============================================================================
-// extend 批2：检测任务（兼容层——保留旧 sampleId/testItems 字段供既有 store/tests）
-// =============================================================================
-
-export type TaskStatus = 'pending' | 'testing' | 'completed' | 'rejected'
-
-export interface TaskRecord {
-  id: string
-  sampleId: string
-  assigneeId: string
-  testItems: string
-  status: TaskStatus
-  /** 检测数据（JSON 字符串，由检测员录入） */
-  resultData: string
-  /** 检测结论 */
-  conclusion: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface TaskQuery extends PageQuery {
-  sampleId?: string
-  status?: TaskStatus
-  assigneeId?: string
-}
-
-export interface TaskCreateInput {
-  sampleId: string
-  assigneeId: string
-  testItems: string
-}
-
-export interface TaskUpdateInput {
-  assigneeId?: string
-  testItems?: string
-  status?: TaskStatus
-}
-
-export interface TaskEntryInput {
-  resultData: string
-  conclusion: string
-  status: 'completed' | 'rejected'
-}
-
-// =============================================================================
-// extend 批2：Dashboard 聚合统计（兼容层——保留旧 projectCount 字段名）
-// =============================================================================
-
-export interface DashboardStats {
-  /** @deprecated batch3-A 后由 contractCount 取代；保留以兼容旧组件 */
-  projectCount?: number
-  contractCount?: number
-  receiptCount?: number
-  sampleCount?: number
-  sampleCountByStatus: { pending: number; testing: number; completed: number; rejected: number }
-  reportCountByStatus: { draft: number; reviewing: number; issued: number }
-  pendingTaskCount: number
-}
-
-// =============================================================================
-// extend 批2：密码修改
+// 密码修改
 // =============================================================================
 
 export interface ChangePasswordInput {

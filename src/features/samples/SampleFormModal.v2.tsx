@@ -28,6 +28,8 @@ interface SampleFormModalV2Props {
   initialValues?: any
   contractId: string
   receiptId: string
+  /** 锁定材料类型（编辑时传入当前报告类型，禁止变更） */
+  reportType?: MaterialType
   onSubmit: (values: SampleFormValuesV2) => void
   onCancel: () => void
   loading?: boolean
@@ -41,10 +43,12 @@ const MATERIAL_LABELS: Record<MaterialType, string> = {
 }
 
 export function SampleFormModalV2({
-  open, mode, initialValues, contractId, receiptId, onSubmit, onCancel, loading = false,
+  open, mode, initialValues, contractId, receiptId, reportType, onSubmit, onCancel, loading = false,
 }: SampleFormModalV2Props) {
   const [sampleCode, setSampleCode] = useState(initialValues?.sampleCode ?? '')
-  const [materialType, setMaterialType] = useState<MaterialType>((initialValues?.materialType as MaterialType) ?? 'steel')
+  const [materialType, setMaterialType] = useState<MaterialType>(
+    (initialValues?.materialType as MaterialType) ?? reportType ?? 'steel',
+  )
   const [sampleName, setSampleName] = useState(initialValues?.sampleName ?? '')
   const [sampleType, setSampleType] = useState(initialValues?.sampleType ?? '')
   const [specification, setSpecification] = useState(initialValues?.specification ?? '')
@@ -59,8 +63,11 @@ export function SampleFormModalV2({
 
   useEffect(() => {
     if (open) {
-      setSampleCode(initialValues?.sampleCode ?? '')
-      setMaterialType((initialValues?.materialType as MaterialType) ?? 'steel')
+      setMaterialType(
+        (initialValues?.materialType as MaterialType) ??
+        reportType ??
+        'steel',
+      )
       setSampleName(initialValues?.sampleName ?? '')
       setSampleType(initialValues?.sampleType ?? '')
       setSpecification(initialValues?.specification ?? '')
@@ -131,10 +138,15 @@ export function SampleFormModalV2({
 
             <div>
               <label htmlFor="sample-material" className="block text-sm font-medium mb-1">
-                材料类型 <span className="text-red-600">*</span>
+                材料类型 {mode === 'edit' && <span className="text-gray-400 text-xs">（编辑时禁止修改）</span>}
               </label>
-              <select id="sample-material" value={materialType} onChange={(e) => setMaterialType(e.target.value as MaterialType)}
-                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <select
+                id="sample-material"
+                value={materialType}
+                onChange={(e) => setMaterialType(e.target.value as MaterialType)}
+                disabled={mode === 'edit'}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+              >
                 {MATERIAL_TYPES.map((t) => <option key={t} value={t}>{MATERIAL_LABELS[t]}</option>)}
               </select>
             </div>

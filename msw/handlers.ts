@@ -1,16 +1,11 @@
 import { http, HttpResponse } from 'msw'
 import type {
-  ReviewAction,
   UserRecord,
   UserCreateInput,
   UserUpdateInput,
   RoleRecord,
   RoleCreateInput,
   RoleUpdateInput,
-  TaskRecord,
-  TaskCreateInput,
-  TaskUpdateInput,
-  TaskEntryInput,
   DashboardStats,
   ChangePasswordInput,
 } from '../src/types/api'
@@ -18,88 +13,93 @@ import { signJwt, verifyJwt } from './jwt'
 import {
   MockTable,
   contractTable,
+  reportCategoryTable,
+  categoryStandardTable,
+  modelTable,
+  specificationTable,
+  gradeTable,
+  brandTable,
   receiptTable,
   sampleTable,
-  reportTable,
-  userTable,
-  roleTable,
-  taskTable,
-  testRecordSheetTable,
   testItemTable,
   testParameterTable,
   testStandardTable,
   technicalRequirementTable,
+  reportTemplateTable,
   orgInfoTable,
-  flowStore,
-  reviewReportRecord,
+  userTable,
+  roleTable,
   computeStats,
+  buildSummary,
+  applyFlowAction,
+  evaluateTestResult,
+  syncReceiptResult,
+  samplesOfReceipt,
 } from './db'
 
-// =============================================================================
-// batch3-A2：input adapter（关键兼容层）
-// 旧 fixture 用 name/code/sampleId/title 向 mock API 发送请求；
-// handlers 入口做字段映射，db 内部存新结构（sampleCode/contractId/sampleIds[]/reportCode）。
-// GET 响应时输出新结构 + 旧字段 fallback（兼容测试读 r.sampleId / s.name 等）。
-// =============================================================================
-
-// ---------- /projects 兼容：旧测试 fixture 可能仍用 POST /projects{name,code,ownerId} ----------
-// 实际 /projects 端点保留为 contractTable 的兼容 alias，body {name,code,ownerId,status} 映射到 Contract。
-// GET 返回旧 Project 形态（id, name=projectName, code=contractCode, status, ownerId='u-001' fallback, createdAt, updatedAt）。
-// batch3-A4 测试迁移后删除该 alias 段。
-
-interface LegacyReportCreate {
-  sampleId: string
-  title: string
-  conclusion?: string
-}
-
-/** /projects 旧 Project 形态（GET 响应） */
-interface LegacyProjectShape {
-  id: string
-  name: string
-  code: string
-  status: 'active' | 'archived' | 'paused'
-  ownerId: string
-  createdAt: string
-  updatedAt: string
-}
-
-function contractToLegacyProject(c: {
-  id: string
-  contractCode: string
-  projectName: string
-  status: 'active' | 'archived'
-  createdAt: string
-  updatedAt: string
-}): LegacyProjectShape {
-  return {
-    id: c.id,
-    name: c.projectName,
-    code: c.contractCode,
-    status: c.status,
-    ownerId: 'u-001', // Contract 无 ownerId，mock 用 'u-001' fallback
-    createdAt: c.createdAt,
-    updatedAt: c.updatedAt,
-  }
-}
-
-/** batch3-A2：MSW handler 注册表
- * ch35：/auth/*（auth/login / auth/me）
- * ch36：/projects（旧，已删）+ /samples（旧字段兼容）—— 实际为兼容层
- * ch37：/flow/:id
- * extend 批1：/reports（旧字段兼容）+ /users + /roles
- * extend 批2：/tasks + /stats + /auth/change-password
- * batch3-A2：/contracts + /receipts + /test-record-sheets + /test-items + /org-info
- *          + /test-parameters + /test-standards + /technical-requirements
- *          + /contracts/:id/summary
+/** v3 MSW handler 注册表
+ * /auth/*：登录 / me / change-password
+ * /contracts：合同 CRUD
+ * /report-categories：报告类别 CRUD（含扩展属性定义）
+ * /category-standards：报告类别 ↔ 检测标准 关联 CRUD
+ * /models /specifications /grades /brands：型号/规格/等级/牌号 码表（归属报告类别）
+ * /receipts + /receipts/flow：接样单（合并报告字段）+ 流程管线批量操作
+ * /samples：样品（归属接样单）
+ * /test-items：单项检测记录（归属样品，自动评定 + 手工修正）
+ * /test-parameters /test-standards /technical-requirements：检测码表
+ * /report-templates：报告模板（每类别一份）
+ * /stats + /summary：仪表盘统计 + 按报告类别的试验报告汇总表
+ * /org-info /users /roles
  */
+
+/** 通用码表 CRUD handler 工厂（归属报告类别的字典：型号/规格/等级/牌号） */
+function dictHandlers(
+  path: string,
+  table: MockTable<{ id: string; categoryCode: string; name: string; remark?: string; createdAt: string; updatedAt: string }>,
+  label: string,
+) {
+  return [
+    http.get(`*/${path}`, ({ request }) => {
+      const url = new URL(request.url)
+      const result = table.query({
+        page: Number(url.searchParams.get('page') ?? '1'),
+        pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
+        keyword: url.searchParams.get('keyword') ?? undefined,
+        keywordFields: ['name'],
+        filters: { categoryCode: url.searchParams.get('categoryCode') ?? undefined },
+      })
+      return HttpResponse.json(result)
+    }),
+    http.post(`*/${path}`, async ({ request }) => {
+      const body = (await request.json()) as Partial<{ categoryCode: string; name: string; remark: string }>
+      if (!body.categoryCode || !body.name) {
+        return HttpResponse.json({ message: 'categoryCode/name 必填' }, { status: 400 })
+      }
+      const dup = table.all().find((r) => r.categoryCode === body.categoryCode && r.name === body.name)
+      if (dup) return HttpResponse.json({ message: `该报告类别下已存在同名${label}` }, { status: 400 })
+      const created = table.insert({ categoryCode: body.categoryCode, name: body.name, remark: body.remark })
+      return HttpResponse.json(created, { status: 201 })
+    }),
+    http.put(`*/${path}/:id`, async ({ params, request }) => {
+      const body = (await request.json()) as Record<string, unknown>
+      const updated = table.update(String(params.id), body)
+      if (!updated) return HttpResponse.json({ message: `${label}不存在` }, { status: 404 })
+      return HttpResponse.json(updated)
+    }),
+    http.delete(`*/${path}/:id`, ({ params }) => {
+      const ok = table.remove(String(params.id))
+      if (!ok) return HttpResponse.json({ message: `${label}不存在` }, { status: 404 })
+      return new HttpResponse(null, { status: 204 })
+    }),
+  ]
+}
+
 export const handlers = [
   // ===========================================================
-  // ch35：/auth/login（保留）
+  // /auth
   // ===========================================================
   http.post('*/auth/login', async ({ request }) => {
     const body = (await request.json()) as { username: string; password: string }
-    // batch3-A2 兼容：原 ch35 admin(lab123) + technician(tech123) 双角色逻辑保留
     const isAdmin = body.username === 'labadmin' || body.username === 'admin'
     const isTech = body.username === 'technician'
     const isValidPassword =
@@ -139,108 +139,54 @@ export const handlers = [
     if (!auth?.startsWith('Bearer ')) {
       return HttpResponse.json({ message: '未授权' }, { status: 401 })
     }
-    const token = auth.slice(7)
-    const payload = verifyJwt(token)
+    const payload = verifyJwt(auth.slice(7))
     if (!payload) {
       return HttpResponse.json({ message: 'token 无效或已过期' }, { status: 401 })
     }
-    const rolePermissions = payload.permissions
     return HttpResponse.json({
       user: {
         id: payload.sub,
         username: payload.username,
         displayName: '管理员',
-        role: { id: 'role-admin', name: payload.role, permissions: rolePermissions },
-        permissions: rolePermissions,
+        role: { id: 'role-admin', name: payload.role, permissions: payload.permissions },
+        permissions: payload.permissions,
       },
     })
   }),
 
-  // ===========================================================
-  // batch3-A2 兼容：/projects（CRUD 操作 contractTable，GET 返回旧 Project 形态）
-  // ===========================================================
-  http.get('*/projects', ({ request }) => {
-    const url = new URL(request.url)
-    const status = url.searchParams.get('status') as 'active' | 'archived' | null
-    const result = contractTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '10'),
-      keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['contractCode', 'projectName', 'clientUnit'],
-      filters: {
-        status: status ?? undefined,
-      },
-    })
-    // 输出旧 Project 形态（name/code/ownerId），让 ch36 projectsHandlers.test 仍绿
-    const legacyItems = (result.items as unknown as Parameters<typeof contractToLegacyProject>[0][]).map(contractToLegacyProject)
-    return HttpResponse.json({ ...result, items: legacyItems })
-  }),
-
-  http.post('*/projects', async ({ request }) => {
-    // input adapter：旧 {name, code, ownerId, status} → Contract
-    const body = (await request.json()) as { name?: string; code?: string; ownerId?: string; status?: string }
-    if (!body.name || !body.code || !body.ownerId) {
-      return HttpResponse.json({ message: 'name/code/ownerId 必填' }, { status: 400 })
+  http.post('*/auth/change-password', async ({ request }) => {
+    const body = (await request.json()) as ChangePasswordInput
+    if (body.oldPassword !== 'old-lab123') {
+      return HttpResponse.json({ message: '旧密码错误' }, { status: 400 })
     }
-    const created = contractTable.insert({
-      contractCode: body.code,
-      clientUnit: body.ownerId, // mock：旧 ownerId → Contract.clientUnit 占位
-      projectName: body.name,
-      constructionUnit: 'mock-construction-unit',
-      witnessUnit: 'mock-witness-unit',
-      witness: 'mock-witness',
-      status: (body.status as 'active' | 'archived') ?? 'active',
-    } as never)
-    return HttpResponse.json(contractToLegacyProject(created as never), { status: 201 })
-  }),
-
-  http.get('*/projects/:id', ({ params }) => {
-    const found = contractTable.findById(String(params.id))
-    if (!found) return HttpResponse.json({ message: '项目不存在' }, { status: 404 })
-    return HttpResponse.json(contractToLegacyProject(found as never))
-  }),
-
-  http.put('*/projects/:id', async ({ params, request }) => {
-    const id = String(params.id)
-    const body = (await request.json()) as Record<string, unknown>
-    // 旧字段名 → Contract 字段名
-    if (body.name && !body.projectName) body.projectName = body.name
-    if (body.code && !body.contractCode) body.contractCode = body.code
-    const updated = contractTable.update(id, body)
-    if (!updated) return HttpResponse.json({ message: '项目不存在' }, { status: 404 })
-    return HttpResponse.json(contractToLegacyProject(updated as never))
-  }),
-
-  http.delete('*/projects/:id', ({ params }) => {
-    const ok = contractTable.remove(String(params.id))
-    if (!ok) return HttpResponse.json({ message: '项目不存在' }, { status: 404 })
-    return new HttpResponse(null, { status: 204 })
+    if (!body.newPassword || body.newPassword.length < 6) {
+      return HttpResponse.json({ message: '新密码至少 6 位' }, { status: 400 })
+    }
+    return HttpResponse.json({ success: true })
   }),
 
   // ===========================================================
-  // batch3-A2：/org-info（OrgInfo 系统级单例）
+  // /org-info（单例）
   // ===========================================================
   http.get('*/org-info', () => {
-    const list = orgInfoTable.query({ page: 1, pageSize: 1 })
-    if (list.total === 0) {
-      return HttpResponse.json({ message: 'OrgInfo 未初始化' }, { status: 404 })
-    }
-    return HttpResponse.json(list.items[0])
+    const row = orgInfoTable.query({ page: 1, pageSize: 1 }).items[0]
+    if (!row) return HttpResponse.json({ message: '机构信息未初始化' }, { status: 404 })
+    return HttpResponse.json(row)
   }),
 
   http.put('*/org-info', async ({ request }) => {
-    const body = (await request.json()) as Partial<typeof orgInfoTable extends MockTable<infer T> ? T : never>
-    const list = orgInfoTable.query({ page: 1, pageSize: 1 })
-    if (list.total === 0) {
-      const created = orgInfoTable.insert({ ...body, id: 'org-001' } as never)
-      return HttpResponse.json(created)
+    const body = (await request.json()) as Record<string, unknown>
+    const row = orgInfoTable.query({ page: 1, pageSize: 1 }).items[0]
+    if (!row) {
+      const created = orgInfoTable.insert(body as never)
+      return HttpResponse.json(created, { status: 201 })
     }
-    const updated = orgInfoTable.update(list.items[0].id, body as Record<string, unknown>)
+    const updated = orgInfoTable.update(row.id, body)
     return HttpResponse.json(updated)
   }),
 
   // ===========================================================
-  // batch3-A2：/contracts（合同/委托，取代旧 /projects）
+  // /contracts
   // ===========================================================
   http.get('*/contracts', ({ request }) => {
     const url = new URL(request.url)
@@ -250,15 +196,13 @@ export const handlers = [
       pageSize: Number(url.searchParams.get('pageSize') ?? '10'),
       keyword: url.searchParams.get('keyword') ?? undefined,
       keywordFields: ['contractCode', 'projectName', 'clientUnit'],
-      filters: {
-        status: status ?? undefined,
-      },
+      filters: { status: status ?? undefined },
     })
     return HttpResponse.json(result)
   }),
 
   http.post('*/contracts', async ({ request }) => {
-    const body = (await request.json()) as { contractCode?: string; projectName?: string; clientUnit?: string; constructionUnit?: string; witnessUnit?: string; witness?: string }
+    const body = (await request.json()) as Partial<{ contractCode: string; projectName: string; clientUnit: string; constructionUnit: string; witnessUnit: string; witness: string }>
     if (!body.contractCode || !body.projectName || !body.clientUnit || !body.constructionUnit || !body.witnessUnit || !body.witness) {
       return HttpResponse.json({ message: 'contractCode/projectName/clientUnit/constructionUnit/witnessUnit/witness 必填' }, { status: 400 })
     }
@@ -281,9 +225,8 @@ export const handlers = [
   }),
 
   http.put('*/contracts/:id', async ({ params, request }) => {
-    const id = String(params.id)
     const body = (await request.json()) as Record<string, unknown>
-    const updated = contractTable.update(id, body)
+    const updated = contractTable.update(String(params.id), body)
     if (!updated) return HttpResponse.json({ message: '合同不存在' }, { status: 404 })
     return HttpResponse.json(updated)
   }),
@@ -294,92 +237,229 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 })
   }),
 
-  // batch3-A2：钢材汇总表
-  http.get('*/contracts/:id/summary', ({ params, request }) => {
-    const contractId = String(params.id)
+  // ===========================================================
+  // /report-categories：报告类别（原「材料种类」，可维护 + 扩展属性定义）
+  // ===========================================================
+  http.get('*/report-categories', ({ request }) => {
     const url = new URL(request.url)
-    const materialType = url.searchParams.get('materialType')
-    const samples = sampleTable.query({ page: 1, pageSize: 99999 }).items.filter((s) => s.contractId === contractId)
-    const reports = reportTable.query({ page: 1, pageSize: 99999 }).items.filter((r) => r.contractId === contractId)
-    if (materialType === 'steel') {
-      const rows = samples.filter((s) => s.materialType === 'steel').map((s, i) => {
-        const report = reports.find((r) => r.sampleIds.includes(s.id))
-        return {
-          seq: i + 1,
-          spec: s.specification ?? '',
-          steelGrade: s.sampleGrade ?? '',
-          qualityCertNo: '',
-          manufacturer: s.manufacturer ?? '',
-          representQuantity: s.representQuantity ?? '',
-          reportCode: report?.reportCode ?? '',
-          testDate: report?.reportDate ?? '',
-          result: (report?.result ?? 'pass'),
-        }
-      })
-      return HttpResponse.json(rows)
+    const result = reportCategoryTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['code', 'name', 'reportTitle'],
+    })
+    return HttpResponse.json(result)
+  }),
+
+  http.get('*/report-categories/:code', ({ params }) => {
+    const found = reportCategoryTable.all().find((c) => c.code === String(params.code))
+    if (!found) return HttpResponse.json({ message: '报告类别不存在' }, { status: 404 })
+    return HttpResponse.json(found)
+  }),
+
+  http.post('*/report-categories', async ({ request }) => {
+    const body = (await request.json()) as Partial<{
+      code: string
+      name: string
+      reportTitle: string
+      summaryType: 'material' | 'concrete' | 'connection'
+      summaryName: string
+      extFields: { key: string; label: string }[]
+      remark: string
+    }>
+    if (!body.code || !body.name) {
+      return HttpResponse.json({ message: 'code/name 必填' }, { status: 400 })
     }
-    return HttpResponse.json([])
+    if (reportCategoryTable.all().some((c) => c.code === body.code)) {
+      return HttpResponse.json({ message: '类别编码已存在' }, { status: 400 })
+    }
+    const created = reportCategoryTable.insert({
+      code: body.code,
+      name: body.name,
+      reportTitle: body.reportTitle ?? `${body.name}检测报告`,
+      summaryType: body.summaryType ?? 'material',
+      summaryName: body.summaryName ?? `${body.name}试验报告汇总表`,
+      extFields: body.extFields ?? [],
+      remark: body.remark,
+    })
+    // 新类别自动创建一份默认报告模板
+    if (!reportTemplateTable.all().some((t) => t.categoryCode === body.code)) {
+      reportTemplateTable.insert({
+        categoryCode: body.code,
+        name: `${body.name}报告模板`,
+        content: `<h1 style="text-align:center">{{category.reportTitle}}</h1>\n<p>报告编号：{{receipt.reportCode}}</p>\n<h3>样品信息</h3>\n{{samplesTable}}\n<h3>检测结果</h3>\n{{testItemsTable}}\n<h3>检测结论</h3>\n<p>{{receipt.conclusion}}（判定结果：{{receipt.resultLabel}}）</p>`,
+      })
+    }
+    return HttpResponse.json(created, { status: 201 })
+  }),
+
+  http.put('*/report-categories/:code', async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    const found = reportCategoryTable.all().find((c) => c.code === String(params.code))
+    if (!found) return HttpResponse.json({ message: '报告类别不存在' }, { status: 404 })
+    delete body.code // 编码不可改（样品/接样单/码表经 code 关联）
+    return HttpResponse.json(reportCategoryTable.update(found.id, body))
+  }),
+
+  http.delete('*/report-categories/:code', ({ params }) => {
+    const code = String(params.code)
+    const found = reportCategoryTable.all().find((c) => c.code === code)
+    if (!found) return HttpResponse.json({ message: '报告类别不存在' }, { status: 404 })
+    const used = receiptTable.all().some((r) => r.categoryCode === code)
+    if (used) return HttpResponse.json({ message: '该报告类别已被接样单引用，不能删除' }, { status: 400 })
+    reportCategoryTable.remove(found.id)
+    return new HttpResponse(null, { status: 204 })
   }),
 
   // ===========================================================
-  // batch3-A2：/receipts（接样）
+  // /category-standards：报告类别 ↔ 检测标准 关联
   // ===========================================================
-  http.get('*/receipts', ({ request }) => {
+  http.get('*/category-standards', ({ request }) => {
     const url = new URL(request.url)
-    const status = url.searchParams.get('status') as 'received' | 'testing' | 'completed' | 'rejected' | null
-    const result = receiptTable.query({
+    const result = categoryStandardTable.query({
       page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '10'),
-      keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['receiptCode'],
+      pageSize: Number(url.searchParams.get('pageSize') ?? '200'),
       filters: {
-        contractId: url.searchParams.get('contractId') ?? undefined,
-        status: status ?? undefined,
+        categoryCode: url.searchParams.get('categoryCode') ?? undefined,
+        standardCode: url.searchParams.get('standardCode') ?? undefined,
       },
     })
     return HttpResponse.json(result)
   }),
 
-  http.post('*/receipts', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ contractId: string; receiptCode: string; receivedBy: string; sampleSource: string; testCategory: string }>
-    if (!body.contractId || !body.receiptCode || !body.receivedBy || !body.sampleSource || !body.testCategory) {
-      return HttpResponse.json({ message: 'contractId/receiptCode/receivedBy/sampleSource/testCategory 必填' }, { status: 400 })
+  http.post('*/category-standards', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ categoryCode: string; standardCode: string; remark: string }>
+    if (!body.categoryCode || !body.standardCode) {
+      return HttpResponse.json({ message: 'categoryCode/standardCode 必填' }, { status: 400 })
     }
-    const created = receiptTable.insert({
-      contractId: body.contractId,
-      receiptCode: body.receiptCode,
-      receivedDate: new Date().toISOString().slice(0, 10),
-      receivedBy: body.receivedBy,
-      sampleSource: body.sampleSource,
-      testCategory: body.testCategory,
-      remark: '',
-      status: 'received',
-    } as never)
+    const dup = categoryStandardTable
+      .all()
+      .find((r) => r.categoryCode === body.categoryCode && r.standardCode === body.standardCode)
+    if (dup) return HttpResponse.json({ message: '该关联已存在' }, { status: 400 })
+    const created = categoryStandardTable.insert({
+      categoryCode: body.categoryCode,
+      standardCode: body.standardCode,
+      remark: body.remark,
+    })
     return HttpResponse.json(created, { status: 201 })
   }),
 
-  http.get('*/receipts/:id', ({ params }) => {
-    const found = receiptTable.findById(String(params.id))
-    if (!found) return HttpResponse.json({ message: '接样不存在' }, { status: 404 })
-    return HttpResponse.json(found)
-  }),
-
-  http.put('*/receipts/:id', async ({ params, request }) => {
-    const id = String(params.id)
-    const body = (await request.json()) as Record<string, unknown>
-    const updated = receiptTable.update(id, body)
-    if (!updated) return HttpResponse.json({ message: '接样不存在' }, { status: 404 })
-    return HttpResponse.json(updated)
-  }),
-
-  http.delete('*/receipts/:id', ({ params }) => {
-    const ok = receiptTable.remove(String(params.id))
-    if (!ok) return HttpResponse.json({ message: '接样不存在' }, { status: 404 })
+  http.delete('*/category-standards/:id', ({ params }) => {
+    const ok = categoryStandardTable.remove(String(params.id))
+    if (!ok) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
     return new HttpResponse(null, { status: 204 })
   }),
 
   // ===========================================================
-  // batch3-A2：/samples（兼容旧字段名 + 新结构）
+  // 型号/规格/等级/牌号 码表（归属报告类别）
+  // ===========================================================
+  ...dictHandlers('models', modelTable, '型号'),
+  ...dictHandlers('specifications', specificationTable, '规格'),
+  ...dictHandlers('grades', gradeTable, '等级'),
+  ...dictHandlers('brands', brandTable, '牌号'),
+
+  // ===========================================================
+  // /receipts：接样单（合并报告字段 + 流程管线）
+  // ===========================================================
+  http.get('*/receipts', ({ request }) => {
+    const url = new URL(request.url)
+    const result = receiptTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '10'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['receiptCode', 'reportCode', 'receivedBy'],
+      filters: {
+        contractId: url.searchParams.get('contractId') ?? undefined,
+        categoryCode: url.searchParams.get('categoryCode') ?? undefined,
+        flowStatus: url.searchParams.get('flowStatus') ?? undefined,
+        lastSubmittedBy: url.searchParams.get('lastSubmittedBy') ?? undefined,
+      } as never,
+    })
+    return HttpResponse.json(result)
+  }),
+
+  http.post('*/receipts', async ({ request }) => {
+    const body = (await request.json()) as Partial<{
+      contractId: string
+      receiptCode: string
+      categoryCode: string
+      receivedBy: string
+      sampleSource: string
+      testCategory: string
+      receivedDate: string
+      testEnvironment: string
+      mainEquipment: string
+      remark: string
+    }>
+    if (!body.contractId || !body.receiptCode || !body.categoryCode || !body.receivedBy) {
+      return HttpResponse.json({ message: 'contractId/receiptCode/categoryCode/receivedBy 必填' }, { status: 400 })
+    }
+    if (!reportCategoryTable.all().some((c) => c.code === body.categoryCode)) {
+      return HttpResponse.json({ message: '报告类别不存在' }, { status: 400 })
+    }
+    const created = receiptTable.insert({
+      contractId: body.contractId,
+      receiptCode: body.receiptCode,
+      categoryCode: body.categoryCode,
+      receivedDate: body.receivedDate ?? new Date().toISOString().slice(0, 10),
+      receivedBy: body.receivedBy,
+      sampleSource: body.sampleSource ?? '施工送检',
+      testCategory: body.testCategory ?? '委托检验',
+      testEnvironment: body.testEnvironment,
+      mainEquipment: body.mainEquipment,
+      remark: body.remark ?? '',
+      flowStatus: 'receiving',
+      flowHistory: [],
+      lastSubmittedBy: null,
+    } as never)
+    return HttpResponse.json(created, { status: 201 })
+  }),
+
+  // 流程管线批量操作（提交/退回/撤回，均支持批量）
+  http.post('*/receipts/flow', async ({ request }) => {
+    const body = (await request.json()) as Partial<{
+      action: 'submit' | 'return' | 'withdraw'
+      ids: string[]
+      operator: string
+      reason: string
+    }>
+    if (!body.action || !['submit', 'return', 'withdraw'].includes(body.action)) {
+      return HttpResponse.json({ message: 'action 必须为 submit/return/withdraw' }, { status: 400 })
+    }
+    if (!Array.isArray(body.ids) || body.ids.length === 0) {
+      return HttpResponse.json({ message: 'ids 必填且不能为空' }, { status: 400 })
+    }
+    const results = applyFlowAction(body.ids, body.action, body.operator ?? 'anonymous', body.reason)
+    return HttpResponse.json({ results })
+  }),
+
+  http.get('*/receipts/:id', ({ params }) => {
+    const found = receiptTable.findById(String(params.id))
+    if (!found) return HttpResponse.json({ message: '接样单不存在' }, { status: 404 })
+    return HttpResponse.json(found)
+  }),
+
+  http.put('*/receipts/:id', async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    const updated = receiptTable.update(String(params.id), body)
+    if (!updated) return HttpResponse.json({ message: '接样单不存在' }, { status: 404 })
+    return HttpResponse.json(updated)
+  }),
+
+  http.delete('*/receipts/:id', ({ params }) => {
+    const id = String(params.id)
+    const ok = receiptTable.remove(id)
+    if (!ok) return HttpResponse.json({ message: '接样单不存在' }, { status: 404 })
+    // 级联删除样品与其检测项
+    for (const s of sampleTable.all().filter((x) => x.receiptId === id)) {
+      testItemTable.all().filter((i) => i.sampleId === s.id).forEach((i) => testItemTable.remove(i.id))
+      sampleTable.remove(s.id)
+    }
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // ===========================================================
+  // /samples：样品（归属接样单 receiptId）
   // ===========================================================
   http.get('*/samples', ({ request }) => {
     const url = new URL(request.url)
@@ -387,56 +467,42 @@ export const handlers = [
       page: Number(url.searchParams.get('page') ?? '1'),
       pageSize: Number(url.searchParams.get('pageSize') ?? '10'),
       keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['sampleCode', 'sampleName'],
-      filters: {
-        status: url.searchParams.get('status') ?? undefined,
-        materialType: url.searchParams.get('materialType') ?? undefined,
-        // 兼容旧字段 projectId（ch36 tests 用）
-        projectId: url.searchParams.get('projectId') ?? undefined,
-        // batch3-A2 + v1.2-001：新增 receiptId/contractId 过滤
-        receiptId: url.searchParams.get('receiptId') ?? undefined,
-        contractId: url.searchParams.get('contractId') ?? undefined,
-      },
+      keywordFields: ['sampleCode', 'sampleName', 'model', 'brand'],
+      filters: { receiptId: url.searchParams.get('receiptId') ?? undefined },
     })
     return HttpResponse.json(result)
   }),
 
   http.post('*/samples', async ({ request }) => {
-    // input adapter：兼容旧字段 {projectId, name, code, status, receivedAt}
-    const raw = (await request.json()) as Record<string, unknown>
-    const body: Record<string, unknown> = { ...raw }
-    if (!body.contractId && body.projectId) body.contractId = body.projectId
-    if (!body.sampleCode && body.code) body.sampleCode = body.code
-    if (!body.sampleName && body.name) body.sampleName = body.name
-    if (!body.receiptId) body.receiptId = body.receiptId ?? 'receipt-001' // batch3-A2：默认 fallback
-    if (!body.materialType) body.materialType = body.materialType ?? 'concrete'
-    if (!body.materialDetails) body.materialDetails = body.materialDetails ?? { kind: 'concrete' }
-
-    if (!body.sampleCode || !body.contractId) {
-      return HttpResponse.json({ message: 'sampleCode/contractId 必填' }, { status: 400 })
+    const body = (await request.json()) as Partial<{
+      receiptId: string
+      sampleCode: string
+      sampleName: string
+      model: string
+      specification: string
+      grade: string
+      brand: string
+      sampleQuantity: string
+      ext: Record<string, string>
+      remark: string
+    }>
+    if (!body.receiptId || !body.sampleCode) {
+      return HttpResponse.json({ message: 'receiptId/sampleCode 必填' }, { status: 400 })
+    }
+    if (!receiptTable.findById(body.receiptId)) {
+      return HttpResponse.json({ message: '接样单不存在' }, { status: 400 })
     }
     const created = sampleTable.insert({
-      contractId: body.contractId as string,
-      receiptId: body.receiptId as string,
-      reportId: null,
-      sampleCode: body.sampleCode as string,
-      materialType: body.materialType as string,
-      sampleName: body.sampleName as string | undefined,
-      sampleType: body.sampleType as string | undefined,
-      specification: body.specification as string | undefined,
-      sampleGrade: body.sampleGrade as string | undefined,
-      structuralPart: body.structuralPart as string | undefined,
-      manufacturer: body.manufacturer as string | undefined,
-      sampleQuantity: body.sampleQuantity as string | undefined,
-      representQuantity: body.representQuantity as string | undefined,
-      sampleCondition: body.sampleCondition as string | undefined,
-      materialDetails: body.materialDetails as Record<string, unknown>,
-      status: (body.status as string | undefined) ?? 'pending',
-      // 旧字段兼容（fallback）
-      projectId: body.contractId as string,
-      name: (body.sampleName as string | undefined) ?? (body.sampleCode as string),
-      code: body.sampleCode as string,
-      receivedAt: new Date().toISOString(),
+      receiptId: body.receiptId,
+      sampleCode: body.sampleCode,
+      sampleName: body.sampleName,
+      model: body.model,
+      specification: body.specification,
+      grade: body.grade,
+      brand: body.brand,
+      sampleQuantity: body.sampleQuantity,
+      ext: body.ext ?? {},
+      remark: body.remark,
     })
     return HttpResponse.json(created, { status: 201 })
   }),
@@ -448,219 +514,142 @@ export const handlers = [
   }),
 
   http.put('*/samples/:id', async ({ params, request }) => {
-    const id = String(params.id)
-    const raw = (await request.json()) as Record<string, unknown>
-    const body: Record<string, unknown> = { ...raw }
-    // 兼容旧字段 projectId→contractId, name→sampleName, code→sampleCode
-    if (body.projectId && !body.contractId) body.contractId = body.projectId
-    if (body.name && !body.sampleName) body.sampleName = body.name
-    if (body.code && !body.sampleCode) body.sampleCode = body.code
-    const updated = sampleTable.update(id, body)
+    const body = (await request.json()) as Record<string, unknown>
+    const updated = sampleTable.update(String(params.id), body)
     if (!updated) return HttpResponse.json({ message: '样品不存在' }, { status: 404 })
     return HttpResponse.json(updated)
   }),
 
   http.delete('*/samples/:id', ({ params }) => {
-    const ok = sampleTable.remove(String(params.id))
-    if (!ok) return HttpResponse.json({ message: '样品不存在' }, { status: 404 })
+    const id = String(params.id)
+    const found = sampleTable.findById(id)
+    if (!found) return HttpResponse.json({ message: '样品不存在' }, { status: 404 })
+    testItemTable.all().filter((i) => i.sampleId === id).forEach((i) => testItemTable.remove(i.id))
+    sampleTable.remove(id)
+    syncReceiptResult(found.receiptId)
     return new HttpResponse(null, { status: 204 })
   }),
 
   // ===========================================================
-  // batch3-A2：/reports（兼容旧字段 sampleId/title + 新结构 sampleIds[]/reportCode）
-  // ===========================================================
-  http.get('*/reports', ({ request }) => {
-    const url = new URL(request.url)
-    const result = reportTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '10'),
-      keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['reportCode'],
-      filters: {
-        status: url.searchParams.get('status') ?? undefined,
-        materialType: url.searchParams.get('materialType') ?? undefined,
-        // 兼容旧字段 sampleId
-        sampleId: url.searchParams.get('sampleId') ?? undefined,
-      },
-    })
-    return HttpResponse.json(result)
-  }),
-
-  http.post('*/reports', async ({ request }) => {
-    // input adapter：兼容旧字段 {sampleId, title, conclusion}
-    const raw = (await request.json()) as LegacyReportCreate & Record<string, unknown>
-    const body: Record<string, unknown> = { ...raw }
-    if (!body.sampleIds && body.sampleId) body.sampleIds = [body.sampleId]
-    if (!body.reportCode && body.title) body.reportCode = body.title
-    if (!body.contractId) body.contractId = body.contractId ?? 'contract-bj-001' // fallback
-    if (!body.receiptId) body.receiptId = body.receiptId ?? 'receipt-001'
-    if (!body.reportDate) body.reportDate = body.reportDate ?? new Date().toISOString().slice(0, 10)
-    if (!body.materialType) body.materialType = body.materialType ?? 'concrete'
-    if (!body.result) body.result = body.result ?? 'pass'
-
-    if (!body.reportCode || !Array.isArray(body.sampleIds) || (body.sampleIds as string[]).length === 0) {
-      return HttpResponse.json({ message: 'reportCode/sampleIds 必填' }, { status: 400 })
-    }
-    const created = reportTable.insert({
-      contractId: body.contractId as string,
-      receiptId: body.receiptId as string,
-      reportCode: body.reportCode as string,
-      reportDate: body.reportDate as string,
-      materialType: body.materialType as string,
-      sampleIds: body.sampleIds as string[],
-      conclusion: (body.conclusion as string | undefined) ?? '',
-      result: body.result as 'pass' | 'fail',
-      remark: '',
-      status: 'draft',
-      issuedAt: null,
-      // 旧字段兼容
-      sampleId: (body.sampleIds as string[])[0],
-      title: body.reportCode as string,
-    })
-    return HttpResponse.json(created, { status: 201 })
-  }),
-
-  http.get('*/reports/:id', ({ params }) => {
-    const found = reportTable.findById(String(params.id))
-    if (!found) return HttpResponse.json({ message: '报告不存在' }, { status: 404 })
-    return HttpResponse.json(found)
-  }),
-
-  http.put('*/reports/:id', async ({ params, request }) => {
-    const id = String(params.id)
-    const raw = (await request.json()) as Record<string, unknown>
-    const body: Record<string, unknown> = { ...raw }
-    if (body.title && !body.reportCode) body.reportCode = body.title
-    const updated = reportTable.update(id, body)
-    if (!updated) return HttpResponse.json({ message: '报告不存在' }, { status: 404 })
-    return HttpResponse.json(updated)
-  }),
-
-  http.delete('*/reports/:id', ({ params }) => {
-    const ok = reportTable.remove(String(params.id))
-    if (!ok) return HttpResponse.json({ message: '报告不存在' }, { status: 404 })
-    return new HttpResponse(null, { status: 204 })
-  }),
-
-  http.post('*/reports/:id/review', async ({ params, request }) => {
-    const id = String(params.id)
-    const body = (await request.json()) as { action: ReviewAction }
-    const result = reviewReportRecord(id, body.action)
-    if (!result.ok) {
-      return HttpResponse.json({ message: result.message }, { status: 400 })
-    }
-    return HttpResponse.json(result.report as Record<string, unknown>)
-  }),
-
-  // ===========================================================
-  // batch3-A2：/test-record-sheets
-  // ===========================================================
-  http.get('*/test-record-sheets', ({ request }) => {
-    const url = new URL(request.url)
-    const result = testRecordSheetTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '10'),
-      keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['sheetCode'],
-      filters: { contractId: url.searchParams.get('contractId') ?? undefined },
-    })
-    return HttpResponse.json(result)
-  }),
-
-  http.post('*/test-record-sheets', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ contractId: string; sheetCode: string; testDate: string; sampleIds: string[] }>
-    if (!body.contractId || !body.sheetCode || !body.testDate || !Array.isArray(body.sampleIds)) {
-      return HttpResponse.json({ message: 'contractId/sheetCode/testDate/sampleIds 必填' }, { status: 400 })
-    }
-    const created = testRecordSheetTable.insert({
-      contractId: body.contractId,
-      sheetCode: body.sheetCode,
-      testDate: body.testDate,
-      sampleIds: body.sampleIds,
-    })
-    return HttpResponse.json(created, { status: 201 })
-  }),
-
-  http.get('*/test-record-sheets/:id', ({ params }) => {
-    const found = testRecordSheetTable.findById(String(params.id))
-    if (!found) return HttpResponse.json({ message: '记录单不存在' }, { status: 404 })
-    return HttpResponse.json(found)
-  }),
-
-  http.put('*/test-record-sheets/:id', async ({ params, request }) => {
-    const id = String(params.id)
-    const body = (await request.json()) as Record<string, unknown>
-    const updated = testRecordSheetTable.update(id, body)
-    if (!updated) return HttpResponse.json({ message: '记录单不存在' }, { status: 404 })
-    return HttpResponse.json(updated)
-  }),
-
-  http.delete('*/test-record-sheets/:id', ({ params }) => {
-    const ok = testRecordSheetTable.remove(String(params.id))
-    if (!ok) return HttpResponse.json({ message: '记录单不存在' }, { status: 404 })
-    return new HttpResponse(null, { status: 204 })
-  }),
-
-  // ===========================================================
-  // batch3-A2：/test-items
+  // /test-items：单项检测记录（归属样品；自动评定 + 手工修正）
   // ===========================================================
   http.get('*/test-items', ({ request }) => {
     const url = new URL(request.url)
+    const receiptId = url.searchParams.get('receiptId')
+    // receiptId 过滤：经样品间接查询
+    if (receiptId) {
+      const sampleIds = samplesOfReceipt(receiptId).map((s) => s.id)
+      const items = testItemTable.all().filter((i) => sampleIds.includes(i.sampleId))
+      return HttpResponse.json({ items, total: items.length, page: 1, pageSize: items.length || 1 })
+    }
     const result = testItemTable.query({
       page: Number(url.searchParams.get('page') ?? '1'),
       pageSize: Number(url.searchParams.get('pageSize') ?? '20'),
       keyword: url.searchParams.get('keyword') ?? undefined,
       keywordFields: ['parameterCode', 'requirement', 'result'],
       filters: {
-        sheetId: url.searchParams.get('sheetId') ?? undefined,
         sampleId: url.searchParams.get('sampleId') ?? undefined,
-        reportId: url.searchParams.get('reportId') ?? undefined,
         parameterCode: url.searchParams.get('parameterCode') ?? undefined,
       },
     })
     return HttpResponse.json(result)
   }),
 
+  // 录入检测结果——按样品的 报告类别+牌号/型号/等级/规格 匹配技术要求，自动评定合格/不合格；
+  // 显式传 passed 即手工判定（覆盖自动评定结果）。
   http.post('*/test-items', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ sheetId: string; sampleId: string; parameterCode: string; requirement: string; result: string; passed: boolean }>
-    if (!body.sheetId || !body.sampleId || !body.parameterCode || !body.requirement || body.result === undefined || body.passed === undefined) {
-      return HttpResponse.json({ message: 'sheetId/sampleId/parameterCode/requirement/result/passed 必填' }, { status: 400 })
+    const body = (await request.json()) as Partial<{
+      sampleId: string
+      parameterCode: string
+      result: string
+      unit: string
+      passed: boolean
+      remark: string
+    }>
+    if (!body.sampleId || !body.parameterCode || body.result === undefined || body.result === '') {
+      return HttpResponse.json({ message: 'sampleId/parameterCode/result 必填' }, { status: 400 })
     }
-    const created = testItemTable.insert({
-      sheetId: body.sheetId,
-      sampleId: body.sampleId,
-      reportId: null,
+    const sample = sampleTable.findById(body.sampleId)
+    if (!sample) return HttpResponse.json({ message: '样品不存在' }, { status: 400 })
+    const receipt = receiptTable.findById(sample.receiptId)
+    const evaluation = evaluateTestResult({
       parameterCode: body.parameterCode,
-      requirement: body.requirement,
-      result: body.result,
-      passed: body.passed,
-      materialDetails: { kind: 'steel' }, // 默认 fallback，ch41 UI 按 materialType 选
+      categoryCode: receipt?.categoryCode,
+      brand: sample.brand,
+      model: sample.model,
+      grade: sample.grade,
+      specification: sample.specification,
+      resultValue: body.result,
     })
+    const parameter = testParameterTable.all().find((p) => p.code === body.parameterCode)
+    const created = testItemTable.insert({
+      sampleId: body.sampleId,
+      parameterCode: body.parameterCode,
+      standardCode: evaluation.standardCode,
+      requirementCode: evaluation.requirementCode,
+      requirement: evaluation.requirement,
+      result: body.result,
+      unit: body.unit ?? parameter?.unit,
+      autoPassed: evaluation.autoPassed,
+      // 最终评定：显式传入优先（手工判定），否则取自动评定结果（无法评定时默认不合格，待人工修正）
+      passed: body.passed ?? evaluation.autoPassed ?? false,
+      remark: body.remark,
+    })
+    syncReceiptResult(sample.receiptId)
     return HttpResponse.json(created, { status: 201 })
   }),
 
   http.get('*/test-items/:id', ({ params }) => {
     const found = testItemTable.findById(String(params.id))
-    if (!found) return HttpResponse.json({ message: '单项记录不存在' }, { status: 404 })
+    if (!found) return HttpResponse.json({ message: '检测记录不存在' }, { status: 404 })
     return HttpResponse.json(found)
   }),
 
   http.put('*/test-items/:id', async ({ params, request }) => {
     const id = String(params.id)
     const body = (await request.json()) as Record<string, unknown>
+    const existing = testItemTable.findById(id)
+    if (!existing) return HttpResponse.json({ message: '检测记录不存在' }, { status: 404 })
+    // 修改检测值且未显式传 passed 时重新自动评定；显式传 passed 即手工修正
+    if (typeof body.result === 'string' && body.passed === undefined) {
+      const sample = sampleTable.findById(existing.sampleId)
+      const receipt = sample ? receiptTable.findById(sample.receiptId) : undefined
+      const evaluation = evaluateTestResult({
+        parameterCode: existing.parameterCode,
+        categoryCode: receipt?.categoryCode,
+        brand: sample?.brand,
+        model: sample?.model,
+        grade: sample?.grade,
+        specification: sample?.specification,
+        resultValue: body.result,
+      })
+      body.autoPassed = evaluation.autoPassed
+      body.passed = evaluation.autoPassed ?? existing.passed
+      if (evaluation.matched) {
+        body.requirementCode = evaluation.requirementCode
+        body.requirement = evaluation.requirement
+        body.standardCode = evaluation.standardCode
+      }
+    }
     const updated = testItemTable.update(id, body)
-    if (!updated) return HttpResponse.json({ message: '单项记录不存在' }, { status: 404 })
+    if (updated) {
+      const sample = sampleTable.findById(updated.sampleId)
+      if (sample) syncReceiptResult(sample.receiptId)
+    }
     return HttpResponse.json(updated)
   }),
 
   http.delete('*/test-items/:id', ({ params }) => {
-    const ok = testItemTable.remove(String(params.id))
-    if (!ok) return HttpResponse.json({ message: '单项记录不存在' }, { status: 404 })
+    const found = testItemTable.findById(String(params.id))
+    if (!found) return HttpResponse.json({ message: '检测记录不存在' }, { status: 404 })
+    const sample = sampleTable.findById(found.sampleId)
+    testItemTable.remove(found.id)
+    if (sample) syncReceiptResult(sample.receiptId)
     return new HttpResponse(null, { status: 204 })
   }),
 
   // ===========================================================
-  // batch3-A2：三个码表（/test-parameters / /test-standards / /technical-requirements）
+  // /test-parameters（归属报告类别）
   // ===========================================================
   http.get('*/test-parameters', ({ request }) => {
     const url = new URL(request.url)
@@ -668,46 +657,115 @@ export const handlers = [
       page: Number(url.searchParams.get('page') ?? '1'),
       pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
       keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['code', 'name', 'category'],
-      filters: { materialType: url.searchParams.get('materialType') ?? undefined },
+      keywordFields: ['code', 'name', 'group'],
+      filters: { categoryCode: url.searchParams.get('categoryCode') ?? undefined },
     })
     return HttpResponse.json(result)
   }),
 
   http.get('*/test-parameters/:code', ({ params }) => {
-    const list = testParameterTable.query({ page: 1, pageSize: 99999 })
-    const found = list.items.find((p) => p.code === String(params.code))
+    const found = testParameterTable.all().find((p) => p.code === String(params.code))
     if (!found) return HttpResponse.json({ message: '参数不存在' }, { status: 404 })
     return HttpResponse.json(found)
   }),
 
+  http.post('*/test-parameters', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ code: string; name: string; categoryCode: string; group: string; unit: string; description: string }>
+    if (!body.code || !body.name || !body.categoryCode) {
+      return HttpResponse.json({ message: 'code/name/categoryCode 必填' }, { status: 400 })
+    }
+    if (testParameterTable.all().some((p) => p.code === body.code)) {
+      return HttpResponse.json({ message: '参数编码已存在' }, { status: 400 })
+    }
+    const created = testParameterTable.insert(body as never)
+    return HttpResponse.json(created, { status: 201 })
+  }),
+
+  http.put('*/test-parameters/:code', async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    const found = testParameterTable.all().find((p) => p.code === String(params.code))
+    if (!found) return HttpResponse.json({ message: '参数不存在' }, { status: 404 })
+    return HttpResponse.json(testParameterTable.update(found.id, body))
+  }),
+
+  http.delete('*/test-parameters/:code', ({ params }) => {
+    const found = testParameterTable.all().find((p) => p.code === String(params.code))
+    if (!found) return HttpResponse.json({ message: '参数不存在' }, { status: 404 })
+    testParameterTable.remove(found.id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // ===========================================================
+  // /test-standards（与类别的关联经 /category-standards）
+  // ===========================================================
   http.get('*/test-standards', ({ request }) => {
     const url = new URL(request.url)
+    // categoryCode 过滤：经关联表间接查询
+    const categoryCode = url.searchParams.get('categoryCode')
+    if (categoryCode) {
+      const codes = categoryStandardTable
+        .all()
+        .filter((r) => r.categoryCode === categoryCode)
+        .map((r) => r.standardCode)
+      const items = testStandardTable.all().filter((s) => codes.includes(s.code))
+      return HttpResponse.json({ items, total: items.length, page: 1, pageSize: items.length || 1 })
+    }
     const result = testStandardTable.query({
       page: Number(url.searchParams.get('page') ?? '1'),
       pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
       keyword: url.searchParams.get('keyword') ?? undefined,
       keywordFields: ['code', 'name'],
+      filters: { type: (url.searchParams.get('type') as 'national' | 'industry' | 'local' | 'enterprise' | null) ?? undefined },
     })
     return HttpResponse.json(result)
   }),
 
   http.get('*/test-standards/:code', ({ params }) => {
-    const list = testStandardTable.query({ page: 1, pageSize: 99999 })
-    const found = list.items.find((s) => s.code === String(params.code))
+    const found = testStandardTable.all().find((s) => s.code === String(params.code))
     if (!found) return HttpResponse.json({ message: '标准不存在' }, { status: 404 })
     return HttpResponse.json(found)
   }),
 
+  http.post('*/test-standards', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ code: string; name: string; type: 'national' | 'industry' | 'local' | 'enterprise'; remark: string }>
+    if (!body.code || !body.name || !body.type) {
+      return HttpResponse.json({ message: 'code/name/type 必填' }, { status: 400 })
+    }
+    if (testStandardTable.all().some((s) => s.code === body.code)) {
+      return HttpResponse.json({ message: '标准编码已存在' }, { status: 400 })
+    }
+    const created = testStandardTable.insert(body as never)
+    return HttpResponse.json(created, { status: 201 })
+  }),
+
+  http.put('*/test-standards/:code', async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    const found = testStandardTable.all().find((s) => s.code === String(params.code))
+    if (!found) return HttpResponse.json({ message: '标准不存在' }, { status: 404 })
+    return HttpResponse.json(testStandardTable.update(found.id, body))
+  }),
+
+  http.delete('*/test-standards/:code', ({ params }) => {
+    const found = testStandardTable.all().find((s) => s.code === String(params.code))
+    if (!found) return HttpResponse.json({ message: '标准不存在' }, { status: 404 })
+    testStandardTable.remove(found.id)
+    // 级联删除类别关联
+    categoryStandardTable.all().filter((r) => r.standardCode === found.code).forEach((r) => categoryStandardTable.remove(r.id))
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // ===========================================================
+  // /technical-requirements（报告类别 + 牌号/型号/等级/规格 维度）
+  // ===========================================================
   http.get('*/technical-requirements', ({ request }) => {
     const url = new URL(request.url)
     const result = technicalRequirementTable.query({
       page: Number(url.searchParams.get('page') ?? '1'),
       pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
       keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['code', 'value'],
+      keywordFields: ['code', 'parameterCode', 'brand', 'model', 'grade'],
       filters: {
-        materialType: url.searchParams.get('materialType') ?? undefined,
+        categoryCode: url.searchParams.get('categoryCode') ?? undefined,
         parameterCode: url.searchParams.get('parameterCode') ?? undefined,
       },
     })
@@ -715,14 +773,94 @@ export const handlers = [
   }),
 
   http.get('*/technical-requirements/:code', ({ params }) => {
-    const list = technicalRequirementTable.query({ page: 1, pageSize: 99999 })
-    const found = list.items.find((r) => r.code === String(params.code))
+    const found = technicalRequirementTable.all().find((r) => r.code === String(params.code))
     if (!found) return HttpResponse.json({ message: '技术要求不存在' }, { status: 404 })
     return HttpResponse.json(found)
   }),
 
+  http.post('*/technical-requirements', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ code: string; standardCode: string; parameterCode: string; categoryCode: string; brand: string; model: string; grade: string; specification: string; comparison: string; value: string; unit: string }>
+    if (!body.code || !body.standardCode || !body.parameterCode || !body.categoryCode || !body.comparison || body.value === undefined) {
+      return HttpResponse.json({ message: 'code/standardCode/parameterCode/categoryCode/comparison/value 必填' }, { status: 400 })
+    }
+    if (technicalRequirementTable.all().some((r) => r.code === body.code)) {
+      return HttpResponse.json({ message: '技术要求编码已存在' }, { status: 400 })
+    }
+    const created = technicalRequirementTable.insert(body as never)
+    return HttpResponse.json(created, { status: 201 })
+  }),
+
+  http.put('*/technical-requirements/:code', async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    const found = technicalRequirementTable.all().find((r) => r.code === String(params.code))
+    if (!found) return HttpResponse.json({ message: '技术要求不存在' }, { status: 404 })
+    return HttpResponse.json(technicalRequirementTable.update(found.id, body))
+  }),
+
+  http.delete('*/technical-requirements/:code', ({ params }) => {
+    const found = technicalRequirementTable.all().find((r) => r.code === String(params.code))
+    if (!found) return HttpResponse.json({ message: '技术要求不存在' }, { status: 404 })
+    technicalRequirementTable.remove(found.id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
   // ===========================================================
-  // extend 批1：/users（保留）
+  // /report-templates：报告模板（每个报告类别对应一份，可维护）
+  // ===========================================================
+  http.get('*/report-templates', ({ request }) => {
+    const url = new URL(request.url)
+    const result = reportTemplateTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
+      filters: { categoryCode: url.searchParams.get('categoryCode') ?? undefined },
+    })
+    return HttpResponse.json(result)
+  }),
+
+  http.post('*/report-templates', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ categoryCode: string; name: string; content: string }>
+    if (!body.categoryCode || !body.content) {
+      return HttpResponse.json({ message: 'categoryCode/content 必填' }, { status: 400 })
+    }
+    // 每个类别仅一份模板：已存在则更新
+    const existing = reportTemplateTable.all().find((t) => t.categoryCode === body.categoryCode)
+    if (existing) {
+      return HttpResponse.json(reportTemplateTable.update(existing.id, { name: body.name, content: body.content }))
+    }
+    const created = reportTemplateTable.insert({
+      categoryCode: body.categoryCode,
+      name: body.name ?? '报告模板',
+      content: body.content,
+    })
+    return HttpResponse.json(created, { status: 201 })
+  }),
+
+  http.put('*/report-templates/:id', async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    const updated = reportTemplateTable.update(String(params.id), body)
+    if (!updated) return HttpResponse.json({ message: '模板不存在' }, { status: 404 })
+    return HttpResponse.json(updated)
+  }),
+
+  // ===========================================================
+  // /stats + /summary
+  // ===========================================================
+  http.get('*/stats', () => {
+    return HttpResponse.json(computeStats() as unknown as DashboardStats)
+  }),
+
+  http.get('*/summary', ({ request }) => {
+    const url = new URL(request.url)
+    const categoryCode = url.searchParams.get('categoryCode')
+    if (!categoryCode) {
+      return HttpResponse.json({ message: 'categoryCode 必填' }, { status: 400 })
+    }
+    const contractId = url.searchParams.get('contractId') ?? undefined
+    return HttpResponse.json(buildSummary(categoryCode, contractId))
+  }),
+
+  // ===========================================================
+  // /users + /roles
   // ===========================================================
   http.get('*/users', ({ request }) => {
     const url = new URL(request.url)
@@ -759,9 +897,8 @@ export const handlers = [
   }),
 
   http.put('*/users/:id', async ({ params, request }) => {
-    const id = String(params.id)
     const body = (await request.json()) as UserUpdateInput
-    const updated = userTable.update(id, body as Record<string, unknown>)
+    const updated = userTable.update(String(params.id), body as Record<string, unknown>)
     if (!updated) return HttpResponse.json({ message: '用户不存在' }, { status: 404 })
     return HttpResponse.json(updated as UserRecord)
   }),
@@ -772,9 +909,6 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 })
   }),
 
-  // ===========================================================
-  // extend 批1：/roles（保留）
-  // ===========================================================
   http.get('*/roles', ({ request }) => {
     const url = new URL(request.url)
     const result = roleTable.query({
@@ -806,9 +940,8 @@ export const handlers = [
   }),
 
   http.put('*/roles/:id', async ({ params, request }) => {
-    const id = String(params.id)
     const body = (await request.json()) as RoleUpdateInput
-    const updated = roleTable.update(id, body as Record<string, unknown>)
+    const updated = roleTable.update(String(params.id), body as Record<string, unknown>)
     if (!updated) return HttpResponse.json({ message: '角色不存在' }, { status: 404 })
     return HttpResponse.json(updated as RoleRecord)
   }),
@@ -817,113 +950,5 @@ export const handlers = [
     const ok = roleTable.remove(String(params.id))
     if (!ok) return HttpResponse.json({ message: '角色不存在' }, { status: 404 })
     return new HttpResponse(null, { status: 204 })
-  }),
-
-  // ===========================================================
-  // ch37：/flow/:id（保留）
-  // ===========================================================
-  http.get('*/flow/:id', ({ params }) => {
-    const id = String(params.id)
-    const saved = flowStore.get(id)
-    return HttpResponse.json(saved ?? { status: 'draft', history: [] })
-  }),
-
-  http.post('*/flow/:id', async ({ params, request }) => {
-    const id = String(params.id)
-    const body = (await request.json()) as { status: string; history: unknown[] }
-    flowStore.set(id, body)
-    return HttpResponse.json(body)
-  }),
-
-  // ===========================================================
-  // extend 批2：/tasks（保留）
-  // ===========================================================
-  http.get('*/tasks', ({ request }) => {
-    const url = new URL(request.url)
-    const result = taskTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '10'),
-      keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['testItems', 'conclusion'],
-      filters: {
-        sampleId: url.searchParams.get('sampleId') ?? undefined,
-        status: url.searchParams.get('status') ?? undefined,
-        assigneeId: url.searchParams.get('assigneeId') ?? undefined,
-      },
-    })
-    return HttpResponse.json(result)
-  }),
-
-  http.post('*/tasks', async ({ request }) => {
-    const body = (await request.json()) as Partial<TaskCreateInput>
-    if (!body.sampleId || !body.assigneeId || !body.testItems) {
-      return HttpResponse.json({ message: 'sampleId/assigneeId/testItems 必填' }, { status: 400 })
-    }
-    const created = taskTable.insert({
-      sampleId: body.sampleId,
-      assigneeId: body.assigneeId,
-      testItems: body.testItems,
-      status: 'pending',
-      resultData: '',
-      conclusion: '',
-    } as never)
-    return HttpResponse.json(created as TaskRecord, { status: 201 })
-  }),
-
-  http.get('*/tasks/:id', ({ params }) => {
-    const found = taskTable.findById(String(params.id))
-    if (!found) return HttpResponse.json({ message: '任务不存在' }, { status: 404 })
-    return HttpResponse.json(found)
-  }),
-
-  http.put('*/tasks/:id', async ({ params, request }) => {
-    const id = String(params.id)
-    const body = (await request.json()) as TaskUpdateInput
-    const updated = taskTable.update(id, body as Record<string, unknown>)
-    if (!updated) return HttpResponse.json({ message: '任务不存在' }, { status: 404 })
-    return HttpResponse.json(updated as Record<string, unknown>)
-  }),
-
-  http.delete('*/tasks/:id', ({ params }) => {
-    const ok = taskTable.remove(String(params.id))
-    if (!ok) return HttpResponse.json({ message: '任务不存在' }, { status: 404 })
-    return new HttpResponse(null, { status: 204 })
-  }),
-
-  http.post('*/tasks/:id/entry', async ({ params, request }) => {
-    const id = String(params.id)
-    const body = (await request.json()) as TaskEntryInput
-    const task = taskTable.findById(id)
-    if (!task) return HttpResponse.json({ message: '任务不存在' }, { status: 404 })
-    if (task.status !== 'pending' && task.status !== 'testing') {
-      return HttpResponse.json({ message: '当前状态不可录入数据' }, { status: 400 })
-    }
-    const updated = taskTable.update(id, {
-      status: body.status,
-      resultData: body.resultData,
-      conclusion: body.conclusion,
-    })
-    return HttpResponse.json(updated as Record<string, unknown>)
-  }),
-
-  // ===========================================================
-  // extend 批2：/stats（Dashboard 聚合统计，兼容旧 projectCount 字段）
-  // ===========================================================
-  http.get('*/stats', () => {
-    return HttpResponse.json(computeStats() as unknown as DashboardStats)
-  }),
-
-  // ===========================================================
-  // extend 批2：/auth/change-password（保留）
-  // ===========================================================
-  http.post('*/auth/change-password', async ({ request }) => {
-    const body = (await request.json()) as ChangePasswordInput
-    if (body.oldPassword !== 'old-lab123') {
-      return HttpResponse.json({ message: '旧密码错误' }, { status: 400 })
-    }
-    if (!body.newPassword || body.newPassword.length < 6) {
-      return HttpResponse.json({ message: '新密码至少 6 位' }, { status: 400 })
-    }
-    return HttpResponse.json({ success: true })
   }),
 ]

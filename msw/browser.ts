@@ -10,8 +10,8 @@ export const worker = setupWorker(...handlers)
  * 测试不调用本函数，因此不影响测试隔离语义。
  */
 export async function startDevWorker() {
-  const { resetMockDb, seedBatch3Data } = await import('./db')
+  const { resetMockDb, seedData } = await import('./db')
   resetMockDb()
-  seedBatch3Data()
+  seedData()
   await worker.start({ onUnhandledRequest: 'bypass' })
 }

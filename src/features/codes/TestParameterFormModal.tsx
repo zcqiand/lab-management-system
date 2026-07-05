@@ -1,11 +1,12 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import type { TestParameter, MaterialType } from '../../types/api'
+import type { TestParameter } from '../../types/api'
+import { useCategories } from '../categories/useCategories'
 
 export interface TestParameterFormValues {
   code: string
   name: string
-  materialType: MaterialType
-  category: string
+  categoryCode: string
+  group?: string
   unit?: string
   description?: string
 }
@@ -19,16 +20,6 @@ interface TestParameterFormModalProps {
   loading?: boolean
 }
 
-const MATERIAL_OPTIONS: { label: string; value: MaterialType }[] = [
-  { label: '钢材', value: 'steel' },
-  { label: '水泥', value: 'cement' },
-  { label: '混凝土', value: 'concrete' },
-  { label: '砂', value: 'sand' },
-  { label: '碎石', value: 'gravel' },
-  { label: '钢筋机械连接', value: 'rebar_mech' },
-  { label: '钢筋焊接连接', value: 'rebar_weld' },
-]
-
 export function TestParameterFormModal({
   open,
   mode,
@@ -37,20 +28,21 @@ export function TestParameterFormModal({
   onCancel,
   loading = false,
 }: TestParameterFormModalProps) {
+  const { categories } = useCategories()
   const [code, setCode] = useState(initialValues?.code ?? '')
   const [name, setName] = useState(initialValues?.name ?? '')
-  const [materialType, setMaterialType] = useState<MaterialType>(initialValues?.materialType ?? 'steel')
-  const [category, setCategory] = useState(initialValues?.category ?? '')
+  const [categoryCode, setCategoryCodeState] = useState(initialValues?.categoryCode ?? 'steel')
+  const [group, setGroup] = useState(initialValues?.group ?? '')
   const [unit, setUnit] = useState(initialValues?.unit ?? '')
   const [description, setDescription] = useState(initialValues?.description ?? '')
-  const [errors, setErrors] = useState<{ code?: string; name?: string; materialType?: string; category?: string }>({})
+  const [errors, setErrors] = useState<{ code?: string; name?: string; categoryCode?: string }>({})
 
   useEffect(() => {
     if (open) {
       setCode(initialValues?.code ?? '')
       setName(initialValues?.name ?? '')
-      setMaterialType(initialValues?.materialType ?? 'steel')
-      setCategory(initialValues?.category ?? '')
+      setCategoryCodeState(initialValues?.categoryCode ?? 'steel')
+      setGroup(initialValues?.group ?? '')
       setUnit(initialValues?.unit ?? '')
       setDescription(initialValues?.description ?? '')
       setErrors({})
@@ -65,7 +57,7 @@ export function TestParameterFormModal({
     const next: typeof errors = {}
     if (!code.trim()) next.code = '请输入参数代码'
     if (!name.trim()) next.name = '请输入参数名称'
-    if (!category.trim()) next.category = '请输入分类'
+    if (!categoryCode) next.categoryCode = '请选择报告类别'
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -76,8 +68,8 @@ export function TestParameterFormModal({
     const values: TestParameterFormValues = {
       code: code.trim(),
       name: name.trim(),
-      materialType,
-      category: category.trim(),
+      categoryCode,
+      group: group.trim() || undefined,
       unit: unit.trim() || undefined,
       description: description.trim() || undefined,
     }
@@ -118,31 +110,31 @@ export function TestParameterFormModal({
           </div>
           <div>
             <label htmlFor="tp-material" className="block text-sm mb-1 font-medium">
-              适用材料 <span className="text-red-600">*</span>
+              报告类别 <span className="text-red-600">*</span>
             </label>
             <select
               id="tp-material"
-              value={materialType}
-              onChange={(e) => setMaterialType(e.target.value as MaterialType)}
+              value={categoryCode}
+              onChange={(e) => setCategoryCodeState(e.target.value)}
               className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {MATERIAL_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              {categories.map((opt) => (
+                <option key={opt.code} value={opt.code}>{opt.name}</option>
               ))}
             </select>
+            {errors.categoryCode && <p className="text-red-600 text-xs mt-1">{errors.categoryCode}</p>}
           </div>
           <div>
             <label htmlFor="tp-category" className="block text-sm mb-1 font-medium">
-              分类 <span className="text-red-600">*</span>
+              分组
             </label>
             <input
               id="tp-category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              value={group}
+              onChange={(e) => setGroup(e.target.value)}
               placeholder="mechanical / process / physical / chemistry / strength"
               className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {errors.category && <p className="text-red-600 text-xs mt-1">{errors.category}</p>}
           </div>
           <div>
             <label htmlFor="tp-unit" className="block text-sm mb-1 font-medium">

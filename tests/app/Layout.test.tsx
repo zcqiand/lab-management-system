@@ -36,7 +36,7 @@ describe('Layout 布局组件', () => {
     expect(screen.getByText('仪表盘')).toBeInTheDocument()
     expect(screen.getByText('合同管理')).toBeInTheDocument()
     expect(screen.getByText('接样管理')).toBeInTheDocument()
-    expect(screen.getByText('报告编制')).toBeInTheDocument()
+    expect(screen.getByText('任务安排')).toBeInTheDocument()
     expect(screen.getByText('报告审核')).toBeInTheDocument()
   })
 
