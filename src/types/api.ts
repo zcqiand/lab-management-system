@@ -117,6 +117,8 @@ export interface ReportCategory {
   summaryName: string
   /** 样品扩展属性定义（可维护） */
   extFields: ExtFieldDef[]
+  /** 排序号（越小越靠前），用户可维护 */
+  sortOrder: number
   remark?: string
   createdAt: string
   updatedAt: string
@@ -252,6 +254,12 @@ export interface Sample {
   grade?: string
   /** 牌号：HRB400 等 */
   brand?: string
+  /** 生产厂家 */
+  manufacturer?: string
+  /** 结构部位 */
+  structuralPart?: string
+  /** 代表数量 */
+  representQuantity?: string
   sampleQuantity?: string
   /** 按报告类别 extFields 定义的扩展属性 */
   ext: Record<string, string>
@@ -259,6 +267,26 @@ export interface Sample {
   createdAt: string
   updatedAt: string
 }
+
+/** 新建样品入参 */
+export interface SampleCreateInput {
+  receiptId: string
+  sampleCode: string
+  sampleName?: string
+  model?: string
+  specification?: string
+  grade?: string
+  brand?: string
+  manufacturer?: string
+  structuralPart?: string
+  representQuantity?: string
+  sampleQuantity?: string
+  ext?: Record<string, string>
+  remark?: string
+}
+
+/** 更新样品入参（全量更新，同 create） */
+export type SampleUpdateInput = SampleCreateInput
 
 // =============================================================================
 // TestItem（单项检测记录，归属样品 sampleId）

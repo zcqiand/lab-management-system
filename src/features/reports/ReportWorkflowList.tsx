@@ -22,7 +22,7 @@ const MATERIAL_LABELS: Record<string, string> = {
   sand: '砂',
   gravel: '碎石',
   rebar_mech: '钢筋机械连接',
-  rebar_weld: '钢筋焊接连接',
+  rebar_weld: '钢筋焊接',
 }
 
 export function ReportWorkflowList() {

@@ -94,6 +94,9 @@ function EntryModal({
   const [parameterCode, setParameterCode] = useState('')
   const [resultValue, setResultValue] = useState('')
   const [saving, setSaving] = useState(false)
+  const [testEnvironment, setTestEnvironment] = useState(receipt.testEnvironment ?? '')
+  const [mainEquipment, setMainEquipment] = useState(receipt.mainEquipment ?? '')
+  const [receiptSaving, setReceiptSaving] = useState(false)
 
   const selectedSample = samples.find((s) => s.id === sampleId)
 
@@ -192,6 +195,53 @@ function EntryModal({
             <p className="text-gray-400 py-4 text-center">该接样单暂无样品——请先在「接样管理 → 样品」中新建样品</p>
           ) : (
             <>
+              {/* 检测环境与设备（接样信息在数据录入环节可补录） */}
+              <div className="grid grid-cols-2 gap-3 items-end bg-gray-50 p-3 rounded">
+                <div>
+                  <label htmlFor="de-env" className="block text-xs font-medium text-gray-600 mb-1">检测环境</label>
+                  <input
+                    id="de-env"
+                    value={testEnvironment}
+                    onChange={(e) => setTestEnvironment(e.target.value)}
+                    placeholder="如 温度 20±2℃，湿度 50%RH"
+                    className="w-full border rounded px-2 py-1.5"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="de-equip" className="block text-xs font-medium text-gray-600 mb-1">主要检测设备</label>
+                  <input
+                    id="de-equip"
+                    value={mainEquipment}
+                    onChange={(e) => setMainEquipment(e.target.value)}
+                    placeholder="如 WAW-1000 万能试验机"
+                    className="w-full border rounded px-2 py-1.5"
+                  />
+                </div>
+                <div className="col-span-2 flex justify-end">
+                  <button
+                    onClick={async () => {
+                      setReceiptSaving(true)
+                      setError(null)
+                      try {
+                        await apiClient.put(`/receipts/${receipt.id}`, {
+                          ...receipt,
+                          testEnvironment,
+                          mainEquipment,
+                        })
+                      } catch (e: unknown) {
+                        setError(e instanceof Error ? e.message : '保存失败')
+                      } finally {
+                        setReceiptSaving(false)
+                      }
+                    }}
+                    disabled={receiptSaving}
+                    className="px-3 py-1.5 text-sm border rounded hover:bg-gray-100 disabled:opacity-50"
+                  >
+                    {receiptSaving ? '保存中...' : '保存检测环境/设备'}
+                  </button>
+                </div>
+              </div>
+
               {/* 录入区 */}
               <div className="grid grid-cols-4 gap-3 items-end bg-gray-50 p-3 rounded">
                 <div>

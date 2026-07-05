@@ -13,7 +13,6 @@ import { TestParameterList } from '../features/codes/TestParameterList'
 import { TestStandardList } from '../features/codes/TestStandardList'
 import { TechnicalRequirementList } from '../features/codes/TechnicalRequirementList'
 import { ReportCategoryList } from '../features/categories/ReportCategoryList'
-import { CategoryStandardList } from '../features/categories/CategoryStandardList'
 import { CategoryDictList } from '../features/dicts/CategoryDictList'
 import { ReportTemplateList } from '../features/templates/ReportTemplateList'
 import { TaskAssignmentPage } from '../features/task-assignment/TaskAssignmentPage'
@@ -53,7 +52,6 @@ export const routes: RouteObject[] = [
       { path: 'test-parameters', element: <TestParameterList /> },
       { path: 'test-standards', element: <TestStandardList /> },
       { path: 'technical-requirements', element: <TechnicalRequirementList /> },
-      { path: 'category-standards', element: <CategoryStandardList /> },
       { path: 'models', element: <CategoryDictList key="models" endpoint="models" title="型号管理" hint="指品种/型号：热轧带肋 / P·O 42.5 / C30 / 中砂 / 直螺纹套筒 / 闪光对焊" /> },
       { path: 'specifications', element: <CategoryDictList key="specifications" endpoint="specifications" title="规格管理" hint="指尺寸/粒径/直径：Φ22 / 150×150×150mm / 5-25mm；无尺寸的类别留空" /> },
       { path: 'grades', element: <CategoryDictList key="grades" endpoint="grades" title="等级管理" hint="指机械连接接头等级Ⅰ/Ⅱ/Ⅲ级、砂石用途类别Ⅰ/Ⅱ/Ⅲ类；型号已含等级的钢材/水泥/混凝土留空" /> },

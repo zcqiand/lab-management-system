@@ -57,6 +57,9 @@ const emptyForm = {
   specification: '',
   grade: '',
   brand: '',
+  manufacturer: '',
+  structuralPart: '',
+  representQuantity: '',
   sampleQuantity: '',
   remark: '',
 }
@@ -132,6 +135,9 @@ export function SampleManagerModal({ receipt, onClose, readOnly }: Props) {
       specification: s.specification ?? '',
       grade: s.grade ?? '',
       brand: s.brand ?? '',
+      manufacturer: s.manufacturer ?? '',
+      structuralPart: s.structuralPart ?? '',
+      representQuantity: s.representQuantity ?? '',
       sampleQuantity: s.sampleQuantity ?? '',
       remark: s.remark ?? '',
     })
@@ -201,33 +207,29 @@ export function SampleManagerModal({ receipt, onClose, readOnly }: Props) {
             <thead className="bg-gray-50 text-gray-600">
               <tr>
                 <th className="px-3 py-2 text-left">样品编号</th>
-                <th className="px-3 py-2 text-left">名称</th>
-                <th className="px-3 py-2 text-left">型号</th>
-                <th className="px-3 py-2 text-left">规格</th>
-                <th className="px-3 py-2 text-left">等级</th>
-                <th className="px-3 py-2 text-left">牌号</th>
-                <th className="px-3 py-2 text-left">扩展属性</th>
+                <th className="px-3 py-2 text-left min-w-32">型号/规格/等级/牌号</th>
+                <th className="px-3 py-2 text-left min-w-28">生产厂家/产地</th>
+                <th className="px-3 py-2 text-left min-w-24">结构部位</th>
+                <th className="px-3 py-2 text-left min-w-20">代表数量</th>
                 {!readOnly && <th className="px-3 py-2 text-right">操作</th>}
               </tr>
             </thead>
             <tbody>
               {loading && samples.length === 0 && (
-                <tr><td colSpan={8} className="px-3 py-6 text-center text-gray-400">加载中...</td></tr>
+                <tr><td colSpan={5} className="px-3 py-6 text-center text-gray-400">加载中...</td></tr>
               )}
               {!loading && samples.length === 0 && (
-                <tr><td colSpan={8} className="px-3 py-6 text-center text-gray-400">暂无样品，请新建</td></tr>
+                <tr><td colSpan={5} className="px-3 py-6 text-center text-gray-400">暂无样品，请新建</td></tr>
               )}
               {samples.map((s) => (
                 <tr key={s.id} className="border-t">
                   <td className="px-3 py-2">{s.sampleCode}</td>
-                  <td className="px-3 py-2">{s.sampleName ?? '—'}</td>
-                  <td className="px-3 py-2">{s.model ?? '—'}</td>
-                  <td className="px-3 py-2">{s.specification ?? '—'}</td>
-                  <td className="px-3 py-2">{s.grade ?? '—'}</td>
-                  <td className="px-3 py-2">{s.brand ?? '—'}</td>
-                  <td className="px-3 py-2 text-xs text-gray-500">
-                    {extDefs.map((f) => (s.ext?.[f.key] ? `${f.label}：${s.ext[f.key]}` : null)).filter(Boolean).join('；') || '—'}
+                  <td className="px-3 py-2">
+                    <div>{[s.model, s.specification, s.grade, s.brand].filter(Boolean).join(' / ') || '—'}</div>
                   </td>
+                  <td className="px-3 py-2">{s.manufacturer ?? '—'}</td>
+                  <td className="px-3 py-2">{s.structuralPart ?? '—'}</td>
+                  <td className="px-3 py-2">{s.representQuantity ?? '—'}</td>
                   {!readOnly && (
                     <td className="px-3 py-2 text-right whitespace-nowrap">
                       <button onClick={() => openEdit(s)} className="px-2 py-1 text-blue-600 hover:underline">编辑</button>
@@ -263,6 +265,18 @@ export function SampleManagerModal({ receipt, onClose, readOnly }: Props) {
                   <ComboInput id="dl-spec" label="规格（可输入可选择）" value={form.specification} options={dicts.specifications} onChange={(v) => setForm({ ...form, specification: v })} />
                   <ComboInput id="dl-grade" label="等级（可输入可选择）" value={form.grade} options={dicts.grades} onChange={(v) => setForm({ ...form, grade: v })} />
                   <ComboInput id="dl-brand" label="牌号（可输入可选择）" value={form.brand} options={dicts.brands} onChange={(v) => setForm({ ...form, brand: v })} />
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">生产厂家/产地</label>
+                    <input value={form.manufacturer} onChange={(e) => setForm({ ...form, manufacturer: e.target.value })} placeholder="如：沙钢集团、海螺水泥" className="w-full border rounded px-2 py-1.5" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">结构部位</label>
+                    <input value={form.structuralPart} onChange={(e) => setForm({ ...form, structuralPart: e.target.value })} placeholder="如：一层柱A-3" className="w-full border rounded px-2 py-1.5" />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-xs font-medium text-gray-600 mb-1">代表数量</label>
+                    <input value={form.representQuantity} onChange={(e) => setForm({ ...form, representQuantity: e.target.value })} placeholder="如：60t、200个" className="w-full border rounded px-2 py-1.5" />
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>

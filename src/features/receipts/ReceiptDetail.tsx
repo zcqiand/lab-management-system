@@ -42,7 +42,7 @@ export function ReceiptDetail({ receiptId, contractId, onClose }: ReceiptDetailP
     ({ pending: '待检', testing: '检测中', completed: '已完成', rejected: '已拒收' }[s] ?? s)
 
   const materialLabel = (m?: string) =>
-    ({ steel: '钢材', cement: '水泥', concrete: '混凝土', sand: '砂', gravel: '碎石', rebar_mech: '钢筋机械连接', rebar_weld: '钢筋焊接连接' }[m ?? ''] ?? m ?? '')
+    ({ steel: '钢筋原材', cement: '水泥', concrete: '混凝土', sand: '砂', gravel: '碎（卵）石', rebar_mech: '钢筋机械连接', rebar_weld: '钢筋焊接' }[m ?? ''] ?? m ?? '')
 
   const openCreate = () => { setFormMode('create'); setEditing(null); setFormOpen(true) }
   const openEdit = (s: AnySample) => { setFormMode('edit'); setEditing(s); setFormOpen(true) }
@@ -100,6 +100,9 @@ export function ReceiptDetail({ receiptId, contractId, onClose }: ReceiptDetailP
               <th className="px-3 py-1.5 text-left">样品名称</th>
               <th className="px-3 py-1.5 text-left">材料类型</th>
               <th className="px-3 py-1.5 text-left">规格</th>
+              <th className="px-3 py-1.5 text-left">生产厂家</th>
+              <th className="px-3 py-1.5 text-left">结构部位</th>
+              <th className="px-3 py-1.5 text-left">代表数量</th>
               <th className="px-3 py-1.5 text-left">状态</th>
               <th className="px-3 py-1.5 text-right">操作</th>
             </tr>
@@ -111,6 +114,9 @@ export function ReceiptDetail({ receiptId, contractId, onClose }: ReceiptDetailP
                 <td className="px-3 py-1.5">{s.sampleName ?? s.name ?? '—'}</td>
                 <td className="px-3 py-1.5">{materialLabel(s.materialType)}</td>
                 <td className="px-3 py-1.5">{s.specification ?? '—'}</td>
+                <td className="px-3 py-1.5">{s.manufacturer ?? '—'}</td>
+                <td className="px-3 py-1.5">{s.structuralPart ?? '—'}</td>
+                <td className="px-3 py-1.5">{s.representQuantity ?? '—'}</td>
                 <td className="px-3 py-1.5">{statusLabel(s.status)}</td>
                 <td className="px-3 py-1.5 text-right space-x-2">
                   <button onClick={() => openEdit(s)} className="text-blue-600 hover:underline">编辑</button>

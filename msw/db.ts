@@ -72,8 +72,10 @@ export class MockTable<T extends { id: string } & Timestamped> {
     dateField?: keyof T
     dateFrom?: string
     dateTo?: string
+    /** 排序字段，默认 createdAt */
+    sortField?: keyof T
   }): { items: T[]; total: number; page: number; pageSize: number } {
-    const { page, pageSize, keyword, keywordFields, filters, dateField, dateFrom, dateTo } = opts
+    const { page, pageSize, keyword, keywordFields, filters, dateField, dateFrom, dateTo, sortField } = opts
     let filtered = [...this.rows]
     if (keyword && keywordFields?.length) {
       const kw = keyword.toLowerCase()
@@ -97,7 +99,15 @@ export class MockTable<T extends { id: string } & Timestamped> {
         return true
       })
     }
-    filtered.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    const sf = (sortField ?? 'createdAt') as keyof T
+    filtered.sort((a, b) => {
+      const av = a[sf] as string | number | undefined
+      const bv = b[sf] as string | number | undefined
+      if (av == null && bv == null) return 0
+      if (av == null) return 1
+      if (bv == null) return -1
+      return av < bv ? -1 : av > bv ? 1 : 0
+    })
     const total = filtered.length
     const start = (page - 1) * pageSize
     const items = filtered.slice(start, start + pageSize)
@@ -176,6 +186,8 @@ export const reportCategoryTable = new MockTable<{
   summaryName: string
   /** 样品扩展属性定义（可维护） */
   extFields: ExtFieldDef[]
+  /** 排序号（越小越靠前），用户可维护 */
+  sortOrder: number
   remark?: string
   createdAt: string
   updatedAt: string
@@ -276,6 +288,12 @@ export const sampleTable = new MockTable<{
   grade?: string
   /** 牌号：HRB400 等 */
   brand?: string
+  /** 生产厂家 */
+  manufacturer?: string
+  /** 结构部位 */
+  structuralPart?: string
+  /** 代表数量 */
+  representQuantity?: string
   sampleQuantity?: string
   /** 按报告类别 extFields 定义的扩展属性 */
   ext: Record<string, string>
@@ -865,34 +883,28 @@ function seedCategories() {
     summaryType: 'material' | 'concrete' | 'connection'
     summaryName: string
     extFields: ExtFieldDef[]
+    sortOrder: number
   }[] = [
     {
-      code: 'steel', name: '钢材', reportTitle: '钢筋力学性能、工艺性能、重量偏差检测报告',
+      code: 'steel', sortOrder: 0, name: '钢筋原材', reportTitle: '钢筋力学性能、工艺性能、重量偏差检测报告',
       summaryType: 'material', summaryName: '钢材试验报告汇总表',
       extFields: [
         { key: 'furnaceNo', label: '炉号（批号）' },
         { key: 'qualityCertNo', label: '质保单编号' },
-        { key: 'manufacturer', label: '生产厂家' },
-        { key: 'representQuantity', label: '代表数量（t）' },
-        { key: 'structuralPart', label: '工程部位' },
       ],
     },
     {
-      code: 'cement', name: '水泥', reportTitle: '水泥检测报告',
+      code: 'cement', sortOrder: 1, name: '水泥', reportTitle: '水泥检测报告',
       summaryType: 'material', summaryName: '水泥试验报告汇总表',
       extFields: [
         { key: 'factoryNo', label: '出厂编号' },
         { key: 'factoryDate', label: '出厂日期' },
-        { key: 'manufacturer', label: '生产厂家或商标' },
-        { key: 'representQuantity', label: '代表批量（t）' },
-        { key: 'structuralPart', label: '工程部位' },
       ],
     },
     {
-      code: 'concrete', name: '混凝土', reportTitle: '混凝土抗压强度检测报告',
+      code: 'concrete', sortOrder: 2, name: '混凝土', reportTitle: '混凝土抗压强度检测报告',
       summaryType: 'concrete', summaryName: '（标准养护）混凝土抗压强度试验报告汇总表',
       extFields: [
-        { key: 'structuralPart', label: '轴线/工程部位' },
         { key: 'castingDate', label: '浇筑时间' },
         { key: 'volume', label: '混凝土方量（m³）' },
         { key: 'moldingDate', label: '成型日期' },
@@ -901,41 +913,29 @@ function seedCategories() {
       ],
     },
     {
-      code: 'sand', name: '砂', reportTitle: '建设用砂检测报告',
+      code: 'sand', sortOrder: 3, name: '砂', reportTitle: '建设用砂检测报告',
       summaryType: 'material', summaryName: '砂试验报告汇总表',
-      extFields: [
-        { key: 'manufacturer', label: '生产厂家（产地）' },
-        { key: 'representQuantity', label: '代表数量（t）' },
-        { key: 'structuralPart', label: '工程部位' },
-      ],
+      extFields: [],
     },
     {
-      code: 'gravel', name: '碎（卵）石', reportTitle: '建设用碎（卵）石检测报告',
+      code: 'gravel', sortOrder: 4, name: '碎（卵）石', reportTitle: '建设用碎（卵）石检测报告',
       summaryType: 'material', summaryName: '碎（卵）石试验报告汇总表',
-      extFields: [
-        { key: 'manufacturer', label: '生产厂家（产地）' },
-        { key: 'representQuantity', label: '代表数量（t）' },
-        { key: 'structuralPart', label: '工程部位' },
-      ],
+      extFields: [],
     },
     {
-      code: 'rebar_mech', name: '钢筋机械连接', reportTitle: '钢筋机械连接接头检测报告',
+      code: 'rebar_mech', sortOrder: 5, name: '钢筋机械连接', reportTitle: '钢筋机械连接接头检测报告',
       summaryType: 'connection', summaryName: '钢筋机械连接试验报告汇总表',
       extFields: [
-        { key: 'structuralPart', label: '结构部位' },
         { key: 'jointType', label: '接头类型' },
-        { key: 'representQuantity', label: '代表数量（个）' },
         { key: 'concreteCastingDate', label: '对应部位混凝土浇筑时间' },
       ],
     },
     {
-      code: 'rebar_weld', name: '钢筋焊接连接', reportTitle: '钢筋焊接接头检测报告',
+      code: 'rebar_weld', sortOrder: 6, name: '钢筋焊接', reportTitle: '钢筋焊接接头检测报告',
       summaryType: 'connection', summaryName: '钢筋焊接连接试验报告汇总表',
       extFields: [
-        { key: 'structuralPart', label: '结构部位' },
         { key: 'welderName', label: '焊工姓名' },
         { key: 'welderCertNo', label: '焊工证号' },
-        { key: 'representQuantity', label: '代表数量（个）' },
         { key: 'concreteCastingDate', label: '对应部位混凝土浇筑时间' },
       ],
     },
@@ -1021,14 +1021,14 @@ function seedTechnicalRequirement(req: {
 }
 
 // 每类样品的默认字段（业务种子用）
-const SAMPLE_DEFAULTS: Record<string, { model?: string; specification?: string; grade?: string; brand?: string; ext: Record<string, string>; name: string }> = {
-  steel: { model: '热轧带肋钢筋', specification: 'Φ22', brand: 'HRB400E', name: '热轧带肋钢筋', ext: { furnaceNo: 'LH-2024-0501', qualityCertNo: 'ZB-2024-118', manufacturer: '陕钢集团', representQuantity: '60', structuralPart: '主体结构' } },
-  cement: { model: 'P·O 42.5', name: '通用硅酸盐水泥', ext: { factoryNo: 'CF-2024-0332', factoryDate: '2024-04-20', manufacturer: '尧柏水泥', representQuantity: '200', structuralPart: '基础底板' } },
-  concrete: { model: 'C30', specification: '150×150×150mm', name: '混凝土试块', ext: { structuralPart: '3F 柱 1-8/A-D 轴', castingDate: '2024-05-01', volume: '120', moldingDate: '2024-05-01', age: '28', curing: '标准养护' } },
-  sand: { model: '中砂', grade: 'Ⅱ类', name: '建设用砂', ext: { manufacturer: '汉江砂场', representQuantity: '400', structuralPart: '砌筑工程' } },
-  gravel: { model: '碎石', specification: '5-25mm', grade: 'Ⅱ类', name: '建设用碎石', ext: { manufacturer: '秦岭石料厂', representQuantity: '600', structuralPart: '主体结构' } },
-  rebar_mech: { model: '直螺纹套筒连接', specification: 'Φ22', grade: 'Ⅰ级', brand: 'HRB400', name: '钢筋机械连接接头', ext: { structuralPart: '5F 梁柱节点', jointType: '直螺纹套筒', representQuantity: '500', concreteCastingDate: '2024-05-10' } },
-  rebar_weld: { model: '闪光对焊', specification: 'Φ22', brand: 'HRB400', name: '钢筋焊接接头', ext: { structuralPart: '基础底板', welderName: '刘师傅', welderCertNo: 'HG-0088', representQuantity: '300', concreteCastingDate: '2024-05-12' } },
+const SAMPLE_DEFAULTS: Record<string, { model?: string; specification?: string; grade?: string; brand?: string; manufacturer?: string; structuralPart?: string; representQuantity?: string; ext: Record<string, string>; name: string }> = {
+  steel: { model: '热轧带肋钢筋', specification: 'Φ22', brand: 'HRB400E', name: '热轧带肋钢筋', manufacturer: '陕钢集团', structuralPart: '主体结构', representQuantity: '60t', ext: { furnaceNo: 'LH-2024-0501', qualityCertNo: 'ZB-2024-118' } },
+  cement: { model: 'P·O 42.5', name: '通用硅酸盐水泥', manufacturer: '尧柏水泥', structuralPart: '基础底板', representQuantity: '200t', ext: { factoryNo: 'CF-2024-0332', factoryDate: '2024-04-20' } },
+  concrete: { model: 'C30', specification: '150×150×150mm', name: '混凝土试块', structuralPart: '3F 柱 1-8/A-D 轴', representQuantity: '120m³', ext: { castingDate: '2024-05-01', volume: '120', moldingDate: '2024-05-01', age: '28', curing: '标准养护' } },
+  sand: { model: '中砂', grade: 'Ⅱ类', name: '建设用砂', manufacturer: '汉江砂场', structuralPart: '砌筑工程', representQuantity: '400t', ext: {} },
+  gravel: { model: '碎石', specification: '5-25mm', grade: 'Ⅱ类', name: '建设用碎石', manufacturer: '秦岭石料厂', structuralPart: '主体结构', representQuantity: '600t', ext: {} },
+  rebar_mech: { model: '直螺纹套筒连接', specification: 'Φ22', grade: 'Ⅰ级', brand: 'HRB400', name: '钢筋机械连接接头', structuralPart: '5F 梁柱节点', representQuantity: '500个', ext: { jointType: '直螺纹套筒', concreteCastingDate: '2024-05-10' } },
+  rebar_weld: { model: '闪光对焊', specification: 'Φ22', brand: 'HRB400', name: '钢筋焊接接头', structuralPart: '基础底板', representQuantity: '300个', ext: { welderName: '刘师傅', welderCertNo: 'HG-0088', concreteCastingDate: '2024-05-12' } },
 }
 
 function seedContract(input: { id: string; contractCode: string; clientUnit: string; projectName: string; constructionUnit: string; witnessUnit: string; witness: string; status?: 'active' | 'archived' }) {
@@ -1096,6 +1096,9 @@ function seedReceipt(input: {
       specification: def?.specification,
       grade: def?.grade,
       brand: def?.brand,
+      manufacturer: def?.manufacturer,
+      structuralPart: def?.structuralPart,
+      representQuantity: def?.representQuantity,
       sampleQuantity: '1 组',
       ext: { ...(def?.ext ?? {}) },
       remark: '',

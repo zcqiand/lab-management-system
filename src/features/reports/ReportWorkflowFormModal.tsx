@@ -28,7 +28,7 @@ const MATERIAL_OPTIONS = [
   { value: 'sand', label: '砂' },
   { value: 'gravel', label: '碎石' },
   { value: 'rebar_mech', label: '钢筋机械连接' },
-  { value: 'rebar_weld', label: '钢筋焊接连接' },
+  { value: 'rebar_weld', label: '钢筋焊接' },
 ]
 
 export function ReportWorkflowFormModal({

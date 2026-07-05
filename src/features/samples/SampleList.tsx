@@ -65,19 +65,9 @@ export function SampleList() {
     setSubmitting(true)
     try {
       if (formMode === 'create') {
-        await createSample({
-          projectId: values.projectId,
-          name: values.name,
-          code: values.code,
-          status: values.status,
-        })
+        await createSample(values as Parameters<typeof createSample>[0])
       } else if (values.id) {
-        await updateSample(values.id, {
-          projectId: values.projectId,
-          name: values.name,
-          code: values.code,
-          status: values.status,
-        })
+        await updateSample(values.id, values as Parameters<typeof updateSample>[1])
       }
       setFormOpen(false)
       await fetchSamples(buildQuery(page))
@@ -148,13 +138,14 @@ export function SampleList() {
         </div>
       )}
 
-      <div className="bg-white rounded shadow overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white rounded shadow overflow-x-auto">
+        <table className="w-full text-sm min-w-200">
           <thead className="bg-gray-50 text-gray-600">
             <tr>
-              <th className="px-4 py-2 text-left">样品名称</th>
-              <th className="px-4 py-2 text-left">编号</th>
-              <th className="px-4 py-2 text-left">所属项目</th>
+              <th className="px-4 py-2 text-left">型号/规格/等级/牌号</th>
+              <th className="px-4 py-2 text-left min-w-30">生产厂家/产地</th>
+              <th className="px-4 py-2 text-left min-w-25">结构部位</th>
+              <th className="px-4 py-2 text-left min-w-20">代表数量</th>
               <th className="px-4 py-2 text-left">状态</th>
               <th className="px-4 py-2 text-right">操作</th>
             </tr>
@@ -162,23 +153,27 @@ export function SampleList() {
           <tbody>
             {loading && list.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
                   加载中...
                 </td>
               </tr>
             )}
             {!loading && list.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
                   暂无数据
                 </td>
               </tr>
             )}
             {list.map((s) => (
               <tr key={s.id} className="border-t hover:bg-gray-50">
-                <td className="px-4 py-2">{s.name}</td>
-                <td className="px-4 py-2">{s.code}</td>
-                <td className="px-4 py-2">{s.projectId}</td>
+                <td className="px-4 py-2">
+                  <div>{[s.model, s.specification, s.grade, s.brand].filter(Boolean).join(' / ') || '—'}</div>
+                  <div className="text-xs text-gray-400">{s.sampleCode}</div>
+                </td>
+                <td className="px-4 py-2">{s.manufacturer ?? '—'}</td>
+                <td className="px-4 py-2">{s.structuralPart ?? '—'}</td>
+                <td className="px-4 py-2">{s.representQuantity ?? '—'}</td>
                 <td className="px-4 py-2">{s.status}</td>
                 <td className="px-4 py-2 text-right space-x-2">
                   <button

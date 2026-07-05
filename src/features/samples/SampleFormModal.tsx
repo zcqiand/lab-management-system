@@ -3,9 +3,18 @@ import type { Sample, SampleStatus } from '../../types/api'
 
 export interface SampleFormValues {
   id?: string
-  projectId: string
-  name: string
-  code: string
+  receiptId: string
+  sampleCode: string
+  sampleName?: string
+  model?: string
+  specification?: string
+  grade?: string
+  brand?: string
+  manufacturer?: string
+  structuralPart?: string
+  representQuantity?: string
+  sampleQuantity?: string
+  remark?: string
   status: SampleStatus
 }
 
@@ -20,7 +29,7 @@ interface SampleFormModalProps {
 
 /**
  * 样品表单弹窗：create 与 edit 复用同一组件，由 mode 区分。
- * 与 ProjectFormModal 同构，字段为 projectId/name/code/status。
+ * 包含公共属性：生产厂家、结构部位、代表数量。
  */
 export function SampleFormModal({
   open,
@@ -33,6 +42,9 @@ export function SampleFormModal({
   const [projectId, setProjectId] = useState(initialValues?.projectId ?? '')
   const [name, setName] = useState(initialValues?.name ?? '')
   const [code, setCode] = useState(initialValues?.code ?? '')
+  const [manufacturer, setManufacturer] = useState(initialValues?.manufacturer ?? '')
+  const [structuralPart, setStructuralPart] = useState(initialValues?.structuralPart ?? '')
+  const [representQuantity, setRepresentQuantity] = useState(initialValues?.representQuantity ?? '')
   const [status, setStatus] = useState<SampleStatus>(initialValues?.status ?? 'pending')
   const [errors, setErrors] = useState<{ projectId?: string; name?: string; code?: string }>({})
 
@@ -41,6 +53,9 @@ export function SampleFormModal({
       setProjectId(initialValues?.projectId ?? '')
       setName(initialValues?.name ?? '')
       setCode(initialValues?.code ?? '')
+      setManufacturer(initialValues?.manufacturer ?? '')
+      setStructuralPart(initialValues?.structuralPart ?? '')
+      setRepresentQuantity(initialValues?.representQuantity ?? '')
       setStatus(initialValues?.status ?? 'pending')
       setErrors({})
     }
@@ -68,6 +83,9 @@ export function SampleFormModal({
       projectId: projectId.trim(),
       name: name.trim(),
       code: code.trim(),
+      manufacturer: manufacturer.trim() || undefined,
+      structuralPart: structuralPart.trim() || undefined,
+      representQuantity: representQuantity.trim() || undefined,
       status,
     }
     onSubmit(values)
@@ -75,7 +93,7 @@ export function SampleFormModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-xl w-[480px] max-w-[90vw]">
+      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-xl w-140 max-w-[90vw]">
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-semibold">{title}</h3>
         </div>
@@ -90,25 +108,59 @@ export function SampleFormModal({
             />
             {errors.projectId && <p className="text-red-600 text-xs mt-1">{errors.projectId}</p>}
           </div>
-          <div>
-            <label htmlFor="sample-name" className="block text-sm mb-1 font-medium">样品名称</label>
-            <input
-              id="sample-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.name && <p className="text-red-600 text-xs mt-1">{errors.name}</p>}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="sample-name" className="block text-sm mb-1 font-medium">样品名称</label>
+              <input
+                id="sample-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.name && <p className="text-red-600 text-xs mt-1">{errors.name}</p>}
+            </div>
+            <div>
+              <label htmlFor="sample-code" className="block text-sm mb-1 font-medium">样品编号</label>
+              <input
+                id="sample-code"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.code && <p className="text-red-600 text-xs mt-1">{errors.code}</p>}
+            </div>
           </div>
-          <div>
-            <label htmlFor="sample-code" className="block text-sm mb-1 font-medium">样品编号</label>
-            <input
-              id="sample-code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.code && <p className="text-red-600 text-xs mt-1">{errors.code}</p>}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="sample-mfr" className="block text-sm mb-1 font-medium">生产厂家</label>
+              <input
+                id="sample-mfr"
+                value={manufacturer}
+                onChange={(e) => setManufacturer(e.target.value)}
+                placeholder="如：沙钢集团"
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="sample-struct" className="block text-sm mb-1 font-medium">结构部位</label>
+              <input
+                id="sample-struct"
+                value={structuralPart}
+                onChange={(e) => setStructuralPart(e.target.value)}
+                placeholder="如：一层柱A-3"
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="sample-rep-qty" className="block text-sm mb-1 font-medium">代表数量</label>
+              <input
+                id="sample-rep-qty"
+                value={representQuantity}
+                onChange={(e) => setRepresentQuantity(e.target.value)}
+                placeholder="如：60t、200个"
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
           <div>
             <label htmlFor="sample-status" className="block text-sm mb-1 font-medium">状态</label>

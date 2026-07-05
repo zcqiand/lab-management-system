@@ -39,7 +39,6 @@ const BASIC_MENU: MenuGroup = {
     { to: '/test-parameters', label: '参数管理', permission: 'user:read' },
     { to: '/test-standards', label: '标准管理', permission: 'user:read' },
     { to: '/technical-requirements', label: '技术要求', permission: 'user:read' },
-    { to: '/category-standards', label: '报告类别标准', permission: 'user:read' },
     { to: '/models', label: '型号管理', permission: 'user:read' },
     { to: '/specifications', label: '规格管理', permission: 'user:read' },
     { to: '/grades', label: '等级管理', permission: 'user:read' },

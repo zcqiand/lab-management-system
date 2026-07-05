@@ -47,6 +47,7 @@ describe('types/api 业务实体（v3）', () => {
       summaryType: 'material',
       summaryName: '钢材试验报告汇总表',
       extFields: [{ key: 'furnaceNo', label: '炉号（批号）' }],
+      sortOrder: 0,
       createdAt: '2026-01-01T00:00:00Z',
       updatedAt: '2026-01-01T00:00:00Z',
     }

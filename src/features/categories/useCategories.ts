@@ -13,7 +13,7 @@ export function useCategories() {
       const res = await apiClient.get<{ items: ReportCategory[] }>('/report-categories', {
         params: { page: 1, pageSize: 100 },
       })
-      setCategories(res.data.items)
+      setCategories(res.data.items.sort((a, b) => (a.sortOrder ?? 99) - (b.sortOrder ?? 99)))
     } finally {
       setLoading(false)
     }

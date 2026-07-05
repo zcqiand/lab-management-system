@@ -39,7 +39,7 @@ const MATERIAL_TYPES: MaterialType[] = ['steel', 'cement', 'concrete', 'sand', '
 
 const MATERIAL_LABELS: Record<MaterialType, string> = {
   steel: '钢材', cement: '水泥', concrete: '混凝土',
-  sand: '砂', gravel: '碎石', rebar_mech: '钢筋机械连接', rebar_weld: '钢筋焊接连接',
+  sand: '砂', gravel: '碎石', rebar_mech: '钢筋机械连接', rebar_weld: '钢筋焊接',
 }
 
 export function SampleFormModalV2({
