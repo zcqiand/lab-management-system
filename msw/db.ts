@@ -886,7 +886,7 @@ function seedCategories() {
     sortOrder: number
   }[] = [
     {
-      code: 'steel', sortOrder: 0, name: '钢筋原材', reportTitle: '钢筋力学性能、工艺性能、重量偏差检测报告',
+      code: 'steel', sortOrder: 1, name: '钢筋原材', reportTitle: '钢筋力学性能、工艺性能、重量偏差检测报告',
       summaryType: 'material', summaryName: '钢材试验报告汇总表',
       extFields: [
         { key: 'furnaceNo', label: '炉号（批号）' },
@@ -894,7 +894,7 @@ function seedCategories() {
       ],
     },
     {
-      code: 'cement', sortOrder: 1, name: '水泥', reportTitle: '水泥检测报告',
+      code: 'cement', sortOrder: 0, name: '水泥', reportTitle: '水泥检测报告',
       summaryType: 'material', summaryName: '水泥试验报告汇总表',
       extFields: [
         { key: 'factoryNo', label: '出厂编号' },
@@ -902,7 +902,7 @@ function seedCategories() {
       ],
     },
     {
-      code: 'concrete', sortOrder: 2, name: '混凝土', reportTitle: '混凝土抗压强度检测报告',
+      code: 'concrete', sortOrder: 6, name: '混凝土', reportTitle: '混凝土抗压强度检测报告',
       summaryType: 'concrete', summaryName: '（标准养护）混凝土抗压强度试验报告汇总表',
       extFields: [
         { key: 'castingDate', label: '浇筑时间' },
@@ -913,7 +913,7 @@ function seedCategories() {
       ],
     },
     {
-      code: 'sand', sortOrder: 3, name: '砂', reportTitle: '建设用砂检测报告',
+      code: 'sand', sortOrder: 5, name: '砂', reportTitle: '建设用砂检测报告',
       summaryType: 'material', summaryName: '砂试验报告汇总表',
       extFields: [],
     },
@@ -923,7 +923,7 @@ function seedCategories() {
       extFields: [],
     },
     {
-      code: 'rebar_mech', sortOrder: 5, name: '钢筋机械连接', reportTitle: '钢筋机械连接接头检测报告',
+      code: 'rebar_mech', sortOrder: 2, name: '钢筋机械连接', reportTitle: '钢筋机械连接接头检测报告',
       summaryType: 'connection', summaryName: '钢筋机械连接试验报告汇总表',
       extFields: [
         { key: 'jointType', label: '接头类型' },
@@ -931,7 +931,7 @@ function seedCategories() {
       ],
     },
     {
-      code: 'rebar_weld', sortOrder: 6, name: '钢筋焊接', reportTitle: '钢筋焊接接头检测报告',
+      code: 'rebar_weld', sortOrder: 3, name: '钢筋焊接', reportTitle: '钢筋焊接接头检测报告',
       summaryType: 'connection', summaryName: '钢筋焊接连接试验报告汇总表',
       extFields: [
         { key: 'welderName', label: '焊工姓名' },
