@@ -99,16 +99,16 @@ docker run -p 8080:80 lab-management-system
 
 ## 章节映射
 
-> 书稿每个代码块可据此定位到本仓真实文件。ch34-38 + extend 批1 完成。
+> 书稿每个代码块可据此定位到本仓真实文件。v1.3-004 tag（ch34-38 全部完成）。
 
 | 章 | 主题 | 对应模块 / 源文件 |
 |----|------|------------------|
-| 第34章 | 架构与路由 | `src/types/api.ts`、`src/types/store.ts`、`src/app/router.tsx`、`src/app/layouts/Layout.tsx`、`src/pages/` |
-| 第35章 | JWT 认证 + RBAC | `src/api/client.ts`、`src/features/auth/authStore.ts`、`src/features/auth/Login.tsx`、`src/app/guards/ProtectedRoute.tsx`、`src/features/auth/usePermission.ts`、`src/features/auth/hasPermission.tsx`、`msw/handlers.ts`、`msw/jwt.ts` |
-| 第36章 | 数据管理与业务模块 | `src/features/projects/projectStore.ts`、`src/features/projects/ProjectList.tsx`、`src/features/projects/ProjectFormModal.tsx`、`src/features/samples/sampleStore.ts`、`src/features/samples/SampleList.tsx`、`src/features/samples/SampleFormModal.tsx`、`src/components/ConfirmModal.tsx`、`src/hooks/useFetch.ts`、`msw/db.ts` |
-| 第37章 | 流程引擎与状态机 | `src/features/flow/types.ts`、`src/features/flow/transitions.ts`、`src/features/flow/flowReducer.ts`、`src/features/flow/flowStore.ts`、`src/features/flow/FlowPanel.tsx` |
-| 第38章 | 测试体系与部署 | `tests/integration/authFlow.test.tsx`、`tests/integration/crudFlow.test.tsx`、`tests/integration/flowTransition.test.tsx`、`vitest.config.ts`（coverage）、`Dockerfile`、`nginx.conf`、`.github/workflows/ci.yml` |
-| extend 批1 | 报告管理 + 用户/角色管理（RBAC 落地） | `src/features/reports/reportStore.ts`、`src/features/reports/ReportList.tsx`、`src/features/reports/ReportFormModal.tsx`、`src/features/users/userStore.ts`、`src/features/users/UserList.tsx`、`src/features/users/UserFormModal.tsx`、`src/features/roles/roleStore.ts`、`src/features/roles/RoleList.tsx`、`src/features/roles/RoleFormModal.tsx`、`src/pages/{Reports,Users,Roles}.tsx` |
+| ch34 | 架构与路由 | `src/types/api.ts`、`src/types/store.ts`、`src/app/router.tsx`、`src/app/layouts/Layout.tsx`、`src/pages/Dashboard.tsx` |
+| ch35 | JWT 认证 + RBAC | `src/features/auth/authStore.ts`、`src/features/auth/Login.tsx`、`src/app/guards/ProtectedRoute.tsx`、`src/features/auth/usePermission.ts`、`src/features/auth/hasPermission.tsx`、`msw/handlers.ts`、`msw/jwt.ts` |
+| ch36 | 数据管理与业务模块 | `src/features/contracts/ContractFormModal.tsx`、`src/features/receipts/ReceiptList.tsx`、`src/features/receipts/ReceiptFormModal.tsx`、`src/features/samples/SampleList.tsx`、`src/features/samples/SampleFormModal.tsx`、`src/features/samples/SampleManagerModal.tsx`、`src/features/codes/TestParameterList.tsx`、`src/features/codes/TestStandardList.tsx`、`src/features/codes/TechnicalRequirementList.tsx`、`src/features/categories/ReportCategoryList.tsx`、`src/features/categories/CategoryStandardList.tsx`、`src/features/dicts/CategoryDictList.tsx`、`src/features/reports/ReportEditPage.tsx`、`src/features/reports/ReportWorkflowList.tsx`、`src/features/report-doc/ReportPreviewModal.tsx`、`src/features/report-doc/renderReport.ts`、`msw/db.ts` |
+| ch37 | 流程引擎与状态机 | `src/features/flow-pipeline/FlowStagePage.tsx`、`src/features/receipts/receiptStore.ts`、`src/features/data-entry/DataEntryPage.tsx`、`src/features/task-assignment/TaskAssignmentPage.tsx`、`src/features/summary/SummaryPage.tsx`、`src/features/templates/ReportTemplateList.tsx`、`tests/msw/flowPipelineHandlers.test.ts` |
+| ch38 | 测试体系与部署 | `tests/`（全量）、`vitest.config.ts`（coverage）、`Dockerfile`、`nginx.conf`、`.github/workflows/ci.yml` |
+| v2.0（贯穿全流程） | 单一流程线：接样→数据录入→报告审核→批准→发放→归档 | `src/features/flow-pipeline/FlowStagePage.tsx`（通用）、`src/features/reports/ReportReviewPage.tsx`、`src/features/reports/ReportApprovePage.tsx`、`src/features/reports/ReportIssuePage.tsx`、`src/features/reports/ReportArchivePage.tsx`、`msw/db.ts`（`applyFlowAction`/`evaluateTestResult`/`syncReceiptResult`）、`POST /api/receipts/flow` |
 
 ## 目录结构
 
@@ -116,28 +116,32 @@ docker run -p 8080:80 lab-management-system
 src/
 ├── types/            # 业务实体类型（api.ts / store.ts）
 ├── app/              # 应用骨架（router.tsx / layouts/ / guards/）
-├── pages/            # 路由页面（Dashboard/Projects/Samples/Flow/Reports/Users/Roles/Forbidden）
+├── pages/            # 路由页面（Dashboard 等）
 ├── api/              # HTTP 客户端封装（client.ts）
-├── components/       # 通用组件（ConfirmModal）
-├── hooks/            # 通用 hook（useFetch）
 ├── features/
 │   ├── auth/         # 认证特性（authStore / Login / usePermission / hasPermission）
-│   ├── projects/     # 项目业务（projectStore / ProjectList / ProjectFormModal）
-│   ├── samples/      # 样品业务（sampleStore / SampleList / SampleFormModal）
-│   ├── flow/         # 流程引擎（types / transitions / flowReducer / flowStore / FlowPanel）
-│   ├── reports/      # 报告管理（reportStore / ReportList / ReportFormModal）[extend 批1]
-│   ├── users/        # 用户管理（userStore / UserList / UserFormModal）[extend 批1]
-│   └── roles/        # 角色管理（roleStore / RoleList / RoleFormModal）[extend 批1]
+│   ├── contracts/    # 合同管理（ContractFormModal）
+│   ├── receipts/     # 接样管理（receiptStore / ReceiptList / ReceiptFormModal）
+│   ├── samples/      # 样品管理（SampleList / SampleFormModal / SampleManagerModal）
+│   ├── codes/        # 码表（TestParameter / TestStandard / TechnicalRequirement）
+│   ├── categories/   # 报告类别（ReportCategory / CategoryStandard）
+│   ├── dicts/        # 型号/规格/等级/牌号 码表
+│   ├── data-entry/   # 数据录入（DataEntryPage）
+│   ├── flow-pipeline/# 流程引擎（FlowStagePage 通用页面）
+│   ├── reports/      # 报告 CRUD（ReportEditPage / ReportWorkflowList / ReportReviewPage / ReportApprovePage / ReportIssuePage / ReportArchivePage）
+│   ├── report-doc/   # 报告文档渲染（ReportPreviewModal / renderReport）
+│   ├── summary/      # 汇总表（SummaryPage）
+│   ├── task-assignment/ # 任务分配（TaskAssignmentPage）
+│   └── templates/    # 报告模板（ReportTemplateList）
 ├── main.tsx          # 应用入口
 └── App.tsx           # RouterProvider
 msw/
-├── handlers.ts       # MSW handler 注册表（auth/projects/samples/flow/reports/users/roles）
+├── handlers.ts       # MSW handler 注册表（auth / contracts / receipts / samples / categories / codes / templates / reports / users）
 ├── jwt.ts            # mock JWT 签发/校验
-├── db.ts             # mock 内存表（MockTable + flowStore Map + reportTable + userTable + roleTable）
+├── db.ts             # mock 内存表（MockTable + receiptTable + sampleTable + testItemTable 等）
 └── server.ts         # Node 端 MSW server
 tests/
-├── setup.ts          # vitest 全局 setup（jest-dom + MSW lifecycle + resetMockDb + Request patch）
-├── integration/      # 端到端集成测试（authFlow / crudFlow / flowTransition）
+├── setup.ts          # vitest 全局 setup（jest-dom + MSW lifecycle + resetMockDb）
 └── *.test.ts(x)      # 与 src/ 一一对应的单元/组件测试
 Dockerfile            # 多阶段构建（node build → nginx serve）
 nginx.conf            # SPA try_files fallback
@@ -145,7 +149,7 @@ nginx.conf            # SPA try_files fallback
 
 ## 版本
 
-- 当前状态：**building**（ch34-38 + extend 批1 已完成，批2 待实现，未打新 tag）
+- 当前状态：**v1.3-004 tagged**（ch34-38 + v2.0 单一流程线全部完成）
 - 技术栈：见 `package.json`（与书稿 `version-lock.json` 一致）
 - 仓内开发约定：见 `CLAUDE.md`
 
