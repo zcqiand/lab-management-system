@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Outlet, NavLink } from 'react-router-dom'
+import { Outlet, NavLink } from 'react-router'
 import { useAuthStore } from '../../features/auth/authStore'
 
 interface MenuItem {

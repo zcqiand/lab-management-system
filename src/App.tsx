@@ -1,4 +1,4 @@
-import { RouterProvider } from 'react-router-dom'
+import { RouterProvider } from 'react-router'
 import { getRouter } from './app/router'
 
 export default function App() {

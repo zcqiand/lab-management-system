@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom'
+import { createBrowserRouter, Navigate, type RouteObject } from 'react-router'
 import Layout from './layouts/Layout'
 import { ProtectedRoute } from './guards/ProtectedRoute'
 import { Login } from '../features/auth/Login'
