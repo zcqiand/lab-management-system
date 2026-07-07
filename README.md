@@ -252,3 +252,18 @@ nginx.conf            # SPA try_files fallback
 | v3 测试 | `tests/msw/v3Handlers.test.ts`、`tests/features/report-doc/renderReport.test.ts` |
 
 > 注：上文 v2.0 及各章节记录为历史开发轨迹；v3 中「材料种类」升级为「报告类别」，样品改为归属接样单，检测项改为归属样品，所有兼容字段已移除。
+
+## v2.0 重构遗留源码待清理
+
+v2.0 单一流程线重构后，下列源码与对应的旧测试一并退役。旧测试（`ProjectList.test.tsx` / `projectStore.test.ts` / `ReportList.test.tsx` / `reportStore.test.ts` / `ReportFormModal` 相关 / `taskStore.test.ts` / `sampleStore.test.ts` v1 / `SampleList.test.tsx` v1 / `crudFlow.test.tsx` / `flow|projects|reports|samples` MSW handlers 测试等）已在 v2.0-001 标签前全部删除。下列源文件保留但**已无路由引用、无测试覆盖**，待后续清理批次删除（删源码前需再次确认 import 链断开）：
+
+| 遗留源文件 | 说明 |
+|------------|------|
+| `src/features/tasks/taskStore.ts` | 旧任务实体，v2.0 流程线已无 Task |
+| `src/features/projects/projectStore.ts`、`ProjectList.tsx`、`ProjectFormModal.tsx` | 旧 Project 实体（被 `src/pages/Projects.tsx` 引用，但该 Page 未在 router 注册） |
+| `src/pages/Projects.tsx` | 已不被 `src/app/router.tsx` 引用的孤儿页面 |
+| `src/features/samples/sampleStore.ts`（v1）、`SampleFormModal.tsx`（v1）、`SampleList.tsx` | 被 v2 版本（`sampleStore.v2.ts` / `SampleFormModal.v2.tsx` / `SampleManagerModal.tsx`）取代；`SampleList.tsx` 仅被未路由的 `src/pages/Samples.tsx` 引用 |
+| `src/pages/Samples.tsx` | 已不被 `src/app/router.tsx` 引用的孤儿页面 |
+| `src/features/reports/ReportList.tsx`、`ReportFormModal.tsx` | 旧报告列表/表单（v2.0 报告走 `ReportWorkflowList.tsx` + `ReportWorkflowFormModal.tsx`） |
+
+> v2 版本 `sampleStore.v2.ts` / `reportStore.v2.ts` / `SampleFormModal.v2.tsx` 仍在使用（被 `ReportWorkflowFormModal.tsx` / `ReportWorkflowList.tsx` 引用），**不属于**遗留源码。
