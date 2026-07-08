@@ -1,269 +1,61 @@
-# lab-management-system
+# 建筑工程实验室管理系统
 
-《React从入门到项目实践》案例一：**建筑工程实验室管理系统**配套可运行工程。`git clone` 后即可跑：
+《React从入门到项目实践》案例一：建筑工程实验室管理系统配套可运行工程。
+
+## 快速开始
 
 ```bash
 npm install
-npm test
+npm test        # 全量测试（无 Key/无 Docker/无网可跑）
+npm run dev     # 本地开发
+npm run build   # 生产构建
 ```
 
-默认 MSW mock 后端 + 前端模拟 JWT，无需任何 Key/Docker/网络。真实后端部署见 `.env.example`（可选）。
-
-## 技术栈（钉死于项目 `version-lock.json`）
-
-- React 19 + TypeScript 5.6
-- Vite 6 + Tailwind CSS 4
-- React Router 7
-- 状态管理：Zustand 5（persist）
-- 测试：Vitest 2 + React Testing Library + jsdom + @vitest/coverage-v8
-- mock：MSW 2（拦截所有 HTTP，无真实后端）
-- Node 20 LTS，npm
-
-## 运行
-
-```bash
-npm install              # 安装依赖
-npm test                 # 全量测试（无 Key/无 Docker/无网可跑）
-npm run test:coverage    # 测试 + 覆盖率报告（coverage/ 目录）
-npm run dev              # 本地开发（http://localhost:5173）
-npm run build            # 生产构建（tsc -b + vite build）
-npm run preview          # 预览构建产物
-```
-
-### Mock 用户（仅 mock 层，非真实凭证）
+### Mock 用户
 
 | 用户名 | 密码 | 角色 | 权限 |
-|--------|------|------|------|
+| :--- | :--- | :--- | :--- |
 | `labadmin` | `lab123` | admin | 全部权限（含 user:delete） |
 | `technician` | `tech123` | technician | project:read / sample:* / report:* |
 
-## mock-friendly 验收
+## 功能特性
 
-- `npm install && npm test` 在无 Key、无 Docker、无网下全绿。
-- 所有后端 API（`/auth/*`、`/projects/*`、`/samples/*`、`/flow/*`）由 MSW handler 拦截。
-- JWT 在 mock 层签发/校验（`msw/jwt.ts`，密钥写死，非生产凭证，无密码学安全保证）。
-- 测试环境 `VITE_OFFLINE=1` 强制离线。
+- **JWT 认证 + RBAC**：MSW mock 层签发 JWT，双角色（admin/technician）权限管控
+- **接样管理**：接样单 CRUD，含报告类别关联与流程状态追踪
+- **样品管理**：归属接样单，四码表（型号/规格/等级/牌号）组合框 + 报告类别驱动扩展属性
+- **检测项与自动评定**：按技术要求码表自动评定合格/不合格，支持人工改判
+- **报告文档**：HTML 模板维护 + 预览 + Word 下载，覆盖审核/批准/发放/归档四阶段
+- **流程引擎**：接样→任务安排→数据录入→报告审核→批准→发放→归档，支持批量提交/退回/撤回
+- **统计汇总**：按报告类别输出试验报告汇总表，支持工程过滤
+- **基础数据管理**：机构信息/角色/用户/报告类别/参数/标准/技术要求/四码表/报告模板
 
-## 测试策略与覆盖率
+## 技术栈
 
-### 测试分层
+| 技术 | 版本 |
+| :--- | :--- |
+| React | 19 |
+| TypeScript | 5.6 |
+| Vite | 6 |
+| Tailwind CSS | 4 |
+| React Router | 7 |
+| Zustand | 5 |
+| Vitest | 2 |
+| MSW | 2 |
+| Node | 20 LTS |
 
-| 层级 | 目录 | 说明 |
-|------|------|------|
-| 单元测试 | `tests/types/`、`tests/msw/`、`tests/hooks/`、`tests/features/*/` | 类型契约、MSW handler、hook、store/reducer/组件隔离测试 |
-| 集成测试 | `tests/integration/` | App 全链路登录、CRUD 全流程、FlowPanel 状态流转端到端 |
-| 守卫测试 | `tests/app/guards/` | ProtectedRoute 三态（未登录/已登录/角色不匹配） |
+> 依赖版本与 `version-lock.json` 的 `version_lock` 一致，不引入 lock 外的库。
 
-### 覆盖率
+## 配套书籍及章节映射
 
-```bash
-npm run test:coverage
-```
+| 章 | 主题 | 对应源文件 |
+| :--- | :--- | :--- |
+| ch34 | 架构与路由 | `src/types/api.ts`、`src/app/router.tsx`、`src/app/layouts/Layout.tsx` |
+| ch35 | JWT 认证 + RBAC | `src/features/auth/authStore.ts`、`src/features/auth/Login.tsx`、`src/app/guards/ProtectedRoute.tsx`、`msw/handlers.ts`、`msw/jwt.ts` |
+| ch36 | 数据管理与业务模块 | `src/features/receipts/`、`src/features/samples/`、`src/features/codes/`、`src/features/categories/`、`msw/db.ts` |
+| ch37 | 流程引擎与状态机 | `src/features/flow-pipeline/FlowStagePage.tsx`、`src/features/receipts/receiptStore.ts`、`tests/msw/flowPipelineHandlers.test.ts` |
+| ch38 | 测试体系与部署 | `tests/`、`vitest.config.ts`、`Dockerfile`、`nginx.conf`、`.github/workflows/ci.yml` |
 
-阈值（`vitest.config.ts`）：
-- Lines / Statements / Functions: 80%
-- Branches: 75%
+## 快速链接
 
-当前覆盖率（v8 provider）：
-- Lines: 97.81%
-- Functions: 95.45%
-- Branches: 90.05%
-- Statements: 97.81%
-
-## 构建与部署
-
-### 本地构建
-
-```bash
-npm run build       # tsc -b + vite build，产物在 dist/
-npm run preview     # 本地预览生产包
-```
-
-### Docker 部署
-
-```bash
-docker build -t lab-management-system .
-docker run -p 8080:80 lab-management-system
-# 访问 http://localhost:8080
-```
-
-- 多阶段构建：Stage 1 `node:20-alpine` 构建，Stage 2 `nginx:alpine` 托管
-- `nginx.conf` 配置 SPA `try_files $uri $uri/ /index.html` fallback
-- 静态资源（`/assets/`）永久缓存，`index.html` 不缓存
-
-### CI（GitHub Actions）
-
-- `.github/workflows/ci.yml`：
-  - `test` job：`npm ci` → `npm test` → `npm run test:coverage` → `npm run build`
-  - `docker-build` job：构建 Docker 镜像验证部署配置（依赖 test 通过）
-
-## 章节映射
-
-> 书稿每个代码块可据此定位到本仓真实文件。v1.3-004 tag（ch34-38 全部完成）。
-
-| 章 | 主题 | 对应模块 / 源文件 |
-|----|------|------------------|
-| ch34 | 架构与路由 | `src/types/api.ts`、`src/types/store.ts`、`src/app/router.tsx`、`src/app/layouts/Layout.tsx`、`src/pages/Dashboard.tsx` |
-| ch35 | JWT 认证 + RBAC | `src/features/auth/authStore.ts`、`src/features/auth/Login.tsx`、`src/app/guards/ProtectedRoute.tsx`、`src/features/auth/usePermission.ts`、`src/features/auth/hasPermission.tsx`、`msw/handlers.ts`、`msw/jwt.ts` |
-| ch36 | 数据管理与业务模块 | `src/features/contracts/ContractFormModal.tsx`、`src/features/receipts/ReceiptList.tsx`、`src/features/receipts/ReceiptFormModal.tsx`、`src/features/samples/SampleList.tsx`、`src/features/samples/SampleFormModal.tsx`、`src/features/samples/SampleManagerModal.tsx`、`src/features/codes/TestParameterList.tsx`、`src/features/codes/TestStandardList.tsx`、`src/features/codes/TechnicalRequirementList.tsx`、`src/features/categories/ReportCategoryList.tsx`、`src/features/categories/CategoryStandardList.tsx`、`src/features/dicts/CategoryDictList.tsx`、`src/features/reports/ReportEditPage.tsx`、`src/features/reports/ReportWorkflowList.tsx`、`src/features/report-doc/ReportPreviewModal.tsx`、`src/features/report-doc/renderReport.ts`、`msw/db.ts` |
-| ch37 | 流程引擎与状态机 | `src/features/flow-pipeline/FlowStagePage.tsx`、`src/features/receipts/receiptStore.ts`、`src/features/data-entry/DataEntryPage.tsx`、`src/features/task-assignment/TaskAssignmentPage.tsx`、`src/features/summary/SummaryPage.tsx`、`src/features/templates/ReportTemplateList.tsx`、`tests/msw/flowPipelineHandlers.test.ts` |
-| ch38 | 测试体系与部署 | `tests/`（全量）、`vitest.config.ts`（coverage）、`Dockerfile`、`nginx.conf`、`.github/workflows/ci.yml` |
-| v2.0（贯穿全流程） | 单一流程线：接样→数据录入→报告审核→批准→发放→归档 | `src/features/flow-pipeline/FlowStagePage.tsx`（通用）、`src/features/reports/ReportReviewPage.tsx`、`src/features/reports/ReportApprovePage.tsx`、`src/features/reports/ReportIssuePage.tsx`、`src/features/reports/ReportArchivePage.tsx`、`msw/db.ts`（`applyFlowAction`/`evaluateTestResult`/`syncReceiptResult`）、`POST /api/receipts/flow` |
-
-## 目录结构
-
-```
-src/
-├── types/            # 业务实体类型（api.ts / store.ts）
-├── app/              # 应用骨架（router.tsx / layouts/ / guards/）
-├── pages/            # 路由页面（Dashboard 等）
-├── api/              # HTTP 客户端封装（client.ts）
-├── features/
-│   ├── auth/         # 认证特性（authStore / Login / usePermission / hasPermission）
-│   ├── contracts/    # 合同管理（ContractFormModal）
-│   ├── receipts/     # 接样管理（receiptStore / ReceiptList / ReceiptFormModal）
-│   ├── samples/      # 样品管理（SampleList / SampleFormModal / SampleManagerModal）
-│   ├── codes/        # 码表（TestParameter / TestStandard / TechnicalRequirement）
-│   ├── categories/   # 报告类别（ReportCategory / CategoryStandard）
-│   ├── dicts/        # 型号/规格/等级/牌号 码表
-│   ├── data-entry/   # 数据录入（DataEntryPage）
-│   ├── flow-pipeline/# 流程引擎（FlowStagePage 通用页面）
-│   ├── reports/      # 报告 CRUD（ReportEditPage / ReportWorkflowList / ReportReviewPage / ReportApprovePage / ReportIssuePage / ReportArchivePage）
-│   ├── report-doc/   # 报告文档渲染（ReportPreviewModal / renderReport）
-│   ├── summary/      # 汇总表（SummaryPage）
-│   ├── task-assignment/ # 任务分配（TaskAssignmentPage）
-│   └── templates/    # 报告模板（ReportTemplateList）
-├── main.tsx          # 应用入口
-└── App.tsx           # RouterProvider
-msw/
-├── handlers.ts       # MSW handler 注册表（auth / contracts / receipts / samples / categories / codes / templates / reports / users）
-├── jwt.ts            # mock JWT 签发/校验
-├── db.ts             # mock 内存表（MockTable + receiptTable + sampleTable + testItemTable 等）
-└── server.ts         # Node 端 MSW server
-tests/
-├── setup.ts          # vitest 全局 setup（jest-dom + MSW lifecycle + resetMockDb）
-└── *.test.ts(x)      # 与 src/ 一一对应的单元/组件测试
-Dockerfile            # 多阶段构建（node build → nginx serve）
-nginx.conf            # SPA try_files fallback
-```
-
-## 版本
-
-- 当前状态：**v1.3-004 tagged**（ch34-38 + v2.0 单一流程线全部完成）
-- 技术栈：见 `package.json`（与书稿 `version-lock.json` 一致）
-- 仓内开发约定：见 `CLAUDE.md`
-
-
----
-
-## v2.0 单一流程线重构（最新）
-
-业务全流程收敛为**一条流程线**（合并版）：
-
-```
-接样管理 → 任务安排 → 数据录入 → 报告审核 → 报告批准 → 报告发放 → 报告归档
-```
-
-- **前进 = 提交**（支持批量提交）；**后退 = 退回 + 撤回**（均支持批量；撤回=提交人主动收回，仅当提交后未被下一环节处理时可撤回）。
-- **接样表与报告表合并为一张表**（`msw/db.ts` 的 `receiptTable`），报告字段（`reportCode/conclusion/result/issuedAt` 等）与流程字段（`flowStatus/flowHistory/lastSubmittedBy`）都在接样单上；`/reports`、`/test-record-sheets`、`/tasks` 端点已移除。
-- **报告编制环节已删除**：报告随数据录入自然产生（录入检测项后自动生成报告编号与结论）。
-- **数据录入自动评定**：录入检测值后按「技术要求」码表自动评定合格/不合格（`POST /test-items`）；无法自动判定的（非数值指标）提示人工判定；均可手工改判（`PUT /test-items/:id` 显式传 `passed`）。
-- 核心实现：
-  - 通用阶段页面 `src/features/flow-pipeline/FlowStagePage.tsx`（列表 + 批量提交/退回 + 「我提交的（可撤回）」区块）
-  - 流程状态机 `applyFlowAction` 与自动评定 `evaluateTestResult`、结论同步 `syncReceiptResult`（`msw/db.ts`）
-  - 批量流程端点 `POST /api/receipts/flow`（`{action: 'submit'|'return'|'withdraw', ids: string[], operator}`）
-  - 测试：`tests/msw/flowPipelineHandlers.test.ts`
-
-> 注：上文各章节记录为历史开发轨迹，其中涉及 `reports/tasks/test-record-sheets` 的文件与端点在 v2.0 中已移除或合并。
-
----
-
-## v3 报告类别驱动重构（当前）
-
-在 v2.0 单一流程线基础上，将原先写死的「材料种类」升级为**可维护的报告类别码表**，并以报告类别为中心贯穿样品扩展属性、四码表、检测标准、报告模板与统计汇总。**v2.0 中残留的兼容层（`MaterialType`、`materialType`、`sampleGrade`、`applicableMaterials`、`/projects` alias 等）已全部删除。**
-
-### 领域模型
-
-```
-合同 Contract
-  └─ 接样单 SampleReceipt（含 categoryCode 报告类别、合并的报告字段、流程状态）
-       └─ 样品 Sample（归属 receiptId；型号/规格/等级/牌号 + 按报告类别的扩展属性 ext）
-            └─ 单项检测记录 TestItem（归属 sampleId；自动评定 + 手工修正）
-```
-
-- **样品归属接样单**（`receiptId`），不再归属合同、不再带 `reportType`；合同经接样单间接得到。
-- **检测项归属样品**（`sampleId`）：数据录入时选样品 → 选参数 → 填检测值，系统按「报告类别 + 牌号/型号/等级/规格」匹配技术要求并自动评定。
-
-### 报告类别（原「材料种类」，`/report-categories`）
-
-一条报告类别（如 steel/cement/concrete/sand/gravel/rebar_mech/rebar_weld）决定：
-
-1. **样品扩展属性 `extFields`**：新建样品时按此动态渲染输入项（如钢材的「炉号（批号）」、混凝土的「浇筑部位/浇筑时间」）。
-2. **可选的型号/规格/等级/牌号**：四码表均归属报告类别，新建样品时按类别过滤为可输入可选择的组合框（`input + datalist`）。
-3. **关联的检测标准**：经「报告类别标准」（`/category-standards`）维护多对多关联。
-4. **报告模板**：每个报告类别对应一份模板（`/report-templates`），新建类别时自动生成默认模板。
-5. **统计汇总口径 `summaryType`**：material（原材料）/ concrete（混凝土抗压）/ connection（连接接头）三种汇总表列定义。
-
-编码 `code` 不可修改；已被接样单引用的报告类别不可删除。
-
-### 四码表（型号/规格/等级/牌号，均归属报告类别）
-
-| 码表 | 端点 | 示例（用户指定） |
-|------|------|------|
-| 型号 | `/models` | 热轧带肋 / P·O 42.5 / C30 / 中砂 / 直螺纹套筒 / 闪光对焊 |
-| 规格 | `/specifications` | Φ22 / 150×150×150mm / 5-25mm（无尺寸的类别留空） |
-| 等级 | `/grades` | 机械连接接头Ⅰ/Ⅱ/Ⅲ级、砂石Ⅰ/Ⅱ/Ⅲ类 |
-| 牌号 | `/brands` | HRB400 等 |
-
-样品的型号/规格/等级/牌号**可输入可选择**：选项来自对应码表（按类别过滤），也允许自由输入。
-
-### 报告文档生成
-
-- 每个报告类别一份可维护模板（HTML + `{{标签}}`），标签面板点击插入光标处（`src/features/templates/ReportTemplateList.tsx`）。
-- 数据录入完成后「生成报告」：按模板合成机构信息/合同/接样单/样品表/检测结果表，可预览、打印、下载 Word（`.doc`）。渲染逻辑见 `src/features/report-doc/renderReport.ts`，特殊标签 `{{samplesTable}}`（含扩展属性列）/`{{testItemsTable}}`。
-- 报告审核/批准/发放/归档四个阶段页均提供「查看报告」。
-
-### 统计汇总（`/summary`）
-
-按报告类别输出试验报告汇总表（对应线下的 钢材/水泥/砂/碎石/混凝土/机械连接/焊接连接 汇总表），行粒度为样品，只统计已生成报告编号的接样单，可按工程（合同）过滤。三种 `summaryType` 各有列定义（`buildSummary`，`msw/db.ts`）。
-
-### 自动评定（`evaluateTestResult`）
-
-技术要求（`/technical-requirements`）按「报告类别 + 牌号/型号/等级/规格」四维度匹配样品：技术要求上填写了的维度必须与样品一致才命中（维度冲突则排除），命中多条时按 牌号+4 / 型号+2 / 等级+2 / 规格+1 打分取最高。比较方式支持 ≥ / ≤ / = / range（区间）。无法匹配时 `autoPassed=null`（需人工判定），最终评定 `passed` 可手工改判。
-
-### 基础管理菜单顺序
-
-机构信息 → 角色管理 → 用户管理 → 报告类别 → 参数管理 → 标准管理 → 技术要求 → 报告类别标准 → 型号 → 规格 → 等级 → 牌号 → 报告模板。
-
-### v3 关键源文件
-
-| 主题 | 源文件 |
-|------|--------|
-| 报告类别 CRUD + 扩展属性编辑器 | `src/features/categories/ReportCategoryList.tsx` |
-| 报告类别标准关联 | `src/features/categories/CategoryStandardList.tsx` |
-| 四码表通用页 | `src/features/dicts/CategoryDictList.tsx` |
-| 样品管理（组合框 + 扩展属性） | `src/features/samples/SampleManagerModal.tsx` |
-| 数据录入（自动评定 + 生成报告） | `src/features/data-entry/DataEntryPage.tsx` |
-| 报告模板维护 | `src/features/templates/ReportTemplateList.tsx` |
-| 报告渲染 / 预览 | `src/features/report-doc/renderReport.ts`、`ReportPreviewModal.tsx` |
-| 统计汇总 | `src/features/summary/SummaryPage.tsx` |
-| mock 数据层（种子/评定/汇总） | `msw/db.ts`（`seedData` / `evaluateTestResult` / `buildSummary` / `computeStats`） |
-| v3 端点 handler | `msw/handlers.ts` |
-| v3 测试 | `tests/msw/v3Handlers.test.ts`、`tests/features/report-doc/renderReport.test.ts` |
-
-> 注：上文 v2.0 及各章节记录为历史开发轨迹；v3 中「材料种类」升级为「报告类别」，样品改为归属接样单，检测项改为归属样品，所有兼容字段已移除。
-
-## v2.0 重构遗留源码待清理
-
-v2.0 单一流程线重构后，下列源码与对应的旧测试一并退役。旧测试（`ProjectList.test.tsx` / `projectStore.test.ts` / `ReportList.test.tsx` / `reportStore.test.ts` / `ReportFormModal` 相关 / `taskStore.test.ts` / `sampleStore.test.ts` v1 / `SampleList.test.tsx` v1 / `crudFlow.test.tsx` / `flow|projects|reports|samples` MSW handlers 测试等）已在 v2.0-001 标签前全部删除。下列源文件保留但**已无路由引用、无测试覆盖**，待后续清理批次删除（删源码前需再次确认 import 链断开）：
-
-| 遗留源文件 | 说明 |
-|------------|------|
-| `src/features/tasks/taskStore.ts` | 旧任务实体，v2.0 流程线已无 Task |
-| `src/features/projects/projectStore.ts`、`ProjectList.tsx`、`ProjectFormModal.tsx` | 旧 Project 实体（被 `src/pages/Projects.tsx` 引用，但该 Page 未在 router 注册） |
-| `src/pages/Projects.tsx` | 已不被 `src/app/router.tsx` 引用的孤儿页面 |
-| `src/features/samples/sampleStore.ts`（v1）、`SampleFormModal.tsx`（v1）、`SampleList.tsx` | 被 v2 版本（`sampleStore.v2.ts` / `SampleFormModal.v2.tsx` / `SampleManagerModal.tsx`）取代；`SampleList.tsx` 仅被未路由的 `src/pages/Samples.tsx` 引用 |
-| `src/pages/Samples.tsx` | 已不被 `src/app/router.tsx` 引用的孤儿页面 |
-| `src/features/reports/ReportList.tsx`、`ReportFormModal.tsx` | 旧报告列表/表单（v2.0 报告走 `ReportWorkflowList.tsx` + `ReportWorkflowFormModal.tsx`） |
-
-> v2 版本 `sampleStore.v2.ts` / `reportStore.v2.ts` / `SampleFormModal.v2.tsx` 仍在使用（被 `ReportWorkflowFormModal.tsx` / `ReportWorkflowList.tsx` 引用），**不属于**遗留源码。
+- [功能规格文档.md](功能规格文档.md) — 功能名称、描述与验收标准
+- [CLAUDE.md](CLAUDE.md) — 开发约定与编码规范
