@@ -1,6 +1,6 @@
 # 建筑工程实验室管理系统
 
-《React从入门到项目实践》案例一：建筑工程实验室管理系统配套可运行工程。
+[《React从入门到项目实践》](https://www.amazon.com/dp/B0H5DGZM5B) 案例一：建筑工程实验室管理系统配套可运行工程。
 
 ## 快速开始
 
@@ -46,6 +46,8 @@ npm run build   # 生产构建
 > 依赖版本与 `version-lock.json` 的 `version_lock` 一致，不引入 lock 外的库。
 
 ## 配套书籍及章节映射
+
+购买电子书籍：[《React从入门到项目实践》](https://www.amazon.com/dp/B0H5DGZM5B) 
 
 | 章 | 主题 | 对应源文件 |
 | :--- | :--- | :--- |
