@@ -1,0 +1,33 @@
+{
+  "$schema": "case-repo version-lock v1.0 — 依赖版本「允许面」清单，与 package.json 范围一致。CLAUDE.md「不引入 lock 外的库 / 版本钉死」据此判定：新增依赖须先加入 version_lock。",
+  "repo": "lab-management-system",
+  "project": "xr-know-001 案例一（建筑工程实验室管理系统，React，ch34-38）；亦为 xr-know-011 lab-management-system-vue 的 React 姊妹仓 / source of truth",
+  "tag": "v2.0-001",
+  "runtime": {
+    "node": "20 LTS",
+    "package_manager": "npm"
+  },
+  "version_lock": {
+    "react": "19.x",
+    "react-dom": "19.x",
+    "react-router-dom": "7.x",
+    "zustand": "5.x",
+    "axios": "1.7.x",
+    "typescript": "5.6.x (strict)",
+    "vite": "6.x",
+    "@vitejs/plugin-react": "4.x",
+    "tailwindcss": "4.x",
+    "@tailwindcss/vite": "4.x",
+    "vitest": "2.x",
+    "@vitest/coverage-v8": "2.x",
+    "@testing-library/react": "16.x",
+    "@testing-library/jest-dom": "6.x",
+    "@testing-library/user-event": "14.x",
+    "@types/react": "19.x",
+    "@types/react-dom": "19.x",
+    "jsdom": "25.x",
+    "msw": "2.x"
+  },
+  "locked_from": "package.json @ v2.0-001",
+  "_note": "实际钉死走 package.json 范围 + package-lock.json；本文件为人类可读的「允许版本面」，是 CLAUDE.md「不引入 lock 外的库」的判定依据。新增依赖须先加入 version_lock 并与 CLAUDE.md 技术栈段同步。v2.0-001 为「单一流程线」重构基线。"
+}
