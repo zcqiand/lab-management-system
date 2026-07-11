@@ -146,21 +146,20 @@ export function SampleList() {
               <th className="px-4 py-2 text-left min-w-30">生产厂家/产地</th>
               <th className="px-4 py-2 text-left min-w-25">结构部位</th>
               <th className="px-4 py-2 text-left min-w-20">代表数量</th>
-              <th className="px-4 py-2 text-left">状态</th>
               <th className="px-4 py-2 text-right">操作</th>
             </tr>
           </thead>
           <tbody>
             {loading && list.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
                   加载中...
                 </td>
               </tr>
             )}
             {!loading && list.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
                   暂无数据
                 </td>
               </tr>
@@ -174,7 +173,6 @@ export function SampleList() {
                 <td className="px-4 py-2">{s.manufacturer ?? '—'}</td>
                 <td className="px-4 py-2">{s.structuralPart ?? '—'}</td>
                 <td className="px-4 py-2">{s.representQuantity ?? '—'}</td>
-                <td className="px-4 py-2">{s.status}</td>
                 <td className="px-4 py-2 text-right space-x-2">
                   <button
                     onClick={() => openEdit(s)}
@@ -230,7 +228,7 @@ export function SampleList() {
       <ConfirmModal
         open={deleteTarget !== null}
         title="删除确认"
-        message={`确定删除样品「${deleteTarget?.name ?? ''}」？此操作不可撤销。`}
+        message={`确定删除样品「${deleteTarget?.sampleName ?? ''}」？此操作不可撤销。`}
         confirmText="确认"
         loading={deleting}
         onConfirm={handleDelete}

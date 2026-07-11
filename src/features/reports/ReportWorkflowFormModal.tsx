@@ -49,7 +49,7 @@ export function ReportWorkflowFormModal({
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => { if (open) { fetchContracts({ page: 1, pageSize: 100 }) } }, [open, fetchContracts])
-  useEffect(() => { if (contractId) { fetchReceipts({ page: 1, pageSize: 100, status: undefined }) } }, [contractId, fetchReceipts])
+  useEffect(() => { if (contractId) { fetchReceipts({ page: 1, pageSize: 100 }) } }, [contractId, fetchReceipts])
   useEffect(() => { if (receiptId) { fetchSamples({ page: 1, pageSize: 100, receiptId }) } }, [receiptId, fetchSamples])
 
   useEffect(() => {

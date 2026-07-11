@@ -477,3 +477,148 @@ export interface ChangePasswordInput {
   oldPassword: string
   newPassword: string
 }
+
+// =============================================================================
+// 占位类型（待完整建模）
+// =============================================================================
+
+/** 项目（基建/甲方/检测委托） */
+export interface Project {
+  id: string
+  code: string
+  name: string
+  ownerId: string
+  status: ProjectStatus
+  createdAt: string
+  updatedAt: string
+}
+export type ProjectStatus = string
+export interface ProjectQuery {
+  page: number
+  pageSize: number
+  keyword?: string
+  name?: string
+  status?: ProjectStatus
+  ownerId?: string
+  code?: string
+  dateFrom?: string
+  dateTo?: string
+}
+export interface ProjectCreateInput {
+  code: string
+  name: string
+  ownerId: string
+  status?: ProjectStatus
+}
+export interface ProjectUpdateInput {
+  code?: string
+  name?: string
+  ownerId?: string
+  status?: ProjectStatus
+}
+
+/** 报告文档 */
+export interface Report {
+  id: string
+  title: string
+  status: ReportStatus
+  conclusion?: string
+  createdAt: string
+  updatedAt: string
+  [key: string]: unknown
+}
+export type ReportStatus = string
+export type ReviewAction = 'approve' | 'reject' | 'return'
+export interface ReportQuery {
+  page: number
+  pageSize: number
+  status?: ReportStatus
+  keyword?: string
+  sampleId?: string
+  [key: string]: unknown
+}
+export interface ReportCreateInput {
+  title: string
+  status?: ReportStatus
+  conclusion?: string
+}
+export interface ReportUpdateInput {
+  title?: string
+  status?: ReportStatus
+  conclusion?: string
+}
+export interface ReportRecord {
+  id: string
+  contractId: string
+  receiptId: string
+  reportCode: string
+  materialType: string
+  sampleIds: string[]
+  conclusion?: string
+  reportDate?: string
+  result?: 'pass' | 'fail'
+  status: ReportStatus
+  createdAt: string
+  updatedAt: string
+}
+
+/** 报告材料类型 */
+export type MaterialType = 'steel' | 'cement' | 'concrete' | 'sand' | 'gravel' | 'mechanical_connection' | 'welding_connection'
+
+/** 钢材汇总表行 */
+export interface SteelSummaryRow {
+  seq: number
+  spec: string
+  steelGrade: string
+  qualityCertNo: string
+  manufacturer: string
+  representQuantity: string
+  reportCode: string
+  testDate: string
+  result: 'pass' | 'fail'
+}
+
+// =============================================================================
+// 任务管理
+// =============================================================================
+
+export interface TaskRecord {
+  id: string
+  receiptId: string
+  assigneeId: string
+  assigneeName?: string
+  plannedTestDate?: string
+  status: TaskStatus
+  createdAt: string
+  updatedAt: string
+}
+export type TaskStatus = string
+export interface TaskQuery {
+  page: number
+  pageSize: number
+  keyword?: string
+  status?: TaskStatus
+  sampleId?: string
+  assigneeId?: string
+}
+export interface TaskCreateInput {
+  receiptId: string
+  assigneeId: string
+  plannedTestDate?: string
+}
+export interface TaskUpdateInput {
+  assigneeId?: string
+  plannedTestDate?: string
+  status?: TaskStatus
+}
+
+/** 样品状态 */
+export type SampleStatus = string
+export interface SampleQuery {
+  page: number
+  pageSize: number
+  keyword?: string
+  status?: SampleStatus
+  projectId?: string
+  receiptId?: string
+}

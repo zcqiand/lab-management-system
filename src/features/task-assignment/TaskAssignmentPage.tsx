@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { FlowStagePage } from '../flow-pipeline/FlowStagePage'
 import { ConfirmModal } from '../../components/ConfirmModal'
 import { apiClient } from '../../api/client'
@@ -9,6 +9,14 @@ import type { SampleReceipt } from '../../types/api'
  * 可退回「接样」；已提交的可由提交人撤回。
  * （原独立「检测任务表」已移除，任务信息直接记录在合并后的接样单上。）
  */
+function AssignButton({ receipt, onAssign, refresh }: { receipt: SampleReceipt; onAssign: (r: SampleReceipt, refresh: () => Promise<void>) => void; refresh: () => Promise<void> }) {
+  return (
+    <button onClick={() => onAssign(receipt, refresh)} className="px-2 py-1 text-purple-600 hover:underline">
+      安排
+    </button>
+  )
+}
+
 export function TaskAssignmentPage() {
   const [target, setTarget] = useState<SampleReceipt | null>(null)
   const [assigneeName, setAssigneeName] = useState('')
@@ -19,9 +27,13 @@ export function TaskAssignmentPage() {
   const openAssign = (r: SampleReceipt, refresh: () => Promise<void>) => {
     setTarget(r)
     setAssigneeName(r.assigneeName ?? '')
-    setPlannedTestDate(r.plannedTestDate ?? new Date().toISOString().split('T')[0])
+    setPlannedTestDate(r.plannedTestDate ?? new Date().toISOString().split('T')[0] ?? '')
     setRefreshAfterSave(() => refresh)
   }
+
+  const rowAction = useCallback((r: SampleReceipt, refresh: () => Promise<void>) => (
+    <AssignButton receipt={r} onAssign={openAssign} refresh={refresh} />
+  ), [])
 
   const handleSave = async () => {
     if (!target) return
@@ -55,11 +67,7 @@ export function TaskAssignmentPage() {
             render: (r) => r.plannedTestDate ?? <span className="text-gray-400">—</span>,
           },
         ]}
-        rowActions={(r, refresh) => (
-          <button onClick={() => openAssign(r, refresh)} className="px-2 py-1 text-purple-600 hover:underline">
-            安排
-          </button>
-        )}
+        rowActions={rowAction}
       />
 
       <ConfirmModal

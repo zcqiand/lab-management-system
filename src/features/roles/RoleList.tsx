@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRoleStore } from './roleStore'
 import { RoleFormModal, type RoleFormValues } from './RoleFormModal'
 import { ConfirmModal } from '../../components/ConfirmModal'
@@ -17,9 +17,9 @@ export function RoleList() {
   const [deleteTarget, setDeleteTarget] = useState<RoleRecord | null>(null)
   const [deleting, setDeleting] = useState(false)
 
-  const buildQuery = (p: number): RoleQuery => ({ page: p, pageSize: PAGE_SIZE })
+  const buildQuery = useCallback((p: number): RoleQuery => ({ page: p, pageSize: PAGE_SIZE }), [])
 
-  useEffect(() => { fetchRoles(buildQuery(page)) /* eslint-disable-next-line */ }, [page])
+  useEffect(() => { fetchRoles(buildQuery(page)) }, [page, fetchRoles, buildQuery])
 
   const openCreate = () => { setFormMode('create'); setEditing(null); setFormOpen(true) }
   const openEdit = (r: RoleRecord) => { setFormMode('edit'); setEditing(r); setFormOpen(true) }

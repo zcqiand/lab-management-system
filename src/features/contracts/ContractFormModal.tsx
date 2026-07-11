@@ -91,7 +91,7 @@ export function ContractFormModal({
       setStatus(initialValues?.status ?? "active");
       setErrors({});
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [open, initialValues]);
 
   if (!open) return null;

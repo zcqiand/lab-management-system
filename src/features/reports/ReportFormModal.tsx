@@ -18,19 +18,19 @@ interface ReportFormModalProps {
 }
 
 export function ReportFormModal({ open, mode, initialValues, onSubmit, onCancel, loading = false }: ReportFormModalProps) {
-  const [sampleId, setSampleId] = useState(initialValues?.sampleId ?? '')
-  const [title, setTitle] = useState(initialValues?.title ?? '')
-  const [conclusion, setConclusion] = useState(initialValues?.conclusion ?? '')
+  const [sampleId, setSampleId] = useState((initialValues?.sampleId as string | undefined) ?? '')
+  const [title, setTitle] = useState((initialValues?.title as string | undefined) ?? '')
+  const [conclusion, setConclusion] = useState((initialValues?.conclusion as string | undefined) ?? '')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
     if (open) {
-      setSampleId(initialValues?.sampleId ?? '')
-      setTitle(initialValues?.title ?? '')
-      setConclusion(initialValues?.conclusion ?? '')
+      setSampleId((initialValues?.sampleId as string | undefined) ?? '')
+      setTitle((initialValues?.title as string | undefined) ?? '')
+      setConclusion((initialValues?.conclusion as string | undefined) ?? '')
       setErrors({})
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [open, initialValues])
 
   if (!open) return null

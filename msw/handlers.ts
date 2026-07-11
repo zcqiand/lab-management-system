@@ -273,14 +273,17 @@ export const handlers = [
     if (reportCategoryTable.all().some((c) => c.code === body.code)) {
       return HttpResponse.json({ message: '类别编码已存在' }, { status: 400 })
     }
+    const { remark, ...rest } = body
     const created = reportCategoryTable.insert({
-      code: body.code,
-      name: body.name,
+      ...rest,
+      name: body.name!,
+      code: body.code!,
       reportTitle: body.reportTitle ?? `${body.name}检测报告`,
       summaryType: body.summaryType ?? 'material',
       summaryName: body.summaryName ?? `${body.name}试验报告汇总表`,
       extFields: body.extFields ?? [],
-      remark: body.remark,
+      sortOrder: 0,
+      ...(remark !== undefined ? { remark } : {}),
     })
     // 新类别自动创建一份默认报告模板
     if (!reportTemplateTable.all().some((t) => t.categoryCode === body.code)) {

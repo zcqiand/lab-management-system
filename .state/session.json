@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "project": "lab-management-system",
+  "current_task": "功能清单对齐完成，软告警清零",
+  "done": [
+    "将 M02.F02/F03/F04（人员/设备/设施）状态改为规划",
+    "将 M03.F02.I03（任务取消）状态改为已废弃",
+    "将 M02.F01.I04（合同汇总）/M03.F01.I05（接样单详情）/M03.F04.I04（Word下载）/M04.F02.I03（模板删除）/M05.F01.I02（汇总类型）状态改为已废弃",
+    "修复 flow-function-map.md D06 范围记法：将 M04.F06~F09 展开为精确 ID，消除孤儿白名单告警",
+    "新增 sampleStore.test.ts：覆盖 M03.F02.I01/I02/I03",
+    "新增 useCategories.test.tsx：覆盖 M04.F01.I01",
+    "新增 codesHandlers.test.ts：覆盖 M04 全套字典 + M03.F03.I03-I06",
+    "新增 orgHandlers.test.ts：覆盖 M01.F01.I01 + M04.F01.I02/I03 + M04.F03.I04",
+    "修复 trace-parse.js（vitest 2.1.9 reporter 不工作）",
+    "lab-management-system 软告警：87 → 0 条"
+  ],
+  "next": "下次会话：无阻塞任务，可直接开始新功能开发",
+  "open_questions": [],
+  "blocked_by": [],
+  "dont": [
+    "不要改 .harness/stack.json 让门变松",
+    "不要给 skip 的测试挂功能 ID",
+    "不要写依赖不存在 MSW handler 的测试",
+    "不要在项目代码里加 eslint-disable 除非附 ADR 说明"
+  ],
+  "last_handoff_at": "2026-07-11"
+}

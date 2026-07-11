@@ -56,7 +56,7 @@ export function verifyJwt(token: string): JwtPayload | null {
   const [, encodedPayload, signature] = parts
   if (signature !== MOCK_SIGNATURE) return null
   try {
-    const payload = JSON.parse(base64urlDecode(encodedPayload)) as JwtPayload
+    const payload = JSON.parse(base64urlDecode(encodedPayload!)) as JwtPayload
     if (payload.exp < Math.floor(Date.now() / 1000)) return null
     return payload
   } catch {

@@ -163,7 +163,7 @@ export function ReportCategoryList() {
     const idx = list.findIndex((x) => x.id === c.id)
     if (direction === 'up' && idx === 0) return
     if (direction === 'down' && idx === list.length - 1) return
-    const swapped = list[direction === 'up' ? idx - 1 : idx + 1]
+    const swapped = list[direction === 'up' ? idx - 1 : idx + 1]!
     // 交换 sortOrder
     try {
       await apiClient.put(`/report-categories/${c.code}`, { sortOrder: swapped.sortOrder ?? 0 })

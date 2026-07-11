@@ -35,11 +35,11 @@ interface SampleFormModalV2Props {
   loading?: boolean
 }
 
-const MATERIAL_TYPES: MaterialType[] = ['steel', 'cement', 'concrete', 'sand', 'gravel', 'rebar_mech', 'rebar_weld']
+const MATERIAL_TYPES: MaterialType[] = ['steel', 'cement', 'concrete', 'sand', 'gravel', 'mechanical_connection', 'welding_connection']
 
 const MATERIAL_LABELS: Record<MaterialType, string> = {
   steel: '钢材', cement: '水泥', concrete: '混凝土',
-  sand: '砂', gravel: '碎石', rebar_mech: '钢筋机械连接', rebar_weld: '钢筋焊接',
+  sand: '砂', gravel: '碎石', mechanical_connection: '钢筋机械连接', welding_connection: '钢筋焊接',
 }
 
 export function SampleFormModalV2({

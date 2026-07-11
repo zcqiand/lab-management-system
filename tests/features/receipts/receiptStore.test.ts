@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, expect, beforeEach } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../../../msw/server'
 import { useReceiptStore } from '../../../src/features/receipts/receiptStore'
 import { resetApiClient } from '../../../src/api/client'
 import { receiptTable, reportCategoryTable } from '../../../msw/db'
+import { fnTest } from '../../fn'
 
 function seedCategory(code = 'steel') {
   if (!reportCategoryTable.all().some((c) => c.code === code)) {
@@ -15,6 +16,7 @@ function seedCategory(code = 'steel') {
       summaryType: 'material',
       summaryName: '钢材试验报告汇总表',
       extFields: [],
+      sortOrder: 0,
     })
   }
 }
@@ -49,14 +51,14 @@ function insertReceipt(overrides: Partial<{
 }
 
 describe('receiptStore 状态流转', () => {
-  it('初始状态: list=[], loading=false, error=null', () => {
+  fnTest(['M03.F01.I01'], '初始状态', () => {
     const s = useReceiptStore.getState()
     expect(s.list).toEqual([])
     expect(s.loading).toBe(false)
     expect(s.error).toBeNull()
   })
 
-  it('fetchReceipts 成功后 list/total 填充，loading 流转', async () => {
+  fnTest(['M03.F01.I01'], 'fetchReceipts 成功', async () => {
     insertReceipt({ receiptCode: 'RC-001' })
     insertReceipt({ receiptCode: 'RC-002' })
     insertReceipt({ receiptCode: 'RC-003' })
@@ -70,26 +72,26 @@ describe('receiptStore 状态流转', () => {
     expect(s.error).toBeNull()
   })
 
-  it('fetchReceipts 支持 keyword 搜索', async () => {
+  fnTest(['M03.F01.I01'], 'fetchReceipts 支持 keyword 搜索', async () => {
     insertReceipt({ receiptCode: 'RC-KEYWORD-XYZ' })
     insertReceipt({ receiptCode: 'RC-OTHER' })
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10, keyword: 'XYZ' })
     const s = useReceiptStore.getState()
     expect(s.list).toHaveLength(1)
-    expect(s.list[0].receiptCode).toContain('XYZ')
+    expect(s.list[0]!.receiptCode).toContain('XYZ')
   })
 
-  it('fetchReceipts 支持 categoryCode 过滤', async () => {
+  fnTest(['M03.F01.I01'], 'fetchReceipts 支持 categoryCode 过滤', async () => {
     seedCategory('cement')
     insertReceipt({ receiptCode: 'RC-STATUS-1', categoryCode: 'cement' })
     insertReceipt({ receiptCode: 'RC-STATUS-2', categoryCode: 'steel' })
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10, categoryCode: 'cement' })
     const s = useReceiptStore.getState()
     expect(s.list).toHaveLength(1)
-    expect(s.list[0].categoryCode).toBe('cement')
+    expect(s.list[0]!.categoryCode).toBe('cement')
   })
 
-  it('fetchReceipts 空列表场景', async () => {
+  fnTest(['M03.F01.I01'], 'fetchReceipts 空列表场景', async () => {
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10 })
     const s = useReceiptStore.getState()
     expect(s.list).toHaveLength(0)
@@ -97,7 +99,7 @@ describe('receiptStore 状态流转', () => {
     expect(s.loading).toBe(false)
   })
 
-  it('fetchReceipts 网络错误后 error 填充', async () => {
+  fnTest(['M03.F01.I01'], 'fetchReceipts 网络错误', async () => {
     server.use(http.get('*/receipts', () => HttpResponse.error()))
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10 })
     const s = useReceiptStore.getState()
@@ -106,7 +108,7 @@ describe('receiptStore 状态流转', () => {
     expect(s.list).toEqual([])
   })
 
-  it('createReceipt 成功后追加到 list', async () => {
+  fnTest(['M03.F01.I02'], 'createReceipt 成功', async () => {
     insertReceipt({ receiptCode: 'RC-SEED-001' })
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10 })
     await useReceiptStore.getState().createReceipt({
@@ -122,7 +124,7 @@ describe('receiptStore 状态流转', () => {
     expect(s.total).toBe(2)
   })
 
-  it('createReceipt 失败（缺字段）后 error 填充', async () => {
+  fnTest(['M03.F01.I02'], 'createReceipt 失败', async () => {
     await useReceiptStore.getState().createReceipt({
       contractId: '',
       receiptCode: '',
@@ -135,10 +137,10 @@ describe('receiptStore 状态流转', () => {
     expect(s.error).toBeTruthy()
   })
 
-  it('updateReceipt 成功后 list 中对应项更新', async () => {
+  fnTest(['M03.F01.I03'], 'updateReceipt 成功', async () => {
     insertReceipt({ id: 'rc-update-test', receiptCode: 'RC-UPD-001' })
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10 })
-    const target = useReceiptStore.getState().list[0]
+    const target = useReceiptStore.getState().list[0]!
     await useReceiptStore.getState().updateReceipt(target.id, { receivedBy: '李四', remark: '复检' })
     const s = useReceiptStore.getState()
     const updated = s.list.find((r) => r.id === target.id)
@@ -146,28 +148,28 @@ describe('receiptStore 状态流转', () => {
     expect(updated?.remark).toBe('复检')
   })
 
-  it('updateReceipt 不存在时 error 填充', async () => {
+  fnTest(['M03.F01.I03'], 'updateReceipt 不存在', async () => {
     await useReceiptStore.getState().updateReceipt('nonexistent', { receivedBy: 'x' })
     expect(useReceiptStore.getState().error).toBeTruthy()
   })
 
-  it('deleteReceipt 成功后从 list 移除', async () => {
+  fnTest(['M03.F01.I04'], 'deleteReceipt 成功', async () => {
     insertReceipt({ id: 'rc-del-1', receiptCode: 'RC-DEL-1' })
     insertReceipt({ id: 'rc-del-2', receiptCode: 'RC-DEL-2' })
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10 })
-    const target = useReceiptStore.getState().list[0]
+    const target = useReceiptStore.getState().list[0]!
     await useReceiptStore.getState().deleteReceipt(target.id)
     const s = useReceiptStore.getState()
     expect(s.list.some((r) => r.id === target.id)).toBe(false)
     expect(s.total).toBe(1)
   })
 
-  it('deleteReceipt 不存在时 error 填充', async () => {
+  fnTest(['M03.F01.I04'], 'deleteReceipt 不存在', async () => {
     await useReceiptStore.getState().deleteReceipt('nonexistent')
     expect(useReceiptStore.getState().error).toBeTruthy()
   })
 
-  it('clearError 清除 error', async () => {
+  fnTest(['M03.F01.I01'], 'clearError', async () => {
     await useReceiptStore.getState().deleteReceipt('nonexistent')
     expect(useReceiptStore.getState().error).toBeTruthy()
     useReceiptStore.getState().clearError()

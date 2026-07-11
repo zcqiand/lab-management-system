@@ -20,7 +20,7 @@ export function CategoryStandardList() {
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    if (!categoryCode && categories.length > 0) setCategoryCode(categories[0].code)
+    if (!categoryCode && categories.length > 0) setCategoryCode(categories[0]!.code)
   }, [categories, categoryCode])
 
   useEffect(() => {

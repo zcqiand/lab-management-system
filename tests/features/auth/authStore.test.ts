@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, expect, beforeEach } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../../../msw/server'
 import { useAuthStore } from '../../../src/features/auth/authStore'
 import { resetApiClient } from '../../../src/api/client'
+import { fnTest } from '../../fn'
 
 beforeEach(() => {
   localStorage.clear()
@@ -11,7 +12,7 @@ beforeEach(() => {
 })
 
 describe('authStore 状态流转', () => {
-  it('初始状态: user=null, token=null, status=idle, error=null', () => {
+  fnTest(['M01.F05.I01', 'M01.F05.I02'], '初始状态', () => {
     const state = useAuthStore.getState()
     expect(state.user).toBeNull()
     expect(state.token).toBeNull()
@@ -19,7 +20,7 @@ describe('authStore 状态流转', () => {
     expect(state.error).toBeNull()
   })
 
-  it('login 成功: 设置 user/token, status=authenticated', async () => {
+  fnTest(['M01.F05.I01', 'M01.F05.I02'], 'login 成功', async () => {
     await useAuthStore.getState().login('labadmin', 'lab123')
     const state = useAuthStore.getState()
     expect(state.status).toBe('authenticated')
@@ -30,7 +31,7 @@ describe('authStore 状态流转', () => {
     expect(state.error).toBeNull()
   })
 
-  it('login 失败: status=error, error 有消息, user/token 为 null', async () => {
+  fnTest(['M01.F05.I01'], 'login 失败', async () => {
     await useAuthStore.getState().login('labadmin', 'wrong-password')
     const state = useAuthStore.getState()
     expect(state.status).toBe('error')
@@ -39,7 +40,7 @@ describe('authStore 状态流转', () => {
     expect(state.token).toBeNull()
   })
 
-  it('login 网络错误: status=error, error 有消息', async () => {
+  fnTest(['M01.F05.I01'], 'login 网络错误', async () => {
     server.use(
       http.post('*/auth/login', () => HttpResponse.error()),
     )
@@ -49,7 +50,7 @@ describe('authStore 状态流转', () => {
     expect(state.error).toBeTruthy()
   })
 
-  it('logout: 清除 user/token, status=idle', async () => {
+  fnTest(['M01.F05.I01'], 'logout', async () => {
     await useAuthStore.getState().login('labadmin', 'lab123')
     useAuthStore.getState().logout()
     const state = useAuthStore.getState()
@@ -59,7 +60,7 @@ describe('authStore 状态流转', () => {
     expect(state.error).toBeNull()
   })
 
-  it('login 成功后 token 同步到 apiClient（后续请求带 Authorization）', async () => {
+  fnTest(['M01.F05.I02'], 'token 同步到 apiClient', async () => {
     await useAuthStore.getState().login('labadmin', 'lab123')
     server.use(
       http.get('*/auth/echo', ({ request }) => {
@@ -73,14 +74,14 @@ describe('authStore 状态流转', () => {
     expect(res.data.authorization).toBe(`Bearer ${useAuthStore.getState().token}`)
   })
 
-  it('persist: token 与 user 持久化到 localStorage', async () => {
+  fnTest(['M01.F05.I01'], 'token 持久化', async () => {
     await useAuthStore.getState().login('labadmin', 'lab123')
     const persisted = JSON.parse(localStorage.getItem('lab-auth') || '{}')
     expect(persisted.state.token).toBeTruthy()
     expect(persisted.state.user.username).toBe('labadmin')
   })
 
-  it('clearError: 清除 error 字段', async () => {
+  fnTest(['M01.F05.I01'], 'clearError', async () => {
     await useAuthStore.getState().login('labadmin', 'wrong')
     expect(useAuthStore.getState().error).toBeTruthy()
     useAuthStore.getState().clearError()

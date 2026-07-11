@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useReportStore } from './reportStore'
 import { ReportFormModal, type ReportFormValues } from './ReportFormModal'
 import { ConfirmModal } from '../../components/ConfirmModal'
@@ -22,11 +22,11 @@ export function ReportList() {
   const [deleteTarget, setDeleteTarget] = useState<Report | null>(null)
   const [deleting, setDeleting] = useState(false)
 
-  const buildQuery = (p: number): ReportQuery => ({
+  const buildQuery = useCallback((p: number): ReportQuery => ({
     page: p, pageSize: PAGE_SIZE, status: status || undefined,
-  })
+  }), [status])
 
-  useEffect(() => { fetchReports(buildQuery(page)) /* eslint-disable-next-line */ }, [page])
+  useEffect(() => { fetchReports(buildQuery(page)) }, [page, fetchReports, buildQuery])
 
   const handleStatusChange = (value: ReportStatus | '') => {
     setStatus(value); setPage(1)
@@ -40,7 +40,7 @@ export function ReportList() {
     setSubmitting(true)
     try {
       if (formMode === 'create') {
-        await createReport({ sampleId: values.sampleId, title: values.title, conclusion: values.conclusion })
+        await createReport({ title: values.title, conclusion: values.conclusion })
       } else if (values.id) {
         await updateReport(values.id, { title: values.title, conclusion: values.conclusion })
       }
@@ -55,7 +55,7 @@ export function ReportList() {
     finally { setDeleting(false) }
   }
 
-  const handleReview = async (r: Report, action: 'submit' | 'approve' | 'reject') => {
+  const handleReview = async (r: Report, action: 'approve' | 'reject' | 'return') => {
     await reviewReport(r.id, action)
   }
 
@@ -102,17 +102,17 @@ export function ReportList() {
             {list.map((r) => (
               <tr key={r.id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-2">{r.title}</td>
-                <td className="px-4 py-2">{r.sampleId}</td>
+                <td className="px-4 py-2">{String(r.sampleId ?? '-')}</td>
                 <td className="px-4 py-2">{r.status}</td>
-                <td className="px-4 py-2">{r.conclusion}</td>
-                <td className="px-4 py-2">{r.issuedAt ?? '-'}</td>
+                <td className="px-4 py-2">{String(r.conclusion ?? '-')}</td>
+                <td className="px-4 py-2">{String(r.issuedAt ?? '-')}</td>
                 <td className="px-4 py-2 text-right space-x-2">
                   <HasPermission permission="report:write">
                     <button onClick={() => openEdit(r)} className="px-2 py-1 text-blue-600 hover:underline">编辑</button>
                   </HasPermission>
                   {r.status === 'draft' && (
                     <HasPermission permission="report:write">
-                      <button onClick={() => handleReview(r, 'submit')} className="px-2 py-1 text-purple-600 hover:underline">提交审核</button>
+                      <button onClick={() => handleReview(r, 'approve')} className="px-2 py-1 text-purple-600 hover:underline">提交审核</button>
                     </HasPermission>
                   )}
                   {r.status === 'reviewing' && canIssue && (

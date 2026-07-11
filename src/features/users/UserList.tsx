@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useUserStore } from './userStore'
 import { useRoleStore } from '../roles/roleStore'
 import { UserFormModal, type UserFormValues } from './UserFormModal'
@@ -20,10 +20,10 @@ export function UserList() {
   const [deleteTarget, setDeleteTarget] = useState<UserRecord | null>(null)
   const [deleting, setDeleting] = useState(false)
 
-  const buildQuery = (p: number): UserQuery => ({ page: p, pageSize: PAGE_SIZE, role: roleFilter || undefined })
+  const buildQuery = useCallback((p: number): UserQuery => ({ page: p, pageSize: PAGE_SIZE, role: roleFilter || undefined }), [roleFilter])
 
   useEffect(() => { fetchRoles({ page: 1, pageSize: 50 }) }, [fetchRoles])
-  useEffect(() => { fetchUsers(buildQuery(page)) /* eslint-disable-next-line */ }, [page])
+  useEffect(() => { fetchUsers(buildQuery(page)) }, [page, fetchUsers, buildQuery])
 
   const handleRoleFilter = (value: string) => { setRoleFilter(value); setPage(1); fetchUsers({ page: 1, pageSize: PAGE_SIZE, role: value || undefined }) }
   const openCreate = () => { setFormMode('create'); setEditing(null); setFormOpen(true) }

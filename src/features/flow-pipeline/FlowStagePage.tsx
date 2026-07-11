@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { apiClient } from '../../api/client'
 import { useAuthStore } from '../auth/authStore'
 import {
@@ -11,6 +11,12 @@ import {
 } from '../../types/api'
 
 const PAGE_SIZE = 10
+
+function ResultLabel({ result }: { result?: string }) {
+  if (result === 'pass') return <span className="text-green-600">合格</span>
+  if (result === 'fail') return <span className="text-red-600">不合格</span>
+  return <span className="text-gray-400">—</span>
+}
 
 interface PageResp {
   items: SampleReceipt[]
@@ -175,17 +181,6 @@ export function FlowStagePage({
   const finalSubmitLabel = submitLabel ?? '提交'
   const colSpan = 7 + extraColumns.length
 
-  const resultLabel = useMemo(
-    () => (r: SampleReceipt) =>
-      r.result === 'pass' ? (
-        <span className="text-green-600">合格</span>
-      ) : r.result === 'fail' ? (
-        <span className="text-red-600">不合格</span>
-      ) : (
-        <span className="text-gray-400">—</span>
-      ),
-    [],
-  )
 
   return (
     <div className="space-y-4">
@@ -304,7 +299,7 @@ export function FlowStagePage({
                     {c.render(r)}
                   </td>
                 ))}
-                <td className="px-4 py-2">{resultLabel(r)}</td>
+                <td className="px-4 py-2"><ResultLabel result={r.result} /></td>
                 <td className="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                   {rowActions?.(r, refresh)}
                   {allowSubmit && (

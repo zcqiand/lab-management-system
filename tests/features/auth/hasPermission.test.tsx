@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, expect, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { HasPermission } from '../../../src/features/auth/hasPermission'
 import { useAuthStore } from '../../../src/features/auth/authStore'
+import { fnTest } from '../../fn'
 import type { User } from '../../../src/types/api'
 
 const adminUser: User = {
@@ -18,7 +19,7 @@ beforeEach(() => {
 })
 
 describe('HasPermission 组件', () => {
-  it('有权限时渲染 children', () => {
+  fnTest(['M01.F04.I03'], '有权限时渲染 children', () => {
     useAuthStore.setState({ user: adminUser })
     render(
       <HasPermission permission="project:read">
@@ -28,7 +29,7 @@ describe('HasPermission 组件', () => {
     expect(screen.getByText('受保护内容')).toBeInTheDocument()
   })
 
-  it('无权限时不渲染 children', () => {
+  fnTest(['M01.F04.I03'], '无权限时不渲染 children', () => {
     useAuthStore.setState({ user: adminUser })
     render(
       <HasPermission permission="user:delete">
@@ -39,7 +40,7 @@ describe('HasPermission 组件', () => {
     expect(screen.getByText('删除按钮')).toBeInTheDocument()
   })
 
-  it('无权限时渲染 fallback', () => {
+  fnTest(['M01.F04.I03'], '无权限时渲染 fallback', () => {
     render(
       <HasPermission permission="user:delete" fallback={<span>无权操作</span>}>
         <div>删除按钮</div>
@@ -49,7 +50,7 @@ describe('HasPermission 组件', () => {
     expect(screen.getByText('无权操作')).toBeInTheDocument()
   })
 
-  it('无权限且无 fallback 时渲染为空', () => {
+  fnTest(['M01.F04.I03'], '无权限且无 fallback 时渲染为空', () => {
     render(
       <HasPermission permission="user:delete">
         <div>删除按钮</div>
@@ -58,7 +59,7 @@ describe('HasPermission 组件', () => {
     expect(screen.queryByText('删除按钮')).not.toBeInTheDocument()
   })
 
-  it('未登录时不渲染 children', () => {
+  fnTest(['M01.F04.I03', 'M01.F04.I02'], '未登录时不渲染 children', () => {
     render(
       <HasPermission permission="project:read">
         <div>受保护内容</div>

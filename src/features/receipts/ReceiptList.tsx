@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useContractStore } from '../contracts/contractStore'
 import { ReceiptFormModal, type ReceiptFormValues } from './ReceiptFormModal'
 import { ConfirmModal } from '../../components/ConfirmModal'
@@ -12,6 +12,16 @@ import type { SampleReceipt } from '../../types/api'
  * 在此新建/编辑接样单；提交（支持批量）后进入「任务安排」；
  * 已提交但未被处理的单据可由提交人在下方「我提交的（可撤回）」区块撤回。
  */
+function ReceiptRowActions({ receipt, onEdit, onSample, onDelete }: { receipt: SampleReceipt; onEdit: (r: SampleReceipt) => void; onSample: (r: SampleReceipt) => void; onDelete: (r: SampleReceipt) => void }) {
+  return (
+    <>
+      <button onClick={() => onEdit(receipt)} className="px-2 py-1 text-blue-600 hover:underline">编辑</button>
+      <button onClick={() => onSample(receipt)} className="px-2 py-1 text-emerald-700 hover:underline">样品</button>
+      <button onClick={() => onDelete(receipt)} className="px-2 py-1 text-red-600 hover:underline">删除</button>
+    </>
+  )
+}
+
 export function ReceiptList() {
   const { list: contracts, fetchContracts } = useContractStore()
   const { categories } = useCategories()
@@ -72,6 +82,26 @@ export function ReceiptList() {
 
   const contractCode = (id: string) => contracts.find((c) => c.id === id)?.contractCode ?? id
 
+  const toolbarAction = useCallback((refresh: () => Promise<void>) => {
+    refreshRef.current = refresh
+    return (
+      <button
+        onClick={() => {
+          setFormMode('create')
+          setEditing(null)
+          setFormOpen(true)
+        }}
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+      >
+        新建接样
+      </button>
+    )
+  }, [])
+
+  const rowAction = useCallback((r: SampleReceipt) => (
+    <ReceiptRowActions receipt={r} onEdit={(r) => { setFormMode('edit'); setEditing(r); setFormOpen(true) }} onSample={setSampleTarget} onDelete={setDeleteTarget} />
+  ), [])
+
   return (
     <>
       <FlowStagePage
@@ -83,42 +113,8 @@ export function ReceiptList() {
           { header: '报告类别', render: (r) => categoryName(categories, r.categoryCode) },
           { header: '检测类别', render: (r) => r.testCategory },
         ]}
-        toolbar={(refresh) => {
-          // 记录 FlowStagePage 的刷新函数供表单/删除后调用
-          refreshRef.current = refresh
-          return (
-            <button
-              onClick={() => {
-                setFormMode('create')
-                setEditing(null)
-                setFormOpen(true)
-              }}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-            >
-              新建接样
-            </button>
-          )
-        }}
-        rowActions={(r) => (
-          <>
-            <button
-              onClick={() => {
-                setFormMode('edit')
-                setEditing(r)
-                setFormOpen(true)
-              }}
-              className="px-2 py-1 text-blue-600 hover:underline"
-            >
-              编辑
-            </button>
-            <button onClick={() => setSampleTarget(r)} className="px-2 py-1 text-emerald-700 hover:underline">
-              样品
-            </button>
-            <button onClick={() => setDeleteTarget(r)} className="px-2 py-1 text-red-600 hover:underline">
-              删除
-            </button>
-          </>
-        )}
+        toolbar={toolbarAction}
+        rowActions={rowAction}
       />
 
       <ReceiptFormModal

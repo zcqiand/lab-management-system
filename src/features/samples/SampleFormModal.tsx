@@ -1,9 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import type { Sample, SampleStatus } from '../../types/api'
+import type { Sample } from '../../types/api'
 
 export interface SampleFormValues {
   id?: string
-  receiptId: string
+  receiptId?: string
   sampleCode: string
   sampleName?: string
   model?: string
@@ -15,7 +15,7 @@ export interface SampleFormValues {
   representQuantity?: string
   sampleQuantity?: string
   remark?: string
-  status: SampleStatus
+  projectId: string
 }
 
 interface SampleFormModalProps {
@@ -39,27 +39,25 @@ export function SampleFormModal({
   onCancel,
   loading = false,
 }: SampleFormModalProps) {
-  const [projectId, setProjectId] = useState(initialValues?.projectId ?? '')
-  const [name, setName] = useState(initialValues?.name ?? '')
-  const [code, setCode] = useState(initialValues?.code ?? '')
+  const [projectId, setProjectId] = useState('')
+  const [name, setName] = useState('')
+  const [code, setCode] = useState('')
   const [manufacturer, setManufacturer] = useState(initialValues?.manufacturer ?? '')
   const [structuralPart, setStructuralPart] = useState(initialValues?.structuralPart ?? '')
   const [representQuantity, setRepresentQuantity] = useState(initialValues?.representQuantity ?? '')
-  const [status, setStatus] = useState<SampleStatus>(initialValues?.status ?? 'pending')
   const [errors, setErrors] = useState<{ projectId?: string; name?: string; code?: string }>({})
 
   useEffect(() => {
     if (open) {
-      setProjectId(initialValues?.projectId ?? '')
-      setName(initialValues?.name ?? '')
-      setCode(initialValues?.code ?? '')
+      setProjectId('')
+      setName(initialValues?.sampleName ?? '')
+      setCode(initialValues?.sampleCode ?? '')
       setManufacturer(initialValues?.manufacturer ?? '')
       setStructuralPart(initialValues?.structuralPart ?? '')
       setRepresentQuantity(initialValues?.representQuantity ?? '')
-      setStatus(initialValues?.status ?? 'pending')
       setErrors({})
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [open, initialValues])
 
   if (!open) return null
@@ -81,12 +79,11 @@ export function SampleFormModal({
     const values: SampleFormValues = {
       ...(mode === 'edit' && initialValues?.id ? { id: initialValues.id } : {}),
       projectId: projectId.trim(),
-      name: name.trim(),
-      code: code.trim(),
+      sampleName: name.trim(),
+      sampleCode: code.trim(),
       manufacturer: manufacturer.trim() || undefined,
       structuralPart: structuralPart.trim() || undefined,
       representQuantity: representQuantity.trim() || undefined,
-      status,
     }
     onSubmit(values)
   }
@@ -161,20 +158,6 @@ export function SampleFormModal({
                 className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-          </div>
-          <div>
-            <label htmlFor="sample-status" className="block text-sm mb-1 font-medium">状态</label>
-            <select
-              id="sample-status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value as SampleStatus)}
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="pending">待检</option>
-              <option value="testing">检测中</option>
-              <option value="completed">已完成</option>
-              <option value="rejected">已拒收</option>
-            </select>
           </div>
         </div>
         <div className="px-6 py-3 flex justify-end gap-2 border-t border-gray-200">

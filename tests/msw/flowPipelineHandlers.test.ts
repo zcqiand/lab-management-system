@@ -47,8 +47,8 @@ describe('v2.0 流程管线：提交（前进）', () => {
     const rc = await createReceipt('RC-FLOW-1')
     expect(rc.flowStatus).toBe('receiving')
     const { results } = await flow('submit', [rc.id])
-    expect(results[0].ok).toBe(true)
-    expect(results[0].flowStatus).toBe('task_assignment')
+    expect(results[0]!.ok).toBe(true)
+    expect(results[0]!.flowStatus).toBe('task_assignment')
     const after = await getReceipt(rc.id)
     expect(after.flowStatus).toBe('task_assignment')
     expect(after.lastSubmittedBy).toBe('u-001')
@@ -68,15 +68,15 @@ describe('v2.0 流程管线：提交（前进）', () => {
     const stages = ['task_assignment', 'data_entry', 'review', 'approval', 'issuance', 'archived']
     for (const stage of stages) {
       const { results } = await flow('submit', [rc.id])
-      expect(results[0].ok).toBe(true)
-      expect(results[0].flowStatus).toBe(stage)
+      expect(results[0]!.ok).toBe(true)
+      expect(results[0]!.flowStatus).toBe(stage)
     }
     // 批准 → 发放时自动写入签发时间
     const issued = await getReceipt(rc.id)
     expect(issued.issuedAt).toBeTruthy()
     // 已归档不可再提交
     const { results } = await flow('submit', [rc.id])
-    expect(results[0].ok).toBe(false)
+    expect(results[0]!.ok).toBe(false)
   })
 })
 
@@ -85,11 +85,11 @@ describe('v2.0 流程管线：退回（后退）', () => {
     const rc = await createReceipt('RC-FLOW-RET')
     await flow('submit', [rc.id])
     const { results } = await flow('return', [rc.id], 'u-reviewer')
-    expect(results[0].ok).toBe(true)
-    expect(results[0].flowStatus).toBe('receiving')
+    expect(results[0]!.ok).toBe(true)
+    expect(results[0]!.flowStatus).toBe('receiving')
     // 首环节退回失败
     const fail = await flow('return', [rc.id])
-    expect(fail.results[0].ok).toBe(false)
+    expect(fail.results[0]!.ok).toBe(false)
   })
 
   it('批量退回', async () => {
@@ -107,16 +107,16 @@ describe('v2.0 流程管线：撤回（提交人收回）', () => {
     const rc = await createReceipt('RC-FLOW-WD')
     await flow('submit', [rc.id], 'u-001')
     const { results } = await flow('withdraw', [rc.id], 'u-001')
-    expect(results[0].ok).toBe(true)
-    expect(results[0].flowStatus).toBe('receiving')
+    expect(results[0]!.ok).toBe(true)
+    expect(results[0]!.flowStatus).toBe('receiving')
   })
 
   it('非提交人不可撤回', async () => {
     const rc = await createReceipt('RC-FLOW-WD2')
     await flow('submit', [rc.id], 'u-001')
     const { results } = await flow('withdraw', [rc.id], 'u-other')
-    expect(results[0].ok).toBe(false)
-    expect(results[0].message).toContain('提交人')
+    expect(results[0]!.ok).toBe(false)
+    expect(results[0]!.message).toContain('提交人')
   })
 
   it('提交后已被处理（退回）则不可撤回', async () => {
@@ -124,7 +124,7 @@ describe('v2.0 流程管线：撤回（提交人收回）', () => {
     await flow('submit', [rc.id], 'u-001')
     await flow('return', [rc.id], 'u-reviewer')
     const { results } = await flow('withdraw', [rc.id], 'u-001')
-    expect(results[0].ok).toBe(false)
+    expect(results[0]!.ok).toBe(false)
   })
 
   it('批量撤回', async () => {
@@ -162,7 +162,7 @@ describe('v2.0 流程管线：非法请求', () => {
 
   it('不存在的单据返回单条失败结果', async () => {
     const { results } = await flow('submit', ['rc-not-exist'])
-    expect(results[0].ok).toBe(false)
+    expect(results[0]!.ok).toBe(false)
   })
 })
 

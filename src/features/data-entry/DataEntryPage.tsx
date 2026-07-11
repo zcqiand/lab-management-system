@@ -10,11 +10,26 @@ import type { ReportCategory, Sample, SampleReceipt, TestItem, TestParameter } f
  * 系统按 报告类别+牌号/型号/等级/规格 匹配技术要求并自动评定（可手工改判）；
  * 录入完成后可直接生成报告文档。
  */
+function DataEntryRowActions({ receipt, onEntry, onPreview }: { receipt: SampleReceipt; onEntry: (r: SampleReceipt) => void; onPreview: (r: SampleReceipt) => void }) {
+  return (
+    <>
+      <button onClick={() => onEntry(receipt)} className="px-2 py-1 text-blue-600 hover:underline">
+        录入结果
+      </button>
+      <button onClick={() => onPreview(receipt)} className="px-2 py-1 text-emerald-700 hover:underline">
+        生成报告
+      </button>
+    </>
+  )
+}
+
 export function DataEntryPage() {
   const { categories } = useCategories()
   const [entryTarget, setEntryTarget] = useState<SampleReceipt | null>(null)
   const [previewTarget, setPreviewTarget] = useState<SampleReceipt | null>(null)
-
+  const rowAction = useCallback((r: SampleReceipt) => (
+    <DataEntryRowActions receipt={r} onEntry={setEntryTarget} onPreview={setPreviewTarget} />
+  ), [])
   return (
     <>
       <FlowStagePage
@@ -38,25 +53,7 @@ export function DataEntryPage() {
               ),
           },
         ]}
-        rowActions={(r, refresh) => (
-          <>
-            <button
-              onClick={() => setEntryTarget(r)}
-              className="px-2 py-1 text-blue-600 hover:underline"
-            >
-              录入结果
-            </button>
-            <button
-              onClick={() => {
-                setPreviewTarget(r)
-                void refresh
-              }}
-              className="px-2 py-1 text-emerald-700 hover:underline"
-            >
-              生成报告
-            </button>
-          </>
-        )}
+        rowActions={rowAction}
       />
 
       {entryTarget && (
@@ -109,7 +106,7 @@ function EntryModal({
       setSamples(samplesRes.data.items)
       setItems(itemsRes.data.items)
       if (samplesRes.data.items.length > 0 && !samplesRes.data.items.some((s) => s.id === sampleId)) {
-        setSampleId(samplesRes.data.items[0].id)
+        setSampleId(samplesRes.data.items[0]!.id)
       }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : '加载失败')

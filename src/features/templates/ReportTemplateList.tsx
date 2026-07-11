@@ -49,7 +49,7 @@ export function ReportTemplateList() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!categoryCode && categories.length > 0) setCategoryCode(categories[0].code)
+    if (!categoryCode && categories.length > 0) setCategoryCode(categories[0]!.code)
   }, [categories, categoryCode])
 
   const fetchTemplate = useCallback(async () => {

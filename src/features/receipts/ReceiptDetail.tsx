@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { apiClient } from '../../api/client'
 import { SampleFormModalV2, type SampleFormValuesV2 } from '../samples/SampleFormModal.v2'
 import { ConfirmModal } from '../../components/ConfirmModal'
@@ -23,7 +23,7 @@ export function ReceiptDetail({ receiptId, contractId, onClose }: ReceiptDetailP
   const [deleteTarget, setDeleteTarget] = useState<AnySample>(null)
   const [deleting, setDeleting] = useState(false)
 
-  const fetchSamples = async () => {
+  const fetchSamples = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -34,9 +34,9 @@ export function ReceiptDetail({ receiptId, contractId, onClose }: ReceiptDetailP
     } finally {
       setLoading(false)
     }
-  }
+  }, [receiptId])
 
-  useEffect(() => { fetchSamples() }, [receiptId])
+  useEffect(() => { fetchSamples() }, [fetchSamples])
 
   const statusLabel = (s: string) =>
     ({ pending: '待检', testing: '检测中', completed: '已完成', rejected: '已拒收' }[s] ?? s)
@@ -53,7 +53,8 @@ export function ReceiptDetail({ receiptId, contractId, onClose }: ReceiptDetailP
       if (formMode === 'create') {
         await apiClient.post('/samples', { ...values, materialDetails: { kind: values.materialType } })
       } else if (values.id) {
-        const { id, receiptId: _ri, contractId: _ci, sampleCode: _sc, ...patch } = values
+        const { receiptId: _ri, contractId: _ci, sampleCode: _sc, ...patch } = values
+        void _ri; void _ci; void _sc
         await apiClient.put(`/samples/${values.id}`, patch)
       }
       setFormOpen(false)

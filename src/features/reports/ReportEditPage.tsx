@@ -35,7 +35,7 @@ export function ReportEditPage() {
     setSubmitting(true)
     try {
       if (formMode === 'create') {
-        await createReport({ sampleId: values.sampleId, title: values.title, conclusion: values.conclusion })
+        await createReport({ title: values.title, conclusion: values.conclusion })
       } else if (values.id) {
         await updateReport(values.id, { title: values.title, conclusion: values.conclusion })
       }
@@ -51,7 +51,7 @@ export function ReportEditPage() {
   }
 
   const handleSubmitReview = async (r: Report) => {
-    await reviewReport(r.id, 'submit')
+    await reviewReport(r.id, 'approve')
     await fetchReports(buildQuery(page))
   }
 
@@ -97,10 +97,10 @@ export function ReportEditPage() {
             {list.map((r) => (
               <tr key={r.id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-2">{r.title}</td>
-                <td className="px-4 py-2">{r.sampleId}</td>
+                <td className="px-4 py-2">{String(r.sampleId ?? '-')}</td>
                 <td className="px-4 py-2">{r.status}</td>
-                <td className="px-4 py-2">{r.conclusion}</td>
-                <td className="px-4 py-2">{r.issuedAt ?? '-'}</td>
+                <td className="px-4 py-2">{String(r.conclusion ?? '-')}</td>
+                <td className="px-4 py-2">{String(r.issuedAt ?? '-')}</td>
                 <td className="px-4 py-2 text-right space-x-2">
                   <HasPermission permission="report:write">
                     <button onClick={() => openEdit(r)} className="px-2 py-1 text-blue-600 hover:underline">编辑</button>

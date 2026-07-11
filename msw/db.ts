@@ -536,7 +536,7 @@ export function evaluateTestResult(input: {
   })
   if (candidates.length === 0) return { matched: false, requirement: '', autoPassed: null }
 
-  let best = candidates[0]
+  let best = candidates[0]!
   let bestScore = -1
   for (const c of candidates) {
     let score = 0
@@ -573,7 +573,7 @@ export function evaluateTestResult(input: {
     case 'range': {
       const m = best.value.match(/^\s*([\d.]+)\s*[~－-]\s*([\d.]+)\s*$/)
       if (m && !Number.isNaN(num)) {
-        autoPassed = num >= Number.parseFloat(m[1]) && num <= Number.parseFloat(m[2])
+        autoPassed = num >= Number.parseFloat(m[1]!) && num <= Number.parseFloat(m[2]!)
       } else {
         autoPassed = null
       }
@@ -1051,8 +1051,8 @@ function seedReceipt(input: {
   for (let i = 0; i < idx; i++) {
     flowHistory.push({
       action: 'submit',
-      from: FLOW_STAGE_ORDER[i],
-      to: FLOW_STAGE_ORDER[i + 1],
+      from: FLOW_STAGE_ORDER[i]!,
+      to: FLOW_STAGE_ORDER[i + 1]!,
       operator: 'u-seed',
       at: '2024-05-03T08:00:00Z',
     })

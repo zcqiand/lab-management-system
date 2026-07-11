@@ -47,7 +47,7 @@ export function RoleFormModal({ open, mode, initialValues, onSubmit, onCancel, l
       setPermissions(initialValues?.permissions ?? [])
       setErrors({})
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [open, initialValues])
 
   if (!open) return null
