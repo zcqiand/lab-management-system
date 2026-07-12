@@ -137,7 +137,7 @@ export function ReportWorkflowFormModal({
                 disabled={!contractId}
                 className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100">
                 <option value="">请选择接样单</option>
-                {filteredReceipts.map((r) => <option key={r.id} value={r.id}>{r.receiptCode} - {r.sampleSource}</option>)}
+                {filteredReceipts.map((r) => <option key={r.id} value={r.id}>{r.commissionCode} - {r.sampleSource}</option>)}
               </select>
               {errors.receiptId && <p className="text-red-600 text-xs mt-1">{errors.receiptId}</p>}
             </div>

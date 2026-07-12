@@ -285,14 +285,14 @@ export function FlowStagePage({
                 <td className="px-3 py-2">
                   <input
                     type="checkbox"
-                    aria-label={`选择 ${r.receiptCode}`}
+                    aria-label={`选择 ${r.commissionCode}`}
                     checked={selected.has(r.id)}
                     onChange={() => toggle(selected, r.id, setSelected)}
                   />
                 </td>
-                <td className="px-4 py-2">{r.receiptCode}</td>
+                <td className="px-4 py-2">{r.commissionCode}</td>
                 <td className="px-4 py-2">{r.reportCode ?? '—'}</td>
-                <td className="px-4 py-2">{r.receivedDate}</td>
+                <td className="px-4 py-2">{r.commissionDate}</td>
                 <td className="px-4 py-2">{r.receivedBy}</td>
                 {extraColumns.map((c) => (
                   <td key={c.header} className="px-4 py-2">
@@ -379,12 +379,12 @@ export function FlowStagePage({
                   <td className="px-3 py-2 w-8">
                     <input
                       type="checkbox"
-                      aria-label={`选择可撤回 ${r.receiptCode}`}
+                      aria-label={`选择可撤回 ${r.commissionCode}`}
                       checked={submittedSelected.has(r.id)}
                       onChange={() => toggle(submittedSelected, r.id, setSubmittedSelected)}
                     />
                   </td>
-                  <td className="px-4 py-2">{r.receiptCode}</td>
+                  <td className="px-4 py-2">{r.commissionCode}</td>
                   <td className="px-4 py-2">{r.reportCode ?? '—'}</td>
                   <td className="px-4 py-2 text-gray-500">当前：{FLOW_STAGE_LABELS[r.flowStatus]}</td>
                   <td className="px-4 py-2 text-right">

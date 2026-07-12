@@ -64,6 +64,11 @@ export function ContractList() {
           projectName: values.projectName,
           clientUnit: values.clientUnit,
           constructionUnit: values.constructionUnit,
+          contractCategory: values.contractCategory,
+          buildingUnit: values.buildingUnit,
+          supervisorUnit: values.supervisorUnit,
+          inspectionPerson: values.inspectionPerson,
+          inspectionPhone: values.inspectionPhone,
           witnessUnit: values.witnessUnit,
           witness: values.witness,
         })
@@ -73,6 +78,11 @@ export function ContractList() {
           projectName: values.projectName,
           clientUnit: values.clientUnit,
           constructionUnit: values.constructionUnit,
+          contractCategory: values.contractCategory,
+          buildingUnit: values.buildingUnit,
+          supervisorUnit: values.supervisorUnit,
+          inspectionPerson: values.inspectionPerson,
+          inspectionPhone: values.inspectionPhone,
           witnessUnit: values.witnessUnit,
           witness: values.witness,
           witnessPhone: values.witnessPhone,
@@ -159,8 +169,10 @@ export function ContractList() {
               <th className="px-4 py-2 text-left">合同编号</th>
               <th className="px-4 py-2 text-left">工程名称</th>
               <th className="px-4 py-2 text-left">委托单位</th>
-              <th className="px-4 py-2 text-left">施工单位</th>
-              <th className="px-4 py-2 text-left">见证单位</th>
+              <th className="px-4 py-2 text-left">合同类别</th>
+              <th className="px-4 py-2 text-left">建设单位</th>
+              <th className="px-4 py-2 text-left">监理单位</th>
+              <th className="px-4 py-2 text-left">送检人员</th>
               <th className="px-4 py-2 text-left">状态</th>
               <th className="px-4 py-2 text-right">操作</th>
             </tr>
@@ -168,14 +180,14 @@ export function ContractList() {
           <tbody>
             {loading && list.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={9} className="px-4 py-8 text-center text-gray-400">
                   加载中...
                 </td>
               </tr>
             )}
             {!loading && list.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={9} className="px-4 py-8 text-center text-gray-400">
                   暂无数据
                 </td>
               </tr>
@@ -185,8 +197,10 @@ export function ContractList() {
                 <td className="px-4 py-2">{c.contractCode}</td>
                 <td className="px-4 py-2">{c.projectName}</td>
                 <td className="px-4 py-2">{c.clientUnit}</td>
-                <td className="px-4 py-2">{c.constructionUnit}</td>
-                <td className="px-4 py-2">{c.witnessUnit}</td>
+                <td className="px-4 py-2">{c.contractCategory || '—'}</td>
+                <td className="px-4 py-2">{c.buildingUnit || '—'}</td>
+                <td className="px-4 py-2">{c.supervisorUnit || '—'}</td>
+                <td className="px-4 py-2">{c.inspectionPerson || '—'}</td>
                 <td className="px-4 py-2">{statusLabel(c.status)}</td>
                 <td className="px-4 py-2 text-right space-x-2">
                   <button

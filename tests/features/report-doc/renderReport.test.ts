@@ -10,9 +10,9 @@ import type { SampleReceipt } from "../../../src/types/api";
 const receipt: SampleReceipt = {
   id: "rc-1",
   contractId: "c-1",
-  receiptCode: "RC-001",
+  commissionCode: "RC-001",
   categoryCode: "steel",
-  receivedDate: "2024-05-01",
+  commissionDate: "2024-05-01",
   receivedBy: "王五",
   sampleSource: "施工送检",
   testCategory: "委托检验",

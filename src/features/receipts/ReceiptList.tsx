@@ -4,7 +4,6 @@ import { ReceiptFormModal, type ReceiptFormValues } from './ReceiptFormModal'
 import { ConfirmModal } from '../../components/ConfirmModal'
 import { FlowStagePage } from '../flow-pipeline/FlowStagePage'
 import { apiClient } from '../../api/client'
-import { SampleManagerModal } from '../samples/SampleManagerModal'
 import { useCategories, categoryName } from '../categories/useCategories'
 import type { SampleReceipt } from '../../types/api'
 
@@ -12,11 +11,10 @@ import type { SampleReceipt } from '../../types/api'
  * 在此新建/编辑接样单；提交（支持批量）后进入「任务安排」；
  * 已提交但未被处理的单据可由提交人在下方「我提交的（可撤回）」区块撤回。
  */
-function ReceiptRowActions({ receipt, onEdit, onSample, onDelete }: { receipt: SampleReceipt; onEdit: (r: SampleReceipt) => void; onSample: (r: SampleReceipt) => void; onDelete: (r: SampleReceipt) => void }) {
+function ReceiptRowActions({ receipt, onEdit, onDelete }: { receipt: SampleReceipt; onEdit: (r: SampleReceipt) => void; onDelete: (r: SampleReceipt) => void }) {
   return (
     <>
       <button onClick={() => onEdit(receipt)} className="px-2 py-1 text-blue-600 hover:underline">编辑</button>
-      <button onClick={() => onSample(receipt)} className="px-2 py-1 text-emerald-700 hover:underline">样品</button>
       <button onClick={() => onDelete(receipt)} className="px-2 py-1 text-red-600 hover:underline">删除</button>
     </>
   )
@@ -25,8 +23,6 @@ function ReceiptRowActions({ receipt, onEdit, onSample, onDelete }: { receipt: S
 export function ReceiptList() {
   const { list: contracts, fetchContracts } = useContractStore()
   const { categories } = useCategories()
-  const [sampleTarget, setSampleTarget] = useState<SampleReceipt | null>(null)
-
   const [formOpen, setFormOpen] = useState(false)
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create')
   const [editing, setEditing] = useState<SampleReceipt | null>(null)
@@ -47,21 +43,34 @@ export function ReceiptList() {
       const payload = {
         contractId: values.contractId,
         categoryCode: values.categoryCode,
-        receiptCode: values.receiptCode,
-        receivedDate: values.receivedDate,
+        commissionCode: values.commissionCode,
+        commissionDate: values.commissionDate,
+        projectName: values.projectName,
+        clientUnit: values.clientUnit,
+        buildingUnit: values.buildingUnit,
+        supervisorUnit: values.supervisorUnit,
+        constructionUnit: values.constructionUnit,
+        witnessUnit: values.witnessUnit,
+        samplingLocation: values.samplingLocation,
+        witness: values.witness,
+        witnessPhone: values.witnessPhone,
+        inspector: values.inspector,
+        inspectorPhone: values.inspectorPhone,
         receivedBy: values.receivedBy,
         sampleSource: values.sampleSource,
         testCategory: values.testCategory,
-        testEnvironment: values.testEnvironment,
-        mainEquipment: values.mainEquipment,
+        judgmentBasis: values.judgmentBasis,
+        testingBasis: values.testingBasis,
+        testParameters: values.testParameters,
         remark: values.remark,
       }
       if (formMode === 'create') {
-        await apiClient.post('/receipts', payload)
+        const res = await apiClient.post<SampleReceipt>('/receipts', payload)
+        setFormMode('edit')
+        setEditing(res.data)
       } else if (editing) {
         await apiClient.put(`/receipts/${editing.id}`, payload)
       }
-      setFormOpen(false)
       await refreshRef.current?.()
     } finally {
       setSubmitting(false)
@@ -99,7 +108,7 @@ export function ReceiptList() {
   }, [])
 
   const rowAction = useCallback((r: SampleReceipt) => (
-    <ReceiptRowActions receipt={r} onEdit={(r) => { setFormMode('edit'); setEditing(r); setFormOpen(true) }} onSample={setSampleTarget} onDelete={setDeleteTarget} />
+    <ReceiptRowActions receipt={r} onEdit={(r) => { setFormMode('edit'); setEditing(r); setFormOpen(true) }} onDelete={setDeleteTarget} />
   ), [])
 
   return (
@@ -127,14 +136,10 @@ export function ReceiptList() {
         loading={submitting}
       />
 
-      {sampleTarget && (
-        <SampleManagerModal receipt={sampleTarget} onClose={() => setSampleTarget(null)} />
-      )}
-
       <ConfirmModal
         open={deleteTarget !== null}
         title="删除确认"
-        message={`确定删除接样「${deleteTarget?.receiptCode ?? ''}」？其下样品与检测记录将一并删除。`}
+        message={`确定删除接样「${deleteTarget?.commissionCode ?? ''}」？其下样品与检测记录将一并删除。`}
         confirmText="确认"
         loading={deleting}
         onConfirm={handleDelete}

@@ -82,6 +82,16 @@ export interface Contract {
   projectName: string
   projectLocation?: string
   constructionUnit: string
+  /** 合同类别编码 */
+  contractCategory?: string
+  /** 建设单位 */
+  buildingUnit?: string
+  /** 监理单位 */
+  supervisorUnit?: string
+  /** 送检人员姓名 */
+  inspectionPerson?: string
+  /** 送检人员联系电话 */
+  inspectionPhone?: string
   witnessUnit: string
   witness: string
   witnessPhone?: string
@@ -89,6 +99,16 @@ export interface Contract {
   contactPhone?: string
   entrustedDate?: string
   status: ContractStatus
+  createdAt: string
+  updatedAt: string
+}
+
+/** 合同类别码表 */
+export interface ContractCategory {
+  id: string
+  name: string
+  sortOrder?: number
+  remark?: string
   createdAt: string
   updatedAt: string
 }
@@ -208,15 +228,52 @@ export interface FlowActionResult {
 export interface SampleReceipt {
   id: string
   contractId: string
-  receiptCode: string
+  /** 委托书编号 */
+  commissionCode: string
+  /** 委托日期 */
+  commissionDate: string
+  /** 委托书登记号 */
+  commissionRegisterCode?: string
+  /** 委托书登记日期 */
+  commissionRegisterDate?: string
   /** 报告类别——样品扩展属性、报告模板、汇总口径均由此决定 */
   categoryCode: string
-  receivedDate: string
+  /** 工程名称（从合同带出） */
+  projectName?: string
+  /** 委托单位（从合同带出） */
+  clientUnit?: string
+  /** 建设单位（从合同带出） */
+  buildingUnit?: string
+  /** 监理单位（从合同带出） */
+  supervisorUnit?: string
+  /** 施工单位（从合同带出） */
+  constructionUnit?: string
+  /** 见证单位（从合同带出） */
+  witnessUnit?: string
+  /** 取样地点 */
+  samplingLocation?: string
+  /** 见证人 */
+  witness?: string
+  /** 见证人电话 */
+  witnessPhone?: string
+  /** 送检人 */
+  inspector?: string
+  /** 送检人电话 */
+  inspectorPhone?: string
+  /** 接样人（记录操作人员） */
   receivedBy: string
   sampleSource: string
   testCategory: string
+  /** 检测环境（在数据录入环节维护） */
   testEnvironment?: string
+  /** 主要设备（在数据录入环节维护） */
   mainEquipment?: string
+  /** 判定依据：检测标准编码数组 */
+  judgmentBasis?: string[]
+  /** 检测依据：检测标准编码数组 */
+  testingBasis?: string[]
+  /** 检测参数编码数组（按判定依据∪检测依据过滤） */
+  testParameters?: string[]
   remark?: string
   // ----- 流程管线 -----
   flowStatus: FlowStage
@@ -261,6 +318,18 @@ export interface Sample {
   /** 代表数量 */
   representQuantity?: string
   sampleQuantity?: string
+  /** 出厂编号/批号 */
+  batchNumber?: string
+  /** 供销单位 */
+  supplyUnit?: string
+  /** 进场日期 */
+  arrivalDate?: string
+  /** 取（制）样日期 */
+  samplingDate?: string
+  /** 养护条件 */
+  curingCondition?: string
+  /** 龄期 */
+  age?: string
   /** 按报告类别 extFields 定义的扩展属性 */
   ext: Record<string, string>
   remark?: string
@@ -281,6 +350,12 @@ export interface SampleCreateInput {
   structuralPart?: string
   representQuantity?: string
   sampleQuantity?: string
+  batchNumber?: string
+  supplyUnit?: string
+  arrivalDate?: string
+  samplingDate?: string
+  curingCondition?: string
+  age?: string
   ext?: Record<string, string>
   remark?: string
 }
@@ -300,8 +375,13 @@ export interface TestItem {
   requirementCode?: string
   /** 技术要求显示文本，如「≥ 400 MPa」 */
   requirement: string
+  /** 检测值（单值时使用） */
   result: string
   unit?: string
+  /** 多样本检测时的检测值数组，如 [42.5, 43.2, 41.8] */
+  testValues?: number[]
+  /** 后端计算的代表值（如多样本平均值） */
+  representativeValue?: number
   /** 系统按技术要求自动评定的结果（null = 无法自动评定，需人工判定） */
   autoPassed: boolean | null
   /** 最终评定结果（默认取 autoPassed，可手工修正） */
@@ -323,6 +403,8 @@ export interface TestParameter {
   categoryCode: string
   group?: string
   unit?: string
+  /** 该参数需要录入的样本数量（如混凝土抗压强度=3，钢筋拉伸=2），默认为1 */
+  valueCount?: number
   description?: string
   createdAt: string
   updatedAt: string

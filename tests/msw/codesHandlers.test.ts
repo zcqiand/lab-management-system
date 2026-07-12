@@ -25,7 +25,7 @@ async function createReceipt(categoryCode = "steel") {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       contractId: "c-001",
-      receiptCode: "RC-" + Math.random().toString(36).slice(2, 6).toUpperCase(),
+      commissionCode: "RC-" + Math.random().toString(36).slice(2, 6).toUpperCase(),
       categoryCode,
       receivedBy: "测试员",
       sampleSource: "施工送检",

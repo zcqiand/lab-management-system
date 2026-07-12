@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { Contract, ContractStatus } from "../../types/api";
+import { useContractCategories } from "./useContractCategories";
 
 export interface ContractFormValues {
   id?: string;
@@ -7,6 +8,11 @@ export interface ContractFormValues {
   projectName: string;
   clientUnit: string;
   constructionUnit: string;
+  contractCategory?: string;
+  buildingUnit?: string;
+  supervisorUnit?: string;
+  inspectionPerson?: string;
+  inspectionPhone?: string;
   witnessUnit: string;
   witness: string;
   witnessPhone?: string;
@@ -34,45 +40,28 @@ export function ContractFormModal({
   onCancel,
   loading = false,
 }: ContractFormModalProps) {
-  const [contractCode, setContractCode] = useState(
-    initialValues?.contractCode ?? "",
-  );
-  const [projectName, setProjectName] = useState(
-    initialValues?.projectName ?? "",
-  );
-  const [clientUnit, setClientUnit] = useState(initialValues?.clientUnit ?? "");
-  const [constructionUnit, setConstructionUnit] = useState(
-    initialValues?.constructionUnit ?? "",
-  );
-  const [witnessUnit, setWitnessUnit] = useState(
-    initialValues?.witnessUnit ?? "",
-  );
-  const [witness, setWitness] = useState(initialValues?.witness ?? "");
-  const [witnessPhone, setWitnessPhone] = useState(
-    initialValues?.witnessPhone ?? "",
-  );
-  const [contactPerson, setContactPerson] = useState(
-    initialValues?.contactPerson ?? "",
-  );
-  const [contactPhone, setContactPhone] = useState(
-    initialValues?.contactPhone ?? "",
-  );
-  const [entrustedDate, setEntrustedDate] = useState(
-    initialValues?.entrustedDate ?? "",
-  );
-  const [projectLocation, setProjectLocation] = useState(
-    initialValues?.projectLocation ?? "",
-  );
-  const [status, setStatus] = useState<ContractStatus>(
-    initialValues?.status ?? "active",
-  );
+  const { categories } = useContractCategories();
+
+  const [contractCode, setContractCode] = useState("");
+  const [projectName, setProjectName] = useState("");
+  const [clientUnit, setClientUnit] = useState("");
+  const [constructionUnit, setConstructionUnit] = useState("");
+  const [contractCategory, setContractCategory] = useState("");
+  const [buildingUnit, setBuildingUnit] = useState("");
+  const [supervisorUnit, setSupervisorUnit] = useState("");
+  const [inspectionPerson, setInspectionPerson] = useState("");
+  const [inspectionPhone, setInspectionPhone] = useState("");
+  const [witnessUnit, setWitnessUnit] = useState("");
+  const [witness, setWitness] = useState("");
+  const [witnessPhone, setWitnessPhone] = useState("");
+  const [contactPerson, setContactPerson] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [entrustedDate, setEntrustedDate] = useState("");
+  const [projectLocation, setProjectLocation] = useState("");
+  const [status, setStatus] = useState<ContractStatus>("active");
   const [errors, setErrors] = useState<{
     contractCode?: string;
     projectName?: string;
-    clientUnit?: string;
-    constructionUnit?: string;
-    witnessUnit?: string;
-    witness?: string;
   }>({});
 
   useEffect(() => {
@@ -81,6 +70,11 @@ export function ContractFormModal({
       setProjectName(initialValues?.projectName ?? "");
       setClientUnit(initialValues?.clientUnit ?? "");
       setConstructionUnit(initialValues?.constructionUnit ?? "");
+      setContractCategory(initialValues?.contractCategory ?? "");
+      setBuildingUnit(initialValues?.buildingUnit ?? "");
+      setSupervisorUnit(initialValues?.supervisorUnit ?? "");
+      setInspectionPerson(initialValues?.inspectionPerson ?? "");
+      setInspectionPhone(initialValues?.inspectionPhone ?? "");
       setWitnessUnit(initialValues?.witnessUnit ?? "");
       setWitness(initialValues?.witness ?? "");
       setWitnessPhone(initialValues?.witnessPhone ?? "");
@@ -91,7 +85,6 @@ export function ContractFormModal({
       setStatus(initialValues?.status ?? "active");
       setErrors({});
     }
-     
   }, [open, initialValues]);
 
   if (!open) return null;
@@ -102,10 +95,6 @@ export function ContractFormModal({
     const next: typeof errors = {};
     if (!contractCode.trim()) next.contractCode = "请输入合同编号";
     if (!projectName.trim()) next.projectName = "请输入工程名称";
-    if (!clientUnit.trim()) next.clientUnit = "请输入委托单位";
-    if (!constructionUnit.trim()) next.constructionUnit = "请输入施工单位";
-    if (!witnessUnit.trim()) next.witnessUnit = "请输入见证单位";
-    if (!witness.trim()) next.witness = "请输入见证人";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -119,6 +108,11 @@ export function ContractFormModal({
       projectName: projectName.trim(),
       clientUnit: clientUnit.trim(),
       constructionUnit: constructionUnit.trim(),
+      contractCategory: contractCategory.trim() || undefined,
+      buildingUnit: buildingUnit.trim() || undefined,
+      supervisorUnit: supervisorUnit.trim() || undefined,
+      inspectionPerson: inspectionPerson.trim() || undefined,
+      inspectionPhone: inspectionPhone.trim() || undefined,
       witnessUnit: witnessUnit.trim(),
       witness: witness.trim(),
       witnessPhone: witnessPhone.trim() || undefined,
@@ -145,10 +139,7 @@ export function ContractFormModal({
         <div className="px-8 py-5 space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label
-                htmlFor="contract-code"
-                className="block text-sm font-medium mb-1"
-              >
+              <label htmlFor="contract-code" className="block text-sm font-medium mb-1">
                 合同编号 <span className="text-red-600">*</span>
               </label>
               <input
@@ -158,17 +149,12 @@ export function ContractFormModal({
                 className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.contractCode && (
-                <p className="text-red-600 text-xs mt-1">
-                  {errors.contractCode}
-                </p>
+                <p className="text-red-600 text-xs mt-1">{errors.contractCode}</p>
               )}
             </div>
 
             <div>
-              <label
-                htmlFor="entrusted-date"
-                className="block text-sm font-medium mb-1"
-              >
+              <label htmlFor="entrusted-date" className="block text-sm font-medium mb-1">
                 合同日期
               </label>
               <input
@@ -176,6 +162,51 @@ export function ContractFormModal({
                 type="date"
                 value={entrustedDate}
                 onChange={(e) => setEntrustedDate(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="contract-category"
+                className="block text-sm font-medium mb-1"
+              >
+                合同类别
+              </label>
+              <select
+                id="contract-category"
+                value={contractCategory}
+                onChange={(e) => setContractCategory(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">请选择</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="contact-person" className="block text-sm font-medium mb-1">
+                联系人
+              </label>
+              <input
+                id="contact-person"
+                value={contactPerson}
+                onChange={(e) => setContactPerson(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="contact-phone" className="block text-sm font-medium mb-1">
+                联系电话
+              </label>
+              <input
+                id="contact-phone"
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
                 className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -203,28 +234,7 @@ export function ContractFormModal({
 
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label
-                htmlFor="client-unit"
-                className="block text-sm font-medium mb-1"
-              >
-                委托单位 <span className="text-red-600">*</span>
-              </label>
-              <input
-                id="client-unit"
-                value={clientUnit}
-                onChange={(e) => setClientUnit(e.target.value)}
-                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {errors.clientUnit && (
-                <p className="text-red-600 text-xs mt-1">{errors.clientUnit}</p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="project-name"
-                className="block text-sm font-medium mb-1"
-              >
+              <label htmlFor="project-name" className="block text-sm font-medium mb-1">
                 工程名称 <span className="text-red-600">*</span>
               </label>
               <input
@@ -234,9 +244,7 @@ export function ContractFormModal({
                 className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.projectName && (
-                <p className="text-red-600 text-xs mt-1">
-                  {errors.projectName}
-                </p>
+                <p className="text-red-600 text-xs mt-1">{errors.projectName}</p>
               )}
             </div>
 
@@ -258,11 +266,23 @@ export function ContractFormModal({
 
           <div className="grid grid-cols-3 gap-4">
             <div>
+              <label htmlFor="building-unit" className="block text-sm font-medium mb-1">
+                建设单位
+              </label>
+              <input
+                id="building-unit"
+                value={buildingUnit}
+                onChange={(e) => setBuildingUnit(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
               <label
                 htmlFor="construction-unit"
                 className="block text-sm font-medium mb-1"
               >
-                施工单位 <span className="text-red-600">*</span>
+                施工单位
               </label>
               <input
                 id="construction-unit"
@@ -270,52 +290,67 @@ export function ContractFormModal({
                 onChange={(e) => setConstructionUnit(e.target.value)}
                 className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              {errors.constructionUnit && (
-                <p className="text-red-600 text-xs mt-1">
-                  {errors.constructionUnit}
-                </p>
-              )}
             </div>
-
             <div>
-              <label
-                htmlFor="contact-person"
-                className="block text-sm font-medium mb-1"
-              >
-                联系人
+              <label htmlFor="supervisor-unit" className="block text-sm font-medium mb-1">
+                监理单位
               </label>
               <input
-                id="contact-person"
-                value={contactPerson}
-                onChange={(e) => setContactPerson(e.target.value)}
-                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="contact-phone"
-                className="block text-sm font-medium mb-1"
-              >
-                联系电话
-              </label>
-              <input
-                id="contact-phone"
-                value={contactPhone}
-                onChange={(e) => setContactPhone(e.target.value)}
+                id="supervisor-unit"
+                value={supervisorUnit}
+                onChange={(e) => setSupervisorUnit(e.target.value)}
                 className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
 
-          {/* Row 3: 见证单位 | 见证人 | 见证人电话 */}
           <div className="grid grid-cols-3 gap-4">
             <div>
+              <label htmlFor="client-unit" className="block text-sm font-medium mb-1">
+                委托单位
+              </label>
+              <input
+                id="client-unit"
+                value={clientUnit}
+                onChange={(e) => setClientUnit(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
               <label
-                htmlFor="witness-unit"
+                htmlFor="inspection-person"
                 className="block text-sm font-medium mb-1"
               >
-                见证单位 <span className="text-red-600">*</span>
+                送检人
+              </label>
+              <input
+                id="inspection-person"
+                value={inspectionPerson}
+                onChange={(e) => setInspectionPerson(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="inspection-phone"
+                className="block text-sm font-medium mb-1"
+              >
+                送检人电话
+              </label>
+              <input
+                id="inspection-phone"
+                value={inspectionPhone}
+                onChange={(e) => setInspectionPhone(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="witness-unit" className="block text-sm font-medium mb-1">
+                见证单位
               </label>
               <input
                 id="witness-unit"
@@ -323,19 +358,11 @@ export function ContractFormModal({
                 onChange={(e) => setWitnessUnit(e.target.value)}
                 className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              {errors.witnessUnit && (
-                <p className="text-red-600 text-xs mt-1">
-                  {errors.witnessUnit}
-                </p>
-              )}
             </div>
 
             <div>
-              <label
-                htmlFor="witness"
-                className="block text-sm font-medium mb-1"
-              >
-                见证人 <span className="text-red-600">*</span>
+              <label htmlFor="witness" className="block text-sm font-medium mb-1">
+                见证人
               </label>
               <input
                 id="witness"
@@ -343,16 +370,10 @@ export function ContractFormModal({
                 onChange={(e) => setWitness(e.target.value)}
                 className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              {errors.witness && (
-                <p className="text-red-600 text-xs mt-1">{errors.witness}</p>
-              )}
             </div>
 
             <div>
-              <label
-                htmlFor="witness-phone"
-                className="block text-sm font-medium mb-1"
-              >
+              <label htmlFor="witness-phone" className="block text-sm font-medium mb-1">
                 见证人电话
               </label>
               <input

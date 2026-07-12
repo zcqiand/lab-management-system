@@ -46,6 +46,7 @@ const MASTER_MENU: MenuGroup = {
   title: '基础数据',
   items: [
     { to: '/report-categories', label: '报告类别', permission: 'user:read' },
+    { to: '/contract-categories', label: '合同类别', permission: 'user:read' },
     { to: '/test-standards', label: '标准管理', permission: 'user:read' },
     { to: '/test-parameters', label: '检测参数', permission: 'user:read' },
     { to: '/technical-requirements', label: '技术要求', permission: 'user:read' },

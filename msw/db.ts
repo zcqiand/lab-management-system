@@ -119,6 +119,16 @@ export class MockTable<T extends { id: string } & Timestamped> {
 // 表定义
 // =============================================================================
 
+/** 合同类别码表 */
+export const contractCategoryTable = new MockTable<{
+  id: string
+  name: string
+  sortOrder: number
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}>('cc')
+
 /** 合同/委托表 */
 export const contractTable = new MockTable<{
   id: string
@@ -127,6 +137,11 @@ export const contractTable = new MockTable<{
   projectName: string
   projectLocation?: string
   constructionUnit: string
+  contractCategory?: string
+  buildingUnit?: string
+  supervisorUnit?: string
+  inspectionPerson?: string
+  inspectionPhone?: string
   witnessUnit: string
   witness: string
   witnessPhone?: string
@@ -203,6 +218,16 @@ export const categoryStandardTable = new MockTable<{
   updatedAt: string
 }>('cs')
 
+/** 检测标准 ↔ 检测参数 关联表 */
+export const standardParametersTable = new MockTable<{
+  id: string
+  standardCode: string
+  parameterCode: string
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}>('sp')
+
 /** 型号码表（归属报告类别）：热轧带肋 / P·O 42.5 / C30 / 中砂 / 直螺纹套筒 / 闪光对焊 */
 export const modelTable = new MockTable<{
   id: string
@@ -247,15 +272,28 @@ export const brandTable = new MockTable<{
 export const receiptTable = new MockTable<{
   id: string
   contractId: string
-  receiptCode: string
-  /** 报告类别（原材料种类）——样品扩展属性、报告模板、汇总口径均由此决定 */
+  commissionCode: string
+  commissionDate: string
+  commissionRegisterCode?: string
+  commissionRegisterDate?: string
   categoryCode: string
-  receivedDate: string
+  projectName?: string
+  clientUnit?: string
+  buildingUnit?: string
+  supervisorUnit?: string
+  constructionUnit?: string
+  witnessUnit?: string
+  samplingLocation?: string
+  witness?: string
+  witnessPhone?: string
+  inspector?: string
+  inspectorPhone?: string
   receivedBy: string
   sampleSource: string
   testCategory: string
-  testEnvironment?: string
-  mainEquipment?: string
+  judgmentBasis?: string[]
+  testingBasis?: string[]
+  testParameters?: string[]
   remark?: string
   // ----- 流程管线 -----
   flowStatus: FlowStage
@@ -295,6 +333,18 @@ export const sampleTable = new MockTable<{
   /** 代表数量 */
   representQuantity?: string
   sampleQuantity?: string
+  /** 出厂编号/批号 */
+  batchNumber?: string
+  /** 供销单位 */
+  supplyUnit?: string
+  /** 进场日期 */
+  arrivalDate?: string
+  /** 取（制）样日期 */
+  samplingDate?: string
+  /** 养护条件 */
+  curingCondition?: string
+  /** 龄期 */
+  age?: string
   /** 按报告类别 extFields 定义的扩展属性 */
   ext: Record<string, string>
   remark?: string
@@ -312,6 +362,8 @@ export const testItemTable = new MockTable<{
   requirement: string
   result: string
   unit?: string
+  testValues?: number[]
+  representativeValue?: number
   autoPassed: boolean | null
   passed: boolean
   remark?: string
@@ -327,6 +379,7 @@ export const testParameterTable = new MockTable<{
   categoryCode: string
   group?: string
   unit?: string
+  valueCount?: number
   description?: string
   createdAt: string
   updatedAt: string
@@ -507,6 +560,8 @@ export interface EvaluationResult {
   requirement: string
   /** true/false=自动评定结果；null=匹配到要求但无法自动判定（如非数值指标） */
   autoPassed: boolean | null
+  /** 多样本检测时的代表值（平均值） */
+  representativeValue?: number
 }
 
 /** 按 报告类别 + 参数编码 + 牌号/型号/等级/规格 匹配最合适的技术要求并自动评定。
@@ -521,6 +576,7 @@ export function evaluateTestResult(input: {
   grade?: string
   specification?: string
   resultValue: string
+  testValues?: number[]
 }): EvaluationResult {
   const all = technicalRequirementTable.all()
   const candidates = all.filter((r) => {
@@ -554,7 +610,16 @@ export function evaluateTestResult(input: {
   const requirement =
     best.comparison === 'range' ? `${best.value}${unitSuffix}` : `${best.comparison} ${best.value}${unitSuffix}`
 
-  const num = Number.parseFloat(input.resultValue)
+  // 多样本时取平均值作为代表值
+  let representativeValue: number | undefined
+  let num: number
+  if (input.testValues && input.testValues.length > 0) {
+    const sum = input.testValues.reduce((a, b) => a + b, 0)
+    representativeValue = Math.round((sum / input.testValues.length) * 100) / 100
+    num = representativeValue
+  } else {
+    num = Number.parseFloat(input.resultValue)
+  }
   const reqNum = Number.parseFloat(best.value)
 
   let autoPassed: boolean | null = null
@@ -583,7 +648,7 @@ export function evaluateTestResult(input: {
       autoPassed = null
   }
 
-  return { matched: true, requirementCode: best.code, standardCode: best.standardCode, requirement, autoPassed }
+  return { matched: true, requirementCode: best.code, standardCode: best.standardCode, requirement, autoPassed, representativeValue }
 }
 
 /** 取接样单下全部样品 */
@@ -616,7 +681,7 @@ export function syncReceiptResult(receiptId: string) {
     conclusion: allPassed
       ? '所检项目均符合相应标准的技术要求。'
       : `以下检测项不符合技术要求：${failedCodes.join('、')}。`,
-    reportCode: receipt.reportCode ?? `R-${receipt.receiptCode}`,
+    reportCode: receipt.reportCode ?? `R-${receipt.commissionCode}`,
     reportDate: receipt.reportDate ?? new Date().toISOString().slice(0, 10),
   } as never)
 }
@@ -768,9 +833,11 @@ export function buildSummary(categoryCode: string, contractId?: string) {
 }
 
 export function resetMockDb() {
+  contractCategoryTable.reset()
   contractTable.reset()
   reportCategoryTable.reset()
   categoryStandardTable.reset()
+  standardParametersTable.reset()
   modelTable.reset()
   specificationTable.reset()
   gradeTable.reset()
@@ -790,6 +857,12 @@ export function resetMockDb() {
 // =============================================================================
 // 种子数据
 // =============================================================================
+
+function seedContractCategories() {
+  contractCategoryTable.insert({ id: 'cc-001', name: '常规建筑与材料检测', sortOrder: 0 })
+  contractCategoryTable.insert({ id: 'cc-002', name: '工程实体与结构检测', sortOrder: 1 })
+  contractCategoryTable.insert({ id: 'cc-003', name: '专项系统与安全性鉴定', sortOrder: 2 })
+}
 
 function seedOrgInfo() {
   orgInfoTable.insert({
@@ -889,17 +962,13 @@ function seedCategories() {
       code: 'steel', sortOrder: 1, name: '钢筋原材', reportTitle: '钢筋力学性能、工艺性能、重量偏差检测报告',
       summaryType: 'material', summaryName: '钢材试验报告汇总表',
       extFields: [
-        { key: 'furnaceNo', label: '炉号（批号）' },
         { key: 'qualityCertNo', label: '质保单编号' },
       ],
     },
     {
       code: 'cement', sortOrder: 0, name: '水泥', reportTitle: '水泥检测报告',
       summaryType: 'material', summaryName: '水泥试验报告汇总表',
-      extFields: [
-        { key: 'factoryNo', label: '出厂编号' },
-        { key: 'factoryDate', label: '出厂日期' },
-      ],
+      extFields: [],
     },
     {
       code: 'concrete', sortOrder: 6, name: '混凝土', reportTitle: '混凝土抗压强度检测报告',
@@ -908,8 +977,6 @@ function seedCategories() {
         { key: 'castingDate', label: '浇筑时间' },
         { key: 'volume', label: '混凝土方量（m³）' },
         { key: 'moldingDate', label: '成型日期' },
-        { key: 'age', label: '龄期（d）' },
-        { key: 'curing', label: '养护条件' },
       ],
     },
     {
@@ -993,8 +1060,8 @@ function seedDicts() {
   })
 }
 
-function seedTestParameter(code: string, name: string, categoryCode: string, group: string, unit?: string) {
-  testParameterTable.insert({ id: `tp-${code}`, code, name, categoryCode, group, unit })
+function seedTestParameter(code: string, name: string, categoryCode: string, group: string, unit?: string, valueCount?: number) {
+  testParameterTable.insert({ id: `tp-${code}`, code, name, categoryCode, group, unit, valueCount })
 }
 
 function seedTestStandard(code: string, name: string, type: 'national' | 'industry' | 'local' | 'enterprise', categories: string[]) {
@@ -1038,10 +1105,10 @@ function seedContract(input: { id: string; contractCode: string; clientUnit: str
 function seedReceipt(input: {
   id: string
   contractId: string
-  receiptCode: string
+  commissionCode: string
   categoryCode: string
   flowStatus?: FlowStage
-  receivedDate?: string
+  commissionDate?: string
   receivedBy?: string
   sampleCount?: number
 }) {
@@ -1063,20 +1130,20 @@ function seedReceipt(input: {
   receiptTable.insert({
     id: input.id,
     contractId: input.contractId,
-    receiptCode: input.receiptCode,
+    commissionCode: input.commissionCode,
+    commissionDate: input.commissionDate ?? '2024-05-03',
     categoryCode: input.categoryCode,
-    receivedDate: input.receivedDate ?? '2024-05-03',
+    projectName: '',
+    clientUnit: '',
     receivedBy: input.receivedBy ?? '王五',
     sampleSource: '施工送检',
     testCategory: '委托检验',
-    testEnvironment: '温度 20±2℃，湿度 50%RH',
-    mainEquipment: 'WAW-1000 万能试验机',
     remark: '',
     flowStatus,
     flowHistory,
     lastSubmittedBy: flowHistory.length > 0 ? 'u-seed' : null,
     assigneeName: idx >= FLOW_STAGE_ORDER.indexOf('data_entry') ? '检测员' : undefined,
-    reportCode: reported ? `R-${input.receiptCode}` : undefined,
+    reportCode: reported ? `R-${input.commissionCode}` : undefined,
     reportDate: reported ? '2024-05-06' : undefined,
     conclusion: reported ? '所检项目均符合相应标准的技术要求。' : undefined,
     result: reported ? 'pass' : undefined,
@@ -1090,7 +1157,7 @@ function seedReceipt(input: {
     sampleTable.insert({
       id: sid,
       receiptId: input.id,
-      sampleCode: `${input.receiptCode}-S${i}`,
+      sampleCode: `${input.commissionCode}-S${i}`,
       sampleName: def?.name ?? '样品',
       model: def?.model,
       specification: def?.specification,
@@ -1133,6 +1200,7 @@ function seedReceipt(input: {
 
 /** 全量种子：7 个报告类别 + 码表 + 10 合同 × 若干接样单（覆盖 7 阶段与 7 类别） */
 export function seedData() {
+  seedContractCategories()
   seedOrgInfo()
   seedCategories()
   seedDicts()
@@ -1163,7 +1231,7 @@ export function seedData() {
   seedTestParameter('CEM012', '3天抗压强度', 'cement', 'strength', 'MPa')
   seedTestParameter('CEM014', '28天抗压强度', 'cement', 'strength', 'MPa')
   seedTestParameter('CON001', '立方体抗压强度', 'concrete', 'mechanical', 'MPa')
-  seedTestParameter('CON002', '抗压强度代表值', 'concrete', 'mechanical', 'MPa')
+  seedTestParameter('CON002', '抗压强度代表值', 'concrete', 'mechanical', 'MPa', 3)
   seedTestParameter('CON006', '抗折强度', 'concrete', 'mechanical', 'MPa')
   seedTestParameter('SND001', '颗粒级配（细度模数）', 'sand', 'gradation', '')
   seedTestParameter('SND002', '含泥量', 'sand', 'physical', '%')
@@ -1192,6 +1260,52 @@ export function seedData() {
   seedTestStandard('GB/T 14685-2022', '建设用卵石和碎石', 'national', ['gravel'])
   seedTestStandard('JGJ 107-2016', '钢筋机械连接技术规程', 'industry', ['rebar_mech'])
   seedTestStandard('JGJ 18-2012', '钢筋焊接及验收规程', 'industry', ['rebar_weld'])
+
+  // ===== 检测标准 ↔ 检测参数 关联 =====
+  // GB/T 228.1-2021 金属材料 拉伸试验
+  ;['STE001', 'STE002', 'STE003', 'STE004', 'STE005', 'STE006', 'STE008', 'STE009'].forEach((p) =>
+    standardParametersTable.insert({ id: `sp-GB228-${p}`, standardCode: 'GB/T 228.1-2021', parameterCode: p })
+  )
+  // GB 1499.2-2024 钢筋混凝土用钢 第2部分：热轧带肋钢筋
+  ;['STE001', 'STE002', 'STE003', 'STE004', 'STE005', 'STE006', 'STE008', 'STE009'].forEach((p) =>
+    standardParametersTable.insert({ id: `sp-GB1499-2-${p}`, standardCode: 'GB 1499.2-2024', parameterCode: p })
+  )
+  // GB 1499.1-2024 钢筋混凝土用钢 第1部分：热轧光圆钢筋
+  ;['STE001', 'STE002', 'STE003', 'STE004', 'STE005', 'STE006', 'STE008', 'STE009'].forEach((p) =>
+    standardParametersTable.insert({ id: `sp-GB1499-1-${p}`, standardCode: 'GB 1499.1-2024', parameterCode: p })
+  )
+  // GB 175-2023 通用硅酸盐水泥
+  ;['CEM001', 'CEM003', 'CEM004', 'CEM005', 'CEM006', 'CEM012', 'CEM014'].forEach((p) =>
+    standardParametersTable.insert({ id: `sp-GB175-${p}`, standardCode: 'GB 175-2023', parameterCode: p })
+  )
+  // GB/T 1346-2024 水泥凝结时间安定性
+  ;['CEM003', 'CEM004', 'CEM005'].forEach((p) =>
+    standardParametersTable.insert({ id: `sp-GB1346-${p}`, standardCode: 'GB/T 1346-2024', parameterCode: p })
+  )
+  // GB/T 17671-2021 水泥胶砂强度
+  ;['CEM012', 'CEM014'].forEach((p) =>
+    standardParametersTable.insert({ id: `sp-GB17671-${p}`, standardCode: 'GB/T 17671-2021', parameterCode: p })
+  )
+  // GB/T 50081-2019 混凝土力学性能
+  ;['CON001', 'CON002', 'CON006'].forEach((p) =>
+    standardParametersTable.insert({ id: `sp-GB50081-${p}`, standardCode: 'GB/T 50081-2019', parameterCode: p })
+  )
+  // GB/T 14684-2022 建设用砂
+  ;['SND001', 'SND002', 'SND003', 'SND008'].forEach((p) =>
+    standardParametersTable.insert({ id: `sp-GB14684-${p}`, standardCode: 'GB/T 14684-2022', parameterCode: p })
+  )
+  // GB/T 14685-2022 建设用卵石和碎石
+  ;['GRV001', 'GRV002', 'GRV004', 'GRV005'].forEach((p) =>
+    standardParametersTable.insert({ id: `sp-GB14685-${p}`, standardCode: 'GB/T 14685-2022', parameterCode: p })
+  )
+  // JGJ 107-2016 钢筋机械连接
+  ;['RMK001', 'RMK002', 'RMK003'].forEach((p) =>
+    standardParametersTable.insert({ id: `sp-JGJ107-${p}`, standardCode: 'JGJ 107-2016', parameterCode: p })
+  )
+  // JGJ 18-2012 钢筋焊接及验收规程
+  ;['RWD001', 'RWD002', 'RWD003'].forEach((p) =>
+    standardParametersTable.insert({ id: `sp-JGJ18-${p}`, standardCode: 'JGJ 18-2012', parameterCode: p })
+  )
 
   // ===== 技术要求（报告类别 + 牌号/型号/等级/规格 维度）=====
   // 钢材（牌号 + 规格）
@@ -1246,28 +1360,28 @@ export function seedData() {
   seedContract({ id: 'c-009', contractCode: 'HT-2024-009', clientUnit: '紫阳交通局', projectName: '任河大桥维修加固', constructionUnit: '中交二航局', witnessUnit: '铁正监理', witness: '王监理' })
   seedContract({ id: 'c-010', contractCode: 'HT-2024-010', clientUnit: '岚皋住建局', projectName: '老旧小区改造一期', constructionUnit: '陕建五公司', witnessUnit: '华监监理', witness: '冯监理', status: 'archived' })
 
-  seedReceipt({ id: 'rc-001-01', contractId: 'c-001', receiptCode: 'RC-2024-0501-01', categoryCode: 'steel', flowStatus: 'archived', receivedDate: '2024-05-01', sampleCount: 3 })
-  seedReceipt({ id: 'rc-001-02', contractId: 'c-001', receiptCode: 'RC-2024-0502-01', categoryCode: 'concrete', flowStatus: 'issuance', receivedDate: '2024-05-02', sampleCount: 3 })
-  seedReceipt({ id: 'rc-001-03', contractId: 'c-001', receiptCode: 'RC-2024-0503-01', categoryCode: 'rebar_mech', flowStatus: 'approval', receivedDate: '2024-05-03' })
-  seedReceipt({ id: 'rc-002-01', contractId: 'c-002', receiptCode: 'RC-2024-0510-01', categoryCode: 'steel', flowStatus: 'review', receivedDate: '2024-05-10', receivedBy: '赵六' })
-  seedReceipt({ id: 'rc-002-02', contractId: 'c-002', receiptCode: 'RC-2024-0515-01', categoryCode: 'concrete', flowStatus: 'archived', receivedDate: '2024-05-15', receivedBy: '赵六', sampleCount: 3 })
-  seedReceipt({ id: 'rc-002-03', contractId: 'c-002', receiptCode: 'RC-2024-0520-01', categoryCode: 'steel', flowStatus: 'receiving', receivedDate: '2024-05-20', receivedBy: '赵六' })
-  seedReceipt({ id: 'rc-003-01', contractId: 'c-003', receiptCode: 'RC-2024-0525-01', categoryCode: 'cement', flowStatus: 'review', receivedDate: '2024-05-25', receivedBy: '李工' })
-  seedReceipt({ id: 'rc-003-02', contractId: 'c-003', receiptCode: 'RC-2024-0526-01', categoryCode: 'rebar_weld', flowStatus: 'approval', receivedDate: '2024-05-26', receivedBy: '李工', sampleCount: 3 })
-  seedReceipt({ id: 'rc-003-03', contractId: 'c-003', receiptCode: 'RC-2024-0601-01', categoryCode: 'sand', flowStatus: 'data_entry', receivedDate: '2024-06-01', receivedBy: '李工' })
-  seedReceipt({ id: 'rc-004-01', contractId: 'c-004', receiptCode: 'RC-2024-0605-01', categoryCode: 'steel', flowStatus: 'review', receivedDate: '2024-06-05', receivedBy: '王工' })
-  seedReceipt({ id: 'rc-004-02', contractId: 'c-004', receiptCode: 'RC-2024-0610-01', categoryCode: 'sand', flowStatus: 'issuance', receivedDate: '2024-06-10', receivedBy: '王工' })
-  seedReceipt({ id: 'rc-005-01', contractId: 'c-005', receiptCode: 'RC-2024-0615-01', categoryCode: 'concrete', flowStatus: 'issuance', receivedDate: '2024-06-15', receivedBy: '赵工', sampleCount: 3 })
-  seedReceipt({ id: 'rc-005-02', contractId: 'c-005', receiptCode: 'RC-2024-0620-01', categoryCode: 'cement', flowStatus: 'data_entry', receivedDate: '2024-06-20', receivedBy: '赵工' })
-  seedReceipt({ id: 'rc-006-01', contractId: 'c-006', receiptCode: 'RC-2024-0625-01', categoryCode: 'rebar_mech', flowStatus: 'archived', receivedDate: '2024-06-25', receivedBy: '陈工', sampleCount: 3 })
-  seedReceipt({ id: 'rc-006-02', contractId: 'c-006', receiptCode: 'RC-2024-0701-01', categoryCode: 'steel', flowStatus: 'receiving', receivedDate: '2024-07-01', receivedBy: '陈工' })
-  seedReceipt({ id: 'rc-007-01', contractId: 'c-007', receiptCode: 'RC-2024-0705-01', categoryCode: 'concrete', flowStatus: 'data_entry', receivedDate: '2024-07-05', receivedBy: '周工', sampleCount: 3 })
-  seedReceipt({ id: 'rc-007-02', contractId: 'c-007', receiptCode: 'RC-2024-0710-01', categoryCode: 'sand', flowStatus: 'task_assignment', receivedDate: '2024-07-10', receivedBy: '周工' })
-  seedReceipt({ id: 'rc-008-01', contractId: 'c-008', receiptCode: 'RC-2024-0712-01', categoryCode: 'steel', flowStatus: 'receiving', receivedDate: '2024-07-12', receivedBy: '吴工' })
-  seedReceipt({ id: 'rc-008-02', contractId: 'c-008', receiptCode: 'RC-2024-0715-01', categoryCode: 'cement', flowStatus: 'task_assignment', receivedDate: '2024-07-15', receivedBy: '吴工' })
-  seedReceipt({ id: 'rc-009-01', contractId: 'c-009', receiptCode: 'RC-2024-0718-01', categoryCode: 'rebar_weld', flowStatus: 'issuance', receivedDate: '2024-07-18', receivedBy: '郑工', sampleCount: 3 })
-  seedReceipt({ id: 'rc-009-02', contractId: 'c-009', receiptCode: 'RC-2024-0720-01', categoryCode: 'gravel', flowStatus: 'issuance', receivedDate: '2024-07-20', receivedBy: '郑工' })
-  seedReceipt({ id: 'rc-010-01', contractId: 'c-010', receiptCode: 'RC-2024-0508-01', categoryCode: 'gravel', flowStatus: 'archived', receivedDate: '2024-05-08', receivedBy: '孙工' })
+  seedReceipt({ id: 'rc-001-01', contractId: 'c-001', commissionCode: 'RC-2024-0501-01', categoryCode: 'steel', flowStatus: 'archived', commissionDate: '2024-05-01', sampleCount: 3 })
+  seedReceipt({ id: 'rc-001-02', contractId: 'c-001', commissionCode: 'RC-2024-0502-01', categoryCode: 'concrete', flowStatus: 'issuance', commissionDate: '2024-05-02', sampleCount: 3 })
+  seedReceipt({ id: 'rc-001-03', contractId: 'c-001', commissionCode: 'RC-2024-0503-01', categoryCode: 'rebar_mech', flowStatus: 'approval', commissionDate: '2024-05-03' })
+  seedReceipt({ id: 'rc-002-01', contractId: 'c-002', commissionCode: 'RC-2024-0510-01', categoryCode: 'steel', flowStatus: 'review', commissionDate: '2024-05-10', receivedBy: '赵六' })
+  seedReceipt({ id: 'rc-002-02', contractId: 'c-002', commissionCode: 'RC-2024-0515-01', categoryCode: 'concrete', flowStatus: 'archived', commissionDate: '2024-05-15', receivedBy: '赵六', sampleCount: 3 })
+  seedReceipt({ id: 'rc-002-03', contractId: 'c-002', commissionCode: 'RC-2024-0520-01', categoryCode: 'steel', flowStatus: 'receiving', commissionDate: '2024-05-20', receivedBy: '赵六' })
+  seedReceipt({ id: 'rc-003-01', contractId: 'c-003', commissionCode: 'RC-2024-0525-01', categoryCode: 'cement', flowStatus: 'review', commissionDate: '2024-05-25', receivedBy: '李工' })
+  seedReceipt({ id: 'rc-003-02', contractId: 'c-003', commissionCode: 'RC-2024-0526-01', categoryCode: 'rebar_weld', flowStatus: 'approval', commissionDate: '2024-05-26', receivedBy: '李工', sampleCount: 3 })
+  seedReceipt({ id: 'rc-003-03', contractId: 'c-003', commissionCode: 'RC-2024-0601-01', categoryCode: 'sand', flowStatus: 'data_entry', commissionDate: '2024-06-01', receivedBy: '李工' })
+  seedReceipt({ id: 'rc-004-01', contractId: 'c-004', commissionCode: 'RC-2024-0605-01', categoryCode: 'steel', flowStatus: 'review', commissionDate: '2024-06-05', receivedBy: '王工' })
+  seedReceipt({ id: 'rc-004-02', contractId: 'c-004', commissionCode: 'RC-2024-0610-01', categoryCode: 'sand', flowStatus: 'issuance', commissionDate: '2024-06-10', receivedBy: '王工' })
+  seedReceipt({ id: 'rc-005-01', contractId: 'c-005', commissionCode: 'RC-2024-0615-01', categoryCode: 'concrete', flowStatus: 'issuance', commissionDate: '2024-06-15', receivedBy: '赵工', sampleCount: 3 })
+  seedReceipt({ id: 'rc-005-02', contractId: 'c-005', commissionCode: 'RC-2024-0620-01', categoryCode: 'cement', flowStatus: 'data_entry', commissionDate: '2024-06-20', receivedBy: '赵工' })
+  seedReceipt({ id: 'rc-006-01', contractId: 'c-006', commissionCode: 'RC-2024-0625-01', categoryCode: 'rebar_mech', flowStatus: 'archived', commissionDate: '2024-06-25', receivedBy: '陈工', sampleCount: 3 })
+  seedReceipt({ id: 'rc-006-02', contractId: 'c-006', commissionCode: 'RC-2024-0701-01', categoryCode: 'steel', flowStatus: 'receiving', commissionDate: '2024-07-01', receivedBy: '陈工' })
+  seedReceipt({ id: 'rc-007-01', contractId: 'c-007', commissionCode: 'RC-2024-0705-01', categoryCode: 'concrete', flowStatus: 'data_entry', commissionDate: '2024-07-05', receivedBy: '周工', sampleCount: 3 })
+  seedReceipt({ id: 'rc-007-02', contractId: 'c-007', commissionCode: 'RC-2024-0710-01', categoryCode: 'sand', flowStatus: 'task_assignment', commissionDate: '2024-07-10', receivedBy: '周工' })
+  seedReceipt({ id: 'rc-008-01', contractId: 'c-008', commissionCode: 'RC-2024-0712-01', categoryCode: 'steel', flowStatus: 'receiving', commissionDate: '2024-07-12', receivedBy: '吴工' })
+  seedReceipt({ id: 'rc-008-02', contractId: 'c-008', commissionCode: 'RC-2024-0715-01', categoryCode: 'cement', flowStatus: 'task_assignment', commissionDate: '2024-07-15', receivedBy: '吴工' })
+  seedReceipt({ id: 'rc-009-01', contractId: 'c-009', commissionCode: 'RC-2024-0718-01', categoryCode: 'rebar_weld', flowStatus: 'issuance', commissionDate: '2024-07-18', receivedBy: '郑工', sampleCount: 3 })
+  seedReceipt({ id: 'rc-009-02', contractId: 'c-009', commissionCode: 'RC-2024-0720-01', categoryCode: 'gravel', flowStatus: 'issuance', commissionDate: '2024-07-20', receivedBy: '郑工' })
+  seedReceipt({ id: 'rc-010-01', contractId: 'c-010', commissionCode: 'RC-2024-0508-01', categoryCode: 'gravel', flowStatus: 'archived', commissionDate: '2024-05-08', receivedBy: '孙工' })
 }
 
 /** dev 启动种子（幂等，见 msw/browser.ts） */

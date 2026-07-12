@@ -5,7 +5,7 @@ import { apiClient } from '../../api/client'
 
 interface ContractActions {
   fetchContracts: (query: { page: number; pageSize: number; keyword?: string; status?: ContractStatus }) => Promise<void>
-  createContract: (input: { contractCode: string; clientUnit: string; projectName: string; constructionUnit: string; witnessUnit: string; witness: string }) => Promise<void>
+  createContract: (input: { contractCode: string; clientUnit: string; projectName: string; constructionUnit: string; contractCategory?: string; buildingUnit?: string; supervisorUnit?: string; inspectionPerson?: string; inspectionPhone?: string; witnessUnit: string; witness: string }) => Promise<void>
   updateContract: (id: string, input: Partial<Contract>) => Promise<void>
   deleteContract: (id: string) => Promise<void>
   clearError: () => void

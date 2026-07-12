@@ -1,0 +1,34 @@
+{
+  "approved": true,
+  "summary": "新增1个功能模块：合同类别码表管理(M04.F10)，共3个子项，状态均为规划",
+  "changes": [
+    {
+      "id": "M04.F10",
+      "action": "新增",
+      "name": "合同类别码表管理",
+      "reason": "REQ-2026-001 需求，合同类别需形成码表支持 CRUD"
+    },
+    {
+      "id": "M04.F10.I01",
+      "action": "新增",
+      "name": "合同类别列表",
+      "reason": "合同类别码表管理页面"
+    },
+    {
+      "id": "M04.F10.I02",
+      "action": "新增",
+      "name": "合同类别新建/编辑",
+      "reason": "合同类别增删改操作入口"
+    },
+    {
+      "id": "M04.F10.I03",
+      "action": "新增",
+      "name": "合同类别删除",
+      "reason": "合同类别删除操作入口"
+    }
+  ],
+  "sync_files": [
+    "output/lab-management-system/docs/requirements/REQ-2026-001.md"
+  ],
+  "base_sha": "f58cd75ee73e3d9a"
+}

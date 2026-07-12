@@ -18,7 +18,7 @@ async function createReceipt(code: string) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contractId: 'c-1',
-      receiptCode: code,
+      commissionCode: code,
       categoryCode: 'steel',
       receivedBy: '王五',
       sampleSource: '施工送检',

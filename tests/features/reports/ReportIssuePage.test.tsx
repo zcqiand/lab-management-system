@@ -28,10 +28,10 @@ function makeReceipt(overrides: Partial<SampleReceipt> = {}): SampleReceipt {
   return {
     id: "rc-iss-001",
     contractId: "c-001",
-    receiptCode: "RC-2024-001",
+    commissionCode: "RC-2024-001",
     reportCode: "R-2024-001",
     categoryCode: "steel",
-    receivedDate: "2024-06-01",
+    commissionDate: "2024-06-01",
     receivedBy: "张三",
     flowStatus: "issuance",
     result: "pass",
@@ -94,7 +94,7 @@ describe("ReportIssuePage 基础信息", () => {
   fnTest(["M03.F07.I03"], 'submitLabel 为"发放并归档"', async () => {
     server.use(
       mockReceiptsHandler([
-        makeReceipt({ id: "rc-submit-label", receiptCode: "RC-SUBLABEL" }),
+        makeReceipt({ id: "rc-submit-label", commissionCode: "RC-SUBLABEL" }),
       ]),
     );
     render(<ReportIssuePage />);
@@ -160,7 +160,7 @@ describe('"查看报告"按钮', () => {
     const user = userEvent.setup();
     server.use(
       mockReceiptsHandler([
-        makeReceipt({ id: "rc-preview-1", receiptCode: "RC-PREVIEW-1" }),
+        makeReceipt({ id: "rc-preview-1", commissionCode: "RC-PREVIEW-1" }),
       ]),
     );
     render(<ReportIssuePage />);
@@ -183,7 +183,7 @@ describe("发放并归档流程", () => {
     let flowCall: { action: string; ids: string[]; operator: string } | null = null;
     server.use(
       mockReceiptsHandler([
-        makeReceipt({ id: "rc-issue-1", receiptCode: "RC-ISSUE-1" }),
+        makeReceipt({ id: "rc-issue-1", commissionCode: "RC-ISSUE-1" }),
       ]),
       http.post("*/receipts/flow", async ({ request }) => {
         flowCall = (await request.json()) as typeof flowCall;
@@ -205,8 +205,8 @@ describe("发放并归档流程", () => {
     let flowCall: { action: string; ids: string[] } | null = null;
     server.use(
       mockReceiptsHandler([
-        makeReceipt({ id: "rc-batch-iss-1", receiptCode: "RC-BATCH-ISS-1" }),
-        makeReceipt({ id: "rc-batch-iss-2", receiptCode: "RC-BATCH-ISS-2" }),
+        makeReceipt({ id: "rc-batch-iss-1", commissionCode: "RC-BATCH-ISS-1" }),
+        makeReceipt({ id: "rc-batch-iss-2", commissionCode: "RC-BATCH-ISS-2" }),
       ]),
       http.post("*/receipts/flow", async ({ request }) => {
         flowCall = (await request.json()) as typeof flowCall;

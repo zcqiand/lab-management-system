@@ -31,15 +31,15 @@ beforeEach(() => {
 })
 
 function insertReceipt(overrides: Partial<{
-  id: string; contractId: string; receiptCode: string; receivedBy: string;
+  id: string; contractId: string; commissionCode: string; receivedBy: string;
   sampleSource: string; testCategory: string; categoryCode: string
 }> = {}) {
   receiptTable.insert({
     id: overrides.id ?? `rc-${Math.random().toString(36).slice(2, 8)}`,
     contractId: overrides.contractId ?? 'contract-bj-001',
-    receiptCode: overrides.receiptCode ?? 'RC-TEST-001',
+    commissionCode: overrides.commissionCode ?? 'RC-TEST-001',
     categoryCode: overrides.categoryCode ?? 'steel',
-    receivedDate: '2024-05-03',
+    commissionDate: '2024-05-03',
     receivedBy: overrides.receivedBy ?? '王五',
     sampleSource: overrides.sampleSource ?? '施工送检',
     testCategory: overrides.testCategory ?? '委托检验',
@@ -59,9 +59,9 @@ describe('receiptStore 状态流转', () => {
   })
 
   fnTest(['M03.F01.I01'], 'fetchReceipts 成功', async () => {
-    insertReceipt({ receiptCode: 'RC-001' })
-    insertReceipt({ receiptCode: 'RC-002' })
-    insertReceipt({ receiptCode: 'RC-003' })
+    insertReceipt({ commissionCode: 'RC-001' })
+    insertReceipt({ commissionCode: 'RC-002' })
+    insertReceipt({ commissionCode: 'RC-003' })
     const promise = useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10 })
     expect(useReceiptStore.getState().loading).toBe(true)
     await promise
@@ -73,18 +73,18 @@ describe('receiptStore 状态流转', () => {
   })
 
   fnTest(['M03.F01.I01'], 'fetchReceipts 支持 keyword 搜索', async () => {
-    insertReceipt({ receiptCode: 'RC-KEYWORD-XYZ' })
-    insertReceipt({ receiptCode: 'RC-OTHER' })
+    insertReceipt({ commissionCode: 'RC-KEYWORD-XYZ' })
+    insertReceipt({ commissionCode: 'RC-OTHER' })
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10, keyword: 'XYZ' })
     const s = useReceiptStore.getState()
     expect(s.list).toHaveLength(1)
-    expect(s.list[0]!.receiptCode).toContain('XYZ')
+    expect(s.list[0]!.commissionCode).toContain('XYZ')
   })
 
   fnTest(['M03.F01.I01'], 'fetchReceipts 支持 categoryCode 过滤', async () => {
     seedCategory('cement')
-    insertReceipt({ receiptCode: 'RC-STATUS-1', categoryCode: 'cement' })
-    insertReceipt({ receiptCode: 'RC-STATUS-2', categoryCode: 'steel' })
+    insertReceipt({ commissionCode: 'RC-STATUS-1', categoryCode: 'cement' })
+    insertReceipt({ commissionCode: 'RC-STATUS-2', categoryCode: 'steel' })
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10, categoryCode: 'cement' })
     const s = useReceiptStore.getState()
     expect(s.list).toHaveLength(1)
@@ -109,25 +109,25 @@ describe('receiptStore 状态流转', () => {
   })
 
   fnTest(['M03.F01.I02'], 'createReceipt 成功', async () => {
-    insertReceipt({ receiptCode: 'RC-SEED-001' })
+    insertReceipt({ commissionCode: 'RC-SEED-001' })
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10 })
     await useReceiptStore.getState().createReceipt({
       contractId: 'contract-bj-001',
-      receiptCode: 'RC-NEW-001',
+      commissionCode: 'RC-NEW-001',
       categoryCode: 'steel',
       receivedBy: '王五',
       sampleSource: '施工送检',
       testCategory: '委托检验',
     })
     const s = useReceiptStore.getState()
-    expect(s.list.some((r) => r.receiptCode === 'RC-NEW-001')).toBe(true)
+    expect(s.list.some((r) => r.commissionCode === 'RC-NEW-001')).toBe(true)
     expect(s.total).toBe(2)
   })
 
   fnTest(['M03.F01.I02'], 'createReceipt 失败', async () => {
     await useReceiptStore.getState().createReceipt({
       contractId: '',
-      receiptCode: '',
+      commissionCode: '',
       categoryCode: '',
       receivedBy: '',
       sampleSource: '',
@@ -138,7 +138,7 @@ describe('receiptStore 状态流转', () => {
   })
 
   fnTest(['M03.F01.I03'], 'updateReceipt 成功', async () => {
-    insertReceipt({ id: 'rc-update-test', receiptCode: 'RC-UPD-001' })
+    insertReceipt({ id: 'rc-update-test', commissionCode: 'RC-UPD-001' })
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10 })
     const target = useReceiptStore.getState().list[0]!
     await useReceiptStore.getState().updateReceipt(target.id, { receivedBy: '李四', remark: '复检' })
@@ -154,8 +154,8 @@ describe('receiptStore 状态流转', () => {
   })
 
   fnTest(['M03.F01.I04'], 'deleteReceipt 成功', async () => {
-    insertReceipt({ id: 'rc-del-1', receiptCode: 'RC-DEL-1' })
-    insertReceipt({ id: 'rc-del-2', receiptCode: 'RC-DEL-2' })
+    insertReceipt({ id: 'rc-del-1', commissionCode: 'RC-DEL-1' })
+    insertReceipt({ id: 'rc-del-2', commissionCode: 'RC-DEL-2' })
     await useReceiptStore.getState().fetchReceipts({ page: 1, pageSize: 10 })
     const target = useReceiptStore.getState().list[0]!
     await useReceiptStore.getState().deleteReceipt(target.id)

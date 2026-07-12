@@ -19,14 +19,12 @@ interface ReceiptActions {
   fetchReceipts: (query: ReceiptQueryInput) => Promise<void>
   createReceipt: (input: {
     contractId: string
-    receiptCode: string
+    commissionCode: string
     categoryCode: string
     receivedBy: string
     sampleSource: string
     testCategory: string
-    receivedDate?: string
-    testEnvironment?: string
-    mainEquipment?: string
+    commissionDate?: string
     remark?: string
   }) => Promise<void>
   updateReceipt: (id: string, input: Partial<SampleReceipt>) => Promise<void>

@@ -27,10 +27,10 @@ function makeReceipt(overrides: Partial<SampleReceipt> = {}): SampleReceipt {
   return {
     id: "rc-001",
     contractId: "c-001",
-    receiptCode: "RC-2024-001",
+    commissionCode: "RC-2024-001",
     reportCode: "R-2024-001",
     categoryCode: "steel",
-    receivedDate: "2024-06-01",
+    commissionDate: "2024-06-01",
     receivedBy: "张三",
     flowStatus: "receiving",
     result: undefined,
@@ -91,7 +91,7 @@ afterEach(() => {
 describe("基础渲染", () => {
   it("挂载后显示正确标题、当环节标签、提交后进入标签", async () => {
     server.use(
-      mockReceiptsHandler([makeReceipt({ id: "rc-empty", receiptCode: "RC-EMPTY" })]),
+      mockReceiptsHandler([makeReceipt({ id: "rc-empty", commissionCode: "RC-EMPTY" })]),
     );
     render(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("接样管理")).toBeInTheDocument());
@@ -156,9 +156,9 @@ describe("列表渲染", () => {
   it("正确渲染接味单行，含 checkbox、编号、报告编号、日期、收样人、检测结果", async () => {
     const receipt = makeReceipt({
       id: "rc-list-1",
-      receiptCode: "RC-LIST-001",
+      commissionCode: "RC-LIST-001",
       reportCode: "R-2024-010",
-      receivedDate: "2024-07-01",
+      commissionDate: "2024-07-01",
       receivedBy: "李四",
       result: "pass",
     });
@@ -219,7 +219,7 @@ describe("搜索", () => {
 describe("分页", () => {
   it("共 N 条 / 第 X 页 / 共 Y 页显示正确；上一页/下一页按钮", async () => {
     const items = Array.from({ length: 10 }, (_, i) =>
-      makeReceipt({ id: `rc-page-${i}`, receiptCode: `RC-PAGE-${i}` }),
+      makeReceipt({ id: `rc-page-${i}`, commissionCode: `RC-PAGE-${i}` }),
     );
     server.use(mockReceiptsHandler(items, [], 25));
     render(<FlowStagePage title="接样管理" stage="receiving" />);
@@ -240,7 +240,7 @@ describe("分页", () => {
         }
         capturedPage = url.searchParams.get("page");
         return HttpResponse.json({
-          items: [makeReceipt({ id: `rc-p2`, receiptCode: `RC-PAGE-2-${capturedPage}` })],
+          items: [makeReceipt({ id: `rc-p2`, commissionCode: `RC-PAGE-2-${capturedPage}` })],
           total: 25,
         });
       }),
@@ -262,7 +262,7 @@ describe("单个提交", () => {
     let flowCall: { action: string; ids: string[]; operator: string } | null = null;
     server.use(
       mockReceiptsHandler([
-        makeReceipt({ id: "rc-submit-1", receiptCode: "RC-SUBMIT-1" }),
+        makeReceipt({ id: "rc-submit-1", commissionCode: "RC-SUBMIT-1" }),
       ]),
       http.post("*/receipts/flow", async ({ request }) => {
         flowCall = (await request.json()) as typeof flowCall;
@@ -290,7 +290,7 @@ describe("单个提交", () => {
     });
     let capturedOperator: string | null = null;
     server.use(
-      mockReceiptsHandler([makeReceipt({ id: "rc-op-1", receiptCode: "RC-OP-1" })]),
+      mockReceiptsHandler([makeReceipt({ id: "rc-op-1", commissionCode: "RC-OP-1" })]),
       http.post("*/receipts/flow", async ({ request }) => {
         const body = (await request.json()) as { operator: string };
         capturedOperator = body.operator;
@@ -313,8 +313,8 @@ describe("批量提交", () => {
     let flowCall: { action: string; ids: string[] } | null = null;
     server.use(
       mockReceiptsHandler([
-        makeReceipt({ id: "rc-batch-1", receiptCode: "RC-BATCH-1" }),
-        makeReceipt({ id: "rc-batch-2", receiptCode: "RC-BATCH-2" }),
+        makeReceipt({ id: "rc-batch-1", commissionCode: "RC-BATCH-1" }),
+        makeReceipt({ id: "rc-batch-2", commissionCode: "RC-BATCH-2" }),
       ]),
       http.post("*/receipts/flow", async ({ request }) => {
         flowCall = (await request.json()) as typeof flowCall;
@@ -354,7 +354,7 @@ describe("退回", () => {
       mockReceiptsHandler([
         makeReceipt({
           id: "rc-return-1",
-          receiptCode: "RC-RETURN-1",
+          commissionCode: "RC-RETURN-1",
           flowStatus: "review",
         }),
       ]),
@@ -381,7 +381,7 @@ describe("撤回", () => {
         [
           makeReceipt({
             id: "rc-withdraw-1",
-            receiptCode: "RC-WITHDRAW-1",
+            commissionCode: "RC-WITHDRAW-1",
             flowStatus: "task_assignment",
             lastSubmittedBy: "u-001",
           }),
@@ -442,7 +442,7 @@ describe("extraColumns", () => {
       mockReceiptsHandler([
         makeReceipt({
           id: "rc-extra-1",
-          receiptCode: "RC-EXTRA-1",
+          commissionCode: "RC-EXTRA-1",
           categoryCode: "steel",
         }),
       ]),
@@ -474,7 +474,7 @@ describe("rowActions", () => {
     let actionCalled = false;
     server.use(
       mockReceiptsHandler([
-        makeReceipt({ id: "rc-action-1", receiptCode: "RC-ACTION-1" }),
+        makeReceipt({ id: "rc-action-1", commissionCode: "RC-ACTION-1" }),
       ]),
     );
     render(
@@ -488,7 +488,7 @@ describe("rowActions", () => {
             }}
             className="custom-action"
           >
-            编辑 {r.receiptCode}
+            编辑 {r.commissionCode}
           </button>
         )}
       />,
@@ -508,7 +508,7 @@ describe("权限处理", () => {
     const user = userEvent.setup();
     let capturedOperator: string | null = null;
     server.use(
-      mockReceiptsHandler([makeReceipt({ id: "rc-op-id", receiptCode: "RC-OP-ID" })]),
+      mockReceiptsHandler([makeReceipt({ id: "rc-op-id", commissionCode: "RC-OP-ID" })]),
       http.post("*/receipts/flow", async ({ request }) => {
         const body = (await request.json()) as { operator: string };
         capturedOperator = body.operator;
@@ -530,7 +530,7 @@ describe("操作失败", () => {
   it.skip("API 返回失败时显示错误提示", async () => {
     const user = userEvent.setup();
     server.use(
-      mockReceiptsHandler([makeReceipt({ id: "rc-fail-1", receiptCode: "RC-FAIL-1" })]),
+      mockReceiptsHandler([makeReceipt({ id: "rc-fail-1", commissionCode: "RC-FAIL-1" })]),
       http.post("*/receipts/flow", () =>
         HttpResponse.json({
           results: [{ id: "rc-fail-1", ok: false, message: "该单据已被其他人处理" }],
@@ -552,7 +552,7 @@ describe("操作失败", () => {
   it.skip('网络错误时显示"操作失败"', async () => {
     const user = userEvent.setup();
     server.use(
-      mockReceiptsHandler([makeReceipt({ id: "rc-net-err", receiptCode: "RC-NET-ERR" })]),
+      mockReceiptsHandler([makeReceipt({ id: "rc-net-err", commissionCode: "RC-NET-ERR" })]),
       http.post("*/receipts/flow", () => HttpResponse.error()),
     );
     render(<FlowStagePage title="接样管理" stage="receiving" />);
@@ -568,7 +568,7 @@ describe("操作失败", () => {
   it("成功时显示 notice 提示", async () => {
     const user = userEvent.setup();
     server.use(
-      mockReceiptsHandler([makeReceipt({ id: "rc-ok-1", receiptCode: "RC-OK-1" })]),
+      mockReceiptsHandler([makeReceipt({ id: "rc-ok-1", commissionCode: "RC-OK-1" })]),
       http.post("*/receipts/flow", () =>
         HttpResponse.json({ results: [{ id: "rc-ok-1", ok: true }] }),
       ),

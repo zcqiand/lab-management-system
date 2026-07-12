@@ -39,7 +39,7 @@ describe('v3 /report-categories：报告类别可维护', () => {
   it('被接样单引用的类别不能删除；未被引用可删除', async () => {
     await seedCategory('steel')
     await seedCategory('unused')
-    await post('/receipts', { contractId: 'c-1', receiptCode: 'RC-CAT-1', categoryCode: 'steel', receivedBy: '王五' })
+    await post('/receipts', { contractId: 'c-1', commissionCode: 'RC-CAT-1', categoryCode: 'steel', receivedBy: '王五' })
     const delUsed = await fetch(`${API_BASE}/report-categories/steel`, { method: 'DELETE' })
     expect(delUsed.status).toBe(400)
     const delUnused = await fetch(`${API_BASE}/report-categories/unused`, { method: 'DELETE' })
@@ -47,7 +47,7 @@ describe('v3 /report-categories：报告类别可维护', () => {
   })
 
   it('接样单必须携带存在的报告类别', async () => {
-    const res = await post('/receipts', { contractId: 'c-1', receiptCode: 'RC-CAT-X', categoryCode: 'no-such', receivedBy: '王五' })
+    const res = await post('/receipts', { contractId: 'c-1', commissionCode: 'RC-CAT-X', categoryCode: 'no-such', receivedBy: '王五' })
     expect(res.status).toBe(400)
   })
 })
@@ -121,7 +121,7 @@ describe('v3 样品归属接样单 / 检测项归属样品', () => {
     await seedCategory('steel')
     const bad = await post('/samples', { receiptId: 'rc-none', sampleCode: 'S-X' })
     expect(bad.status).toBe(400)
-    const rc = await (await post('/receipts', { contractId: 'c-1', receiptCode: 'RC-CASCADE', categoryCode: 'steel', receivedBy: '王五' })).json()
+    const rc = await (await post('/receipts', { contractId: 'c-1', commissionCode: 'RC-CASCADE', categoryCode: 'steel', receivedBy: '王五' })).json()
     const sample = await (await post('/samples', { receiptId: rc.id, sampleCode: 'S-1', brand: 'HRB400E' })).json()
     await post('/test-items', { sampleId: sample.id, parameterCode: 'STE003', result: '425' })
     await fetch(`${API_BASE}/receipts/${rc.id}`, { method: 'DELETE' })
@@ -133,7 +133,7 @@ describe('v3 样品归属接样单 / 检测项归属样品', () => {
 
   it('GET /test-items?receiptId 经样品 join；样品扩展属性 ext 持久化', async () => {
     await seedCategory('steel', { extFields: [{ key: 'furnaceNo', label: '炉号' }] })
-    const rc = await (await post('/receipts', { contractId: 'c-1', receiptCode: 'RC-JOIN', categoryCode: 'steel', receivedBy: '王五' })).json()
+    const rc = await (await post('/receipts', { contractId: 'c-1', commissionCode: 'RC-JOIN', categoryCode: 'steel', receivedBy: '王五' })).json()
     const sample = await (await post('/samples', { receiptId: rc.id, sampleCode: 'S-1', ext: { furnaceNo: 'LH-01' } })).json()
     expect(sample.ext.furnaceNo).toBe('LH-01')
     await post('/test-items', { sampleId: sample.id, parameterCode: 'P-1', result: '1' })
@@ -147,7 +147,7 @@ describe('v3 /summary：按报告类别的试验报告汇总表', () => {
   it('material 口径：行=样品，含 牌号/质保编号/厂家/代表数量/报告编号/判定结果', async () => {
     await seedCategory('steel', { summaryType: 'material', summaryName: '钢材试验报告汇总表', extFields: [] })
     await post('/technical-requirements', { code: 'REQ-S', standardCode: 'GB', parameterCode: 'STE003', categoryCode: 'steel', brand: 'HRB400E', comparison: '≥', value: '400', unit: 'MPa' })
-    const rc = await (await post('/receipts', { contractId: 'c-1', receiptCode: 'RC-SUM-1', categoryCode: 'steel', receivedBy: '王五' })).json()
+    const rc = await (await post('/receipts', { contractId: 'c-1', commissionCode: 'RC-SUM-1', categoryCode: 'steel', receivedBy: '王五' })).json()
     const sample = await (
       await post('/samples', {
         receiptId: rc.id,
@@ -175,7 +175,7 @@ describe('v3 /summary：按报告类别的试验报告汇总表', () => {
 
   it('concrete 口径：含 轴线部位/浇筑时间/设计强度等级/实际强度值', async () => {
     await seedCategory('concrete', { summaryType: 'concrete', summaryName: '混凝土抗压汇总表' })
-    const rc = await (await post('/receipts', { contractId: 'c-1', receiptCode: 'RC-SUM-C', categoryCode: 'concrete', receivedBy: '王五' })).json()
+    const rc = await (await post('/receipts', { contractId: 'c-1', commissionCode: 'RC-SUM-C', categoryCode: 'concrete', receivedBy: '王五' })).json()
     const sample = await (
       await post('/samples', {
         receiptId: rc.id,
@@ -196,7 +196,7 @@ describe('v3 /summary：按报告类别的试验报告汇总表', () => {
   it('connection 口径：含 结构部位/品种规格/对应部位混凝土浇筑时间；支持合同过滤', async () => {
     await seedCategory('rebar_mech', { summaryType: 'connection', summaryName: '机械连接汇总表' })
     const mk = async (contractId: string, code: string) => {
-      const rc = await (await post('/receipts', { contractId, receiptCode: code, categoryCode: 'rebar_mech', receivedBy: '王五' })).json()
+      const rc = await (await post('/receipts', { contractId, commissionCode: code, categoryCode: 'rebar_mech', receivedBy: '王五' })).json()
       const s = await (
         await post('/samples', {
           receiptId: rc.id,
@@ -223,7 +223,7 @@ describe('v3 /summary：按报告类别的试验报告汇总表', () => {
     const bad = await fetch(`${API_BASE}/summary`)
     expect(bad.status).toBe(400)
     await seedCategory('sand', { summaryType: 'material' })
-    await post('/receipts', { contractId: 'c-1', receiptCode: 'RC-NO-REPORT', categoryCode: 'sand', receivedBy: '王五' })
+    await post('/receipts', { contractId: 'c-1', commissionCode: 'RC-NO-REPORT', categoryCode: 'sand', receivedBy: '王五' })
     const summary = await (await fetch(`${API_BASE}/summary?categoryCode=sand`)).json()
     expect(summary.rows).toHaveLength(0)
   })
@@ -234,7 +234,7 @@ describe('v3 自动评定：技术要求按 类别+牌号/型号/等级/规格 �
     await seedCategory('steel')
     await post('/technical-requirements', { code: 'REQ-400', standardCode: 'GB', parameterCode: 'STE001', categoryCode: 'steel', brand: 'HRB400', comparison: '≥', value: '400', unit: 'MPa' })
     await post('/technical-requirements', { code: 'REQ-500', standardCode: 'GB', parameterCode: 'STE001', categoryCode: 'steel', brand: 'HRB500', comparison: '≥', value: '500', unit: 'MPa' })
-    const rc = await (await post('/receipts', { contractId: 'c-1', receiptCode: 'RC-EVAL-B', categoryCode: 'steel', receivedBy: '王五' })).json()
+    const rc = await (await post('/receipts', { contractId: 'c-1', commissionCode: 'RC-EVAL-B', categoryCode: 'steel', receivedBy: '王五' })).json()
     const sample = await (await post('/samples', { receiptId: rc.id, sampleCode: 'S-500', brand: 'HRB500' })).json()
     // 450 对 HRB500（≥500）不合格；若误匹配 HRB400（≥400）会误判合格
     const item = await (await post('/test-items', { sampleId: sample.id, parameterCode: 'STE001', result: '450' })).json()
@@ -245,7 +245,7 @@ describe('v3 自动评定：技术要求按 类别+牌号/型号/等级/规格 �
   it('range 比较：区间内合格', async () => {
     await seedCategory('sand')
     await post('/technical-requirements', { code: 'REQ-FM', standardCode: 'GB', parameterCode: 'SND001', categoryCode: 'sand', model: '中砂', comparison: 'range', value: '2.3~3.0' })
-    const rc = await (await post('/receipts', { contractId: 'c-1', receiptCode: 'RC-RANGE', categoryCode: 'sand', receivedBy: '王五' })).json()
+    const rc = await (await post('/receipts', { contractId: 'c-1', commissionCode: 'RC-RANGE', categoryCode: 'sand', receivedBy: '王五' })).json()
     const sample = await (await post('/samples', { receiptId: rc.id, sampleCode: 'S-SND', model: '中砂' })).json()
     const ok = await (await post('/test-items', { sampleId: sample.id, parameterCode: 'SND001', result: '2.6' })).json()
     expect(ok.autoPassed).toBe(true)

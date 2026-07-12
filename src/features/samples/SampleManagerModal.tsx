@@ -121,7 +121,7 @@ export function SampleManagerModal({ receipt, onClose, readOnly }: Props) {
 
   const openCreate = () => {
     setEditing(null)
-    setForm({ ...emptyForm, sampleCode: `${receipt.receiptCode}-S${samples.length + 1}` })
+    setForm({ ...emptyForm, sampleCode: `${receipt.commissionCode}-S${samples.length + 1}` })
     setExt({})
     setFormOpen(true)
   }
@@ -185,7 +185,7 @@ export function SampleManagerModal({ receipt, onClose, readOnly }: Props) {
       <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[92vh] overflow-y-auto">
         <div className="flex items-center justify-between px-5 py-3 border-b">
           <div>
-            <h3 className="text-lg font-semibold">样品管理 — {receipt.receiptCode}</h3>
+            <h3 className="text-lg font-semibold">样品管理 — {receipt.commissionCode}</h3>
             <p className="text-xs text-gray-500 mt-0.5">报告类别：{category?.name ?? receipt.categoryCode}</p>
           </div>
           <div className="flex items-center gap-2">

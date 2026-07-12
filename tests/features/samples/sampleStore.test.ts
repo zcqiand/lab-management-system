@@ -25,9 +25,9 @@ function insertReceipt(id = `rc-${Math.random().toString(36).slice(2, 8)}`) {
   return receiptTable.insert({
     id,
     contractId: "contract-001",
-    receiptCode: "RC-TEST-001",
+    commissionCode: "RC-TEST-001",
     categoryCode: "steel",
-    receivedDate: "2024-05-03",
+    commissionDate: "2024-05-03",
     receivedBy: "王五",
     sampleSource: "施工送检",
     testCategory: "委托检验",

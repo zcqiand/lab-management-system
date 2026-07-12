@@ -3,8 +3,8 @@
   "project": "lab-management-system",
   "functions": {
     "modules": 5,
-    "features": 27,
-    "items": 87
+    "features": 28,
+    "items": 90
   },
   "warnings_total": 0,
   "warnings": {},
@@ -299,7 +299,9 @@
     "M02.F01.I01": {
       "name": "合同列表",
       "status": "已上线",
-      "requirements": [],
+      "requirements": [
+        "docs\\requirements\\REQ-2026-001.md"
+      ],
       "flows": [
         "docs\\design\\flow-function-map.md"
       ],
@@ -321,7 +323,9 @@
     "M02.F01.I02": {
       "name": "合同新建/编辑",
       "status": "已上线",
-      "requirements": [],
+      "requirements": [
+        "docs\\requirements\\REQ-2026-001.md"
+      ],
       "flows": [
         "docs\\design\\flow-function-map.md"
       ],
@@ -473,7 +477,9 @@
     "M03.F01.I01": {
       "name": "接样单列表",
       "status": "已上线",
-      "requirements": [],
+      "requirements": [
+        "docs\\requirements\\REQ-2026-002-接样单表单重构.md"
+      ],
       "flows": [
         "docs\\design\\flow-function-map.md"
       ],
@@ -496,7 +502,9 @@
     "M03.F01.I02": {
       "name": "接样单新建",
       "status": "已上线",
-      "requirements": [],
+      "requirements": [
+        "docs\\requirements\\REQ-2026-002-接样单表单重构.md"
+      ],
       "flows": [
         "docs\\design\\flow-function-map.md"
       ],
@@ -511,7 +519,9 @@
     "M03.F01.I03": {
       "name": "接样单编辑",
       "status": "已上线",
-      "requirements": [],
+      "requirements": [
+        "docs\\requirements\\REQ-2026-002-接样单表单重构.md"
+      ],
       "flows": [
         "docs\\design\\flow-function-map.md"
       ],
@@ -1389,6 +1399,36 @@
       "tests": [
         "MSW model/specification/grade/brand handlers DELETE /brands/:id 删除成功"
       ]
+    },
+    "M04.F10.I01": {
+      "name": "合同类别列表",
+      "status": "规划",
+      "requirements": [
+        "docs\\requirements\\REQ-2026-001.md"
+      ],
+      "flows": [],
+      "designs": [],
+      "tests": []
+    },
+    "M04.F10.I02": {
+      "name": "合同类别新建/编辑",
+      "status": "规划",
+      "requirements": [
+        "docs\\requirements\\REQ-2026-001.md"
+      ],
+      "flows": [],
+      "designs": [],
+      "tests": []
+    },
+    "M04.F10.I03": {
+      "name": "合同类别删除",
+      "status": "规划",
+      "requirements": [
+        "docs\\requirements\\REQ-2026-001.md"
+      ],
+      "flows": [],
+      "designs": [],
+      "tests": []
     },
     "M05.F01.I01": {
       "name": "汇总表",

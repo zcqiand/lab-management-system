@@ -72,7 +72,7 @@ export function TaskAssignmentPage() {
 
       <ConfirmModal
         open={target !== null}
-        title={`任务安排 — ${target?.receiptCode ?? ''}`}
+        title={`任务安排 — ${target?.commissionCode ?? ''}`}
         message={
           <div className="space-y-3 text-left text-sm">
             <div>

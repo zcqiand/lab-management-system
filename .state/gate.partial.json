@@ -4,17 +4,17 @@
   "passed": false,
   "partial": true,
   "ran": [
-    "L3"
+    "L5"
   ],
-  "checked_at": "2026-07-11T05:34:17+0800",
+  "checked_at": "2026-07-12T05:15:41+0800",
   "gates": [
     {
-      "level": "L3",
-      "name": "类型",
+      "level": "L5",
+      "name": "引用完整性",
       "passed": false,
       "returncode": 2,
-      "duration_s": 4.641,
-      "output": "msw/handlers.ts(277,48): error TS2345: Argument of type '{ remark?: string | undefined; reportTitle: string; summaryType: \"material\" | \"concrete\" | \"connection\"; summaryName: string; extFields: { key: string; label: string; }[]; code?: string | undefined; name?: string | undefined; }' is not assignable to parameter of type 'Omit<{ id: string; code: string; name: string; reportTitle: string; summaryType: \"material\" | \"concrete\" | \"connection\"; summaryName: string; extFields: ExtFieldDef[]; sortOrder: number; remark?: string | undefined; createdAt: string; updatedAt: string; }, \"id\" | ... 1 more ... | \"updatedAt\"> & Partial<...>'.\n  Property 'sortOrder' is missing in type '{ remark?: string | undefined; reportTitle: string; summaryType: \"material\" | \"concrete\" | \"connection\"; summaryName: string; extFields: { key: string; label: string; }[]; code?: string | undefined; name?: string | undefined; }' but required in type 'Omit<{ id: string; code: string; name: string; reportTitle: string; summaryType: \"material\" | \"concrete\" | \"connection\"; summaryName: string; extFields: ExtFieldDef[]; sortOrder: number; remark?: string | undefined; createdAt: string; updatedAt: string; }, \"id\" | ... 1 more ... | \"updatedAt\">'.\nsrc/features/contracts/ContractSummary.tsx(4,15): error TS2305: Module '\"../../types/api\"' has no exported member 'SteelSummaryRow'.\nsrc/features/contracts/ContractSummary.tsx(4,32): error TS2305: Module '\"../../types/api\"' has no exported member 'MaterialType'.\nsrc/features/projects/ProjectFormModal.tsx(40,51): error TS2339: Property 'code' does not exist on type 'Partial<Project>'.\nsrc/features/projects/ProjectFormModal.tsx(42,57): error TS2339: Property 'ownerId' does not exist on type 'Partial<Project>'.\nsrc/features/projects/ProjectFormModal.tsx(49,30): error TS2339: Property 'code' does not exist on type 'Partial<Project>'.\nsrc/features/projects/ProjectFormModal.tsx(51,33): error TS2339: Property 'ownerId' does not exist on type 'Partial<Project>'.\nsrc/features/projects/ProjectList.tsx(26,5): error TS2353: Object literal may only specify known properties, and 'keyword' does not exist in type 'ProjectQuery'.\nsrc/features/projects/ProjectList.tsx(46,7): error TS2353: Object literal may only specify known properties, and 'keyword' does not exist in type 'ProjectQuery'.\nsrc/features/projects/ProjectList.tsx(70,11): error TS2353: Object literal may only specify known properties, and 'code' does not exist in type 'ProjectCreateInput'.\nsrc/features/projects/ProjectList.tsx(77,11): error TS2353: Object literal may only specify known properties, and 'code' does not exist in type 'ProjectUpdateInput'.\nsrc/features/projects/ProjectList.tsx(179,46): error TS2339: Property 'code' does not exist on type 'Project'.\nsrc/features/projects/ProjectList.tsx(181,46): error TS2339: Property 'ownerId' does not exist on type 'Project'.\nsrc/features/projects/projectStore.ts(45,17): error TS2339: Property 'keyword' does not exist on type 'ProjectQuery'.\nsrc/features/projects/projectStore.ts(45,49): error TS2339: Property 'keyword' does not exist on type 'ProjectQuery'.\nsrc/features/receipts/ReceiptFormModal.tsx(60,21): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'SetStateAction<string>'.\n  Type 'undefined' is not assignable to type 'SetStateAction<string>'.\nsrc/features/reports/ReportEditPage.tsx(100,43): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.\nsrc/features/reports/ReportEditPage.tsx(103,43): error TS2322: Type '{}' is not assignable to type 'ReactNode'.\nsrc/features/reports/ReportFormModal.tsx(42,19): error TS2339: Property 'trim' does not exist on type '{}'.\nsrc/features/reports/ReportFormModal.tsx(53,26): error TS2339: Property 'trim' does not exist on type '{}'.\nsrc/features/reports/ReportFormModal.tsx(68,39): error TS2322: Type '{}' is not assignable to type 'string | number | readonly string[] | undefined'.\nsrc/features/reports/ReportList.tsx(105,43): error TS2322"
+      "duration_s": 11.094,
+      "output": "契约错误: lab-management-system: .state/trace.json 是陈旧的（trace_cmd 没有重写它）。\n    适配器可能被 reporter 配置漏掉了。"
     }
   ]
 }

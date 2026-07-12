@@ -1,27 +1,26 @@
 {
   "schema": 1,
   "project": "lab-management-system",
-  "current_task": "功能清单对齐完成，软告警清零",
+  "current_task": "数据录入左右分栏UI + valueCount动态列数",
   "done": [
-    "将 M02.F02/F03/F04（人员/设备/设施）状态改为规划",
-    "将 M03.F02.I03（任务取消）状态改为已废弃",
-    "将 M02.F01.I04（合同汇总）/M03.F01.I05（接样单详情）/M03.F04.I04（Word下载）/M04.F02.I03（模板删除）/M05.F01.I02（汇总类型）状态改为已废弃",
-    "修复 flow-function-map.md D06 范围记法：将 M04.F06~F09 展开为精确 ID，消除孤儿白名单告警",
-    "新增 sampleStore.test.ts：覆盖 M03.F02.I01/I02/I03",
-    "新增 useCategories.test.tsx：覆盖 M04.F01.I01",
-    "新增 codesHandlers.test.ts：覆盖 M04 全套字典 + M03.F03.I03-I06",
-    "新增 orgHandlers.test.ts：覆盖 M01.F01.I01 + M04.F01.I02/I03 + M04.F03.I04",
-    "修复 trace-parse.js（vitest 2.1.9 reporter 不工作）",
-    "lab-management-system 软告警：87 → 0 条"
+    "数据录入 EntryModal 改为左右分栏：左侧样品清单（橙色未录入高亮），右侧动态列数录入表单",
+    "TestParameter 新增 valueCount 字段控制录入列数",
+    "TestItem 新增 testValues（多样本原始值）+ representativeValue（代表值）",
+    "后端 evaluateTestResult 支持 testValues 数组计算平均值代表值",
+    "混凝土 CON002（抗压强度代表值）设置 valueCount=3，其他参数默认1列",
+    "计算引擎需求已澄清：所有参数都支持，但本次先做UI；计算引擎作为独立需求后续处理"
   ],
-  "next": "下次会话：无阻塞任务，可直接开始新功能开发",
-  "open_questions": [],
+  "next": "计算引擎作为独立需求处理（管理员维护计算规则，根据型号/规格/牌号确定输入面积，按参数类型执行不同算法）",
+  "open_questions": [
+    "计算引擎：管理员维护计算规则（公式、尺寸换算系数、±15%规则等）",
+    "计算引擎：管理员维护试件尺寸表（按型号/规格/牌号决定面积）",
+    "计算引擎：CON002具体算法（荷载→强度→±15%规则→代表值）"
+  ],
   "blocked_by": [],
   "dont": [
     "不要改 .harness/stack.json 让门变松",
     "不要给 skip 的测试挂功能 ID",
-    "不要写依赖不存在 MSW handler 的测试",
-    "不要在项目代码里加 eslint-disable 除非附 ADR 说明"
+    "不要在 ReceiptFormModal 的 grid grid-cols-4 内嵌套同级 div"
   ],
-  "last_handoff_at": "2026-07-11"
+  "last_handoff_at": "2026-07-12"
 }

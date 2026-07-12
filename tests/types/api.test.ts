@@ -78,9 +78,9 @@ describe("types/api 业务实体（v3）", () => {
     const receipt: SampleReceipt = {
       id: "rc-001",
       contractId: "c-001",
-      receiptCode: "RC-2024-0501-01",
+      commissionCode: "RC-2024-0501-01",
       categoryCode: "steel",
-      receivedDate: "2024-05-01",
+      commissionDate: "2024-05-01",
       receivedBy: "王五",
       sampleSource: "施工送检",
       testCategory: "委托检验",

@@ -21,7 +21,7 @@ describe("MSW stats handler", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contractId: "c-1",
-          receiptCode: "RC-STATS-1",
+          commissionCode: "RC-STATS-1",
           categoryCode: "steel",
           receivedBy: "王五",
           sampleSource: "施工送检",

@@ -52,7 +52,7 @@ export function ReportPreviewModal({ receipt, onClose }: Props) {
     })()
   }, [receipt])
 
-  const docTitle = `${receipt.reportCode ?? receipt.receiptCode} 检测报告`
+  const docTitle = `${receipt.reportCode ?? receipt.commissionCode} 检测报告`
 
   const handlePrint = () => {
     const w = window.open('', '_blank')
@@ -69,7 +69,7 @@ export function ReportPreviewModal({ receipt, onClose }: Props) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${receipt.reportCode ?? receipt.receiptCode}.doc`
+    a.download = `${receipt.reportCode ?? receipt.commissionCode}.doc`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -78,7 +78,7 @@ export function ReportPreviewModal({ receipt, onClose }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[92vh] flex flex-col">
         <div className="flex items-center justify-between px-5 py-3 border-b">
-          <h3 className="text-lg font-semibold">报告文档 — {receipt.reportCode ?? receipt.receiptCode}</h3>
+          <h3 className="text-lg font-semibold">报告文档 — {receipt.reportCode ?? receipt.commissionCode}</h3>
           <div className="flex items-center gap-2">
             <button onClick={handleDownload} disabled={loading || Boolean(error)} className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50">
               下载 Word

@@ -71,7 +71,10 @@ export function DataEntryPage() {
   )
 }
 
-/** 录入弹窗：样品（含扩展属性展示）+ 检测项表格 */
+/** 录入弹窗：左右分栏布局
+ * 左侧：样品清单（高亮未录入样品）
+ * 右侧：选中样品的检测录入表单 + 该样品已录入检测项表格
+ */
 function EntryModal({
   receipt,
   onClose,
@@ -89,13 +92,16 @@ function EntryModal({
 
   const [sampleId, setSampleId] = useState('')
   const [parameterCode, setParameterCode] = useState('')
-  const [resultValue, setResultValue] = useState('')
+  const [testValues, setTestValues] = useState<string[]>([''])
   const [saving, setSaving] = useState(false)
   const [testEnvironment, setTestEnvironment] = useState(receipt.testEnvironment ?? '')
   const [mainEquipment, setMainEquipment] = useState(receipt.mainEquipment ?? '')
-  const [receiptSaving, setReceiptSaving] = useState(false)
 
   const selectedSample = samples.find((s) => s.id === sampleId)
+  const selectedParam = parameters.find((p) => p.code === parameterCode)
+
+  // 判断某样品是否已录入检测项
+  const sampleHasEntries = (sid: string) => items.some((i) => i.sampleId === sid)
 
   const fetchAll = useCallback(async () => {
     try {
@@ -129,16 +135,21 @@ function EntryModal({
   }, [receipt.id, receipt.categoryCode])
 
   const handleAdd = async () => {
-    if (!sampleId || !parameterCode || !resultValue.trim()) return
+    if (!sampleId || !parameterCode) return
     setSaving(true)
     setError(null)
     try {
-      await apiClient.post('/test-items', {
-        sampleId,
-        parameterCode,
-        result: resultValue.trim(),
-      })
-      setResultValue('')
+      const numValues = testValues.map((v) => Number.parseFloat(v)).filter((v) => !Number.isNaN(v))
+      if (numValues.length === 0) return
+      const payload: Record<string, unknown> = { sampleId, parameterCode }
+      if (numValues.length > 1) {
+        payload.testValues = numValues
+      } else {
+        payload.result = String(numValues[0])
+      }
+      await apiClient.post('/test-items', payload)
+      setTestValues([''])
+      setParameterCode('')
       await fetchAll()
     } catch (e: unknown) {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message
@@ -168,190 +179,300 @@ function EntryModal({
     }
   }
 
-  const sampleLabel = (id: string) => samples.find((s) => s.id === id)?.sampleCode ?? id
   const paramLabel = (code: string) => parameters.find((p) => p.code === code)?.name ?? code
   const extDefs = category?.extFields ?? []
 
+  // 选中样品已录入的检测项
+  const sampleItems = items.filter((i) => i.sampleId === sampleId)
+
+  // 计算代表值（前端预览）
+  const previewRepresentative = (() => {
+    const nums = testValues.map((v) => Number.parseFloat(v)).filter((v) => !Number.isNaN(v))
+    if (nums.length === 0) return null
+    if (nums.length === 1) return nums[0]
+    const avg = nums.reduce((a, b) => a + b, 0) / nums.length
+    return Math.round(avg * 100) / 100
+  })()
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[92vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-5 py-3 border-b">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden">
+        {/* 头部 */}
+        <div className="flex items-center justify-between px-5 py-3 border-b shrink-0">
           <div>
-            <h3 className="text-lg font-semibold">录入检测结果 — {receipt.receiptCode}</h3>
+            <h3 className="text-lg font-semibold">录入检测结果 — {receipt.commissionCode}</h3>
             <p className="text-xs text-gray-500 mt-0.5">报告类别：{category?.name ?? receipt.categoryCode}</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
         </div>
 
-        <div className="p-5 space-y-4 text-sm">
-          {error && (
-            <div role="alert" className="text-red-600 bg-red-50 p-2 rounded">{error}</div>
-          )}
+        {/* 检测环境/设备 */}
+        <div className="grid grid-cols-3 gap-3 items-end px-5 py-3 border-b bg-gray-50 shrink-0">
+          <div>
+            <label htmlFor="de-env" className="block text-xs font-medium text-gray-600 mb-1">检测环境</label>
+            <input
+              id="de-env"
+              value={testEnvironment}
+              onChange={(e) => setTestEnvironment(e.target.value)}
+              placeholder="如 温度 20±2℃，湿度 50%RH"
+              className="w-full border rounded px-2 py-1.5"
+            />
+          </div>
+          <div>
+            <label htmlFor="de-equip" className="block text-xs font-medium text-gray-600 mb-1">主要检测设备</label>
+            <input
+              id="de-equip"
+              value={mainEquipment}
+              onChange={(e) => setMainEquipment(e.target.value)}
+              placeholder="如 WAW-1000 万能试验机"
+              className="w-full border rounded px-2 py-1.5"
+            />
+          </div>
+          <div className="flex justify-end">
+            <button
+              onClick={async () => {
+                try {
+                  await apiClient.put(`/receipts/${receipt.id}`, { testEnvironment, mainEquipment })
+                } catch (e: unknown) {
+                  setError(e instanceof Error ? e.message : '保存失败')
+                }
+              }}
+              className="px-3 py-1.5 text-sm border rounded hover:bg-gray-100"
+            >
+              保存
+            </button>
+          </div>
+        </div>
 
-          {samples.length === 0 ? (
-            <p className="text-gray-400 py-4 text-center">该接样单暂无样品——请先在「接样管理 → 样品」中新建样品</p>
-          ) : (
-            <>
-              {/* 检测环境与设备（接样信息在数据录入环节可补录） */}
-              <div className="grid grid-cols-2 gap-3 items-end bg-gray-50 p-3 rounded">
-                <div>
-                  <label htmlFor="de-env" className="block text-xs font-medium text-gray-600 mb-1">检测环境</label>
-                  <input
-                    id="de-env"
-                    value={testEnvironment}
-                    onChange={(e) => setTestEnvironment(e.target.value)}
-                    placeholder="如 温度 20±2℃，湿度 50%RH"
-                    className="w-full border rounded px-2 py-1.5"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="de-equip" className="block text-xs font-medium text-gray-600 mb-1">主要检测设备</label>
-                  <input
-                    id="de-equip"
-                    value={mainEquipment}
-                    onChange={(e) => setMainEquipment(e.target.value)}
-                    placeholder="如 WAW-1000 万能试验机"
-                    className="w-full border rounded px-2 py-1.5"
-                  />
-                </div>
-                <div className="col-span-2 flex justify-end">
+        {error && (
+          <div role="alert" className="px-5 py-2 text-red-600 bg-red-50 text-sm shrink-0">{error}</div>
+        )}
+
+        {samples.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center text-gray-400">
+            该接样单暂无样品——请先在「接样管理 → 样品」中新建样品
+          </div>
+        ) : (
+          <div className="flex flex-1 overflow-hidden">
+            {/* ===== 左侧：样品清单 ===== */}
+            <div className="w-48 border-r overflow-y-auto shrink-0 p-3">
+              <p className="text-xs font-semibold text-gray-500 mb-2">样品列表</p>
+              {samples.map((s) => {
+                const hasEntry = sampleHasEntries(s.id)
+                return (
                   <button
-                    onClick={async () => {
-                      setReceiptSaving(true)
-                      setError(null)
-                      try {
-                        await apiClient.put(`/receipts/${receipt.id}`, {
-                          ...receipt,
-                          testEnvironment,
-                          mainEquipment,
-                        })
-                      } catch (e: unknown) {
-                        setError(e instanceof Error ? e.message : '保存失败')
-                      } finally {
-                        setReceiptSaving(false)
-                      }
+                    key={s.id}
+                    onClick={() => {
+                      setSampleId(s.id)
+                      setParameterCode('')
+                      setTestValues([''])
                     }}
-                    disabled={receiptSaving}
-                    className="px-3 py-1.5 text-sm border rounded hover:bg-gray-100 disabled:opacity-50"
+                    className={`w-full text-left px-2 py-1.5 rounded text-sm mb-1 ${
+                      s.id === sampleId
+                        ? 'bg-blue-100 text-blue-800 font-medium'
+                        : hasEntry
+                        ? 'bg-green-50 text-green-800'
+                        : 'bg-orange-50 text-orange-700'
+                    }`}
                   >
-                    {receiptSaving ? '保存中...' : '保存检测环境/设备'}
+                    <span className="font-medium">{s.sampleCode}</span>
+                    <span className="ml-1 text-xs text-gray-400">{s.sampleName ?? ''}</span>
+                    {!hasEntry && <span className="ml-1 text-xs text-orange-500">未录入</span>}
                   </button>
-                </div>
-              </div>
+                )
+              })}
+            </div>
 
-              {/* 录入区 */}
-              <div className="grid grid-cols-4 gap-3 items-end bg-gray-50 p-3 rounded">
-                <div>
-                  <label htmlFor="de-sample" className="block text-xs font-medium text-gray-600 mb-1">样品</label>
-                  <select id="de-sample" value={sampleId} onChange={(e) => setSampleId(e.target.value)} className="w-full border rounded px-2 py-1.5">
-                    {samples.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.sampleCode}（{s.sampleName ?? '样品'}）
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="de-param" className="block text-xs font-medium text-gray-600 mb-1">检测参数</label>
-                  <select id="de-param" value={parameterCode} onChange={(e) => setParameterCode(e.target.value)} className="w-full border rounded px-2 py-1.5">
-                    <option value="">请选择</option>
-                    {parameters.map((p) => (
-                      <option key={p.code} value={p.code}>
-                        {p.name}{p.unit ? `（${p.unit}）` : ''}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="de-result" className="block text-xs font-medium text-gray-600 mb-1">检测值</label>
-                  <input
-                    id="de-result"
-                    value={resultValue}
-                    onChange={(e) => setResultValue(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                    placeholder="如 425"
-                    className="w-full border rounded px-2 py-1.5"
-                  />
-                </div>
-                <button
-                  onClick={handleAdd}
-                  disabled={saving || !sampleId || !parameterCode || !resultValue.trim()}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm disabled:opacity-50"
-                >
-                  {saving ? '录入中...' : '录入'}
-                </button>
-              </div>
-
-              {/* 当前样品信息（型号/规格/等级/牌号 + 扩展属性） */}
+            {/* ===== 右侧：录入表单 ===== */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* 选中样品信息 */}
               {selectedSample && (
                 <div className="text-xs text-gray-600 bg-blue-50 rounded p-2 leading-relaxed">
-                  <span className="font-semibold">当前样品：</span>
-                  型号：{selectedSample.model ?? '—'}　规格：{selectedSample.specification ?? '—'}　
+                  <span className="font-semibold">样品信息：</span>
+                  {selectedSample.sampleCode}
+                  型号：{selectedSample.model ?? '—'}　规格：{selectedSample.specification ?? '—'}
                   等级：{selectedSample.grade ?? '—'}　牌号：{selectedSample.brand ?? '—'}
+                  {selectedSample.batchNumber && <>　批号：{selectedSample.batchNumber}</>}
+                  {selectedSample.supplyUnit && <>　供销单位：{selectedSample.supplyUnit}</>}
                   {extDefs.length > 0 && (
                     <>
                       <br />
-                      <span className="font-semibold">扩展属性：</span>
-                      {extDefs
-                        .map((f) => `${f.label}：${selectedSample.ext?.[f.key] ?? '—'}`)
-                        .join('　')}
+                      <span className="font-semibold">扩展：</span>
+                      {extDefs.map((f) => `${f.label}：${selectedSample.ext?.[f.key] ?? '—'}`).join('　')}
                     </>
                   )}
                 </div>
               )}
 
-              {/* 检测项表格 */}
-              <table className="w-full text-sm border rounded overflow-hidden">
-                <thead className="bg-gray-50 text-gray-600">
-                  <tr>
-                    <th className="px-3 py-2 text-left">样品</th>
-                    <th className="px-3 py-2 text-left">检测参数</th>
-                    <th className="px-3 py-2 text-left">技术要求</th>
-                    <th className="px-3 py-2 text-left">检测值</th>
-                    <th className="px-3 py-2 text-left">自动评定</th>
-                    <th className="px-3 py-2 text-left">最终评定</th>
-                    <th className="px-3 py-2 text-right">操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.length === 0 && (
-                    <tr><td colSpan={7} className="px-3 py-6 text-center text-gray-400">暂无检测记录</td></tr>
+              {/* 录入表单 */}
+              <div className="bg-gray-50 rounded p-3 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label htmlFor="de-param" className="block text-xs font-medium text-gray-600 mb-1">检测参数</label>
+                    <select
+                      id="de-param"
+                      value={parameterCode}
+                      onChange={(e) => {
+                        setParameterCode(e.target.value)
+                        const param = parameters.find((p) => p.code === e.target.value)
+                        const count = param?.valueCount ?? 1
+                        setTestValues(Array(count).fill(''))
+                      }}
+                      className="w-full border rounded px-2 py-1.5"
+                    >
+                      <option value="">请选择检测参数</option>
+                      {parameters.map((p) => (
+                        <option key={p.code} value={p.code}>
+                          {p.name}{p.unit ? `（${p.unit}）` : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {parameterCode && (
+                    <div className="flex items-end">
+                      {selectedParam?.unit && (
+                        <span className="text-xs text-gray-500 mr-2">单位：{selectedParam.unit}</span>
+                      )}
+                    </div>
                   )}
-                  {items.map((item) => (
-                    <tr key={item.id} className="border-t">
-                      <td className="px-3 py-2">{sampleLabel(item.sampleId)}</td>
-                      <td className="px-3 py-2">{paramLabel(item.parameterCode)}</td>
-                      <td className="px-3 py-2 text-gray-600">{item.requirement || '—'}</td>
-                      <td className="px-3 py-2">{item.result}{item.unit ? ` ${item.unit}` : ''}</td>
-                      <td className="px-3 py-2">
-                        {item.autoPassed === true && <span className="text-green-700">合格</span>}
-                        {item.autoPassed === false && <span className="text-red-600">不合格</span>}
-                        {item.autoPassed === null && <span className="text-amber-600">需人工判定</span>}
-                      </td>
-                      <td className="px-3 py-2">
-                        {item.passed ? <span className="text-green-700">合格</span> : <span className="text-red-600">不合格</span>}
-                        {item.autoPassed !== null && item.passed !== item.autoPassed && (
-                          <span className="text-xs text-amber-600 ml-1">（已手工修正）</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2 text-right whitespace-nowrap">
-                        <button onClick={() => handleTogglePassed(item)} className="px-2 py-1 text-amber-700 hover:underline">
-                          改判
-                        </button>
-                        <button onClick={() => handleDelete(item)} className="px-2 py-1 text-red-600 hover:underline">
-                          删除
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
-        </div>
+                </div>
 
-        <div className="flex justify-between items-center px-5 py-3 border-t bg-gray-50">
-          <p className="text-xs text-gray-500">检测项归属样品；全部合格 → 接样单整体结论「合格」</p>
+                {/* 动态列数输入（根据检测参数的 valueCount） */}
+                {parameterCode && (
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1.5">
+                      检测值
+                      {(selectedParam?.valueCount ?? 1) > 1 ? `（需填 ${selectedParam?.valueCount} 个值）` : ''}
+                    </p>
+                    <div
+                      className="grid gap-2 mb-2"
+                      style={{ gridTemplateColumns: `repeat(${selectedParam?.valueCount ?? 1}, minmax(0, 1fr))` }}
+                    >
+                      {testValues.map((v, i) => (
+                        <div key={i}>
+                          <label className="block text-xs text-gray-400 mb-0.5">
+                            {testValues.length > 1 ? `样本${i + 1}` : '检测值'}
+                          </label>
+                          <input
+                            type="number"
+                            value={v}
+                            onChange={(e) => {
+                              const next = [...testValues]
+                              next[i] = e.target.value
+                              setTestValues(next)
+                            }}
+                            placeholder="0.0"
+                            className="w-full border rounded px-2 py-1.5 text-sm"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    {previewRepresentative !== null && (
+                      <div className="text-xs text-center text-blue-700 bg-blue-50 rounded px-2 py-1">
+                        代表值：<span className="font-semibold">{previewRepresentative}</span>
+                        {selectedParam?.unit ? ` ${selectedParam.unit}` : ''}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleAdd}
+                    disabled={
+                      saving ||
+                      !sampleId ||
+                      !parameterCode ||
+                      testValues.filter((v) => v.trim()).length === 0
+                    }
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm disabled:opacity-50"
+                  >
+                    {saving ? '录入中...' : '录入'}
+                  </button>
+                </div>
+              </div>
+
+              {/* 当前样品的已录入检测项 */}
+              <div>
+                <p className="text-xs font-semibold text-gray-700 mb-2">
+                  已录入检测项
+                  <span className="font-normal text-gray-400 ml-1">（{sampleItems.length} 条）</span>
+                </p>
+                {sampleItems.length === 0 ? (
+                  <p className="text-center text-gray-400 py-4 text-sm">暂无检测记录</p>
+                ) : (
+                  <table className="w-full text-xs border rounded overflow-hidden">
+                    <thead className="bg-gray-50 text-gray-600">
+                      <tr>
+                        <th className="px-2 py-1.5 text-left">检测参数</th>
+                        <th className="px-2 py-1.5 text-left">技术要求</th>
+                        <th className="px-2 py-1.5 text-left">检测值</th>
+                        <th className="px-2 py-1.5 text-left">代表值</th>
+                        <th className="px-2 py-1.5 text-left">自动评定</th>
+                        <th className="px-2 py-1.5 text-left">最终评定</th>
+                        <th className="px-2 py-1.5 text-right">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sampleItems.map((item) => (
+                        <tr key={item.id} className="border-t">
+                          <td className="px-2 py-1.5">{paramLabel(item.parameterCode)}</td>
+                          <td className="px-2 py-1.5 text-gray-500">{item.requirement || '—'}</td>
+                          <td className="px-2 py-1.5">
+                            {item.testValues
+                              ? item.testValues.join(', ')
+                              : item.result}
+                            {item.unit ? ` ${item.unit}` : ''}
+                          </td>
+                          <td className="px-2 py-1.5 text-blue-700">
+                            {item.representativeValue !== undefined
+                              ? `${item.representativeValue}${item.unit ? ` ${item.unit}` : ''}`
+                              : '—'}
+                          </td>
+                          <td className="px-2 py-1.5">
+                            {item.autoPassed === true && <span className="text-green-700">合格</span>}
+                            {item.autoPassed === false && <span className="text-red-600">不合格</span>}
+                            {item.autoPassed === null && <span className="text-amber-600">需人工</span>}
+                          </td>
+                          <td className="px-2 py-1.5">
+                            {item.passed ? (
+                              <span className="text-green-700">合格</span>
+                            ) : (
+                              <span className="text-red-600">不合格</span>
+                            )}
+                            {item.autoPassed !== null && item.passed !== item.autoPassed && (
+                              <span className="text-xs text-amber-600 ml-1">已修正</span>
+                            )}
+                          </td>
+                          <td className="px-2 py-1.5 text-right whitespace-nowrap">
+                            <button
+                              onClick={() => handleTogglePassed(item)}
+                              className="px-1.5 py-0.5 text-amber-700 hover:underline"
+                            >
+                              改判
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item)}
+                              className="px-1.5 py-0.5 text-red-600 hover:underline"
+                            >
+                              删除
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 底部操作栏 */}
+        <div className="flex justify-between items-center px-5 py-3 border-t bg-gray-50 shrink-0">
+          <p className="text-xs text-gray-500">
+            全部合格 → 接样单整体结论「合格」
+          </p>
           <div className="flex gap-2">
             <button
               onClick={() => {
@@ -363,7 +484,9 @@ function EntryModal({
             >
               生成报告
             </button>
-            <button onClick={onClose} className="px-4 py-2 text-sm border rounded hover:bg-gray-100">关闭</button>
+            <button onClick={onClose} className="px-4 py-2 text-sm border rounded hover:bg-gray-100">
+              关闭
+            </button>
           </div>
         </div>
       </div>
