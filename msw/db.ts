@@ -365,7 +365,8 @@ export const testItemTable = new MockTable<{
   testValues?: number[]
   representativeValue?: number
   autoPassed: boolean | null
-  passed: boolean
+  passed: boolean | null
+  verdict?: string
   remark?: string
   createdAt: string
   updatedAt: string
@@ -384,6 +385,22 @@ export const testParameterTable = new MockTable<{
   createdAt: string
   updatedAt: string
 }>('tp')
+
+/** 计算规则表（每个检测参数一条规则） */
+export const calculationRuleTable = new MockTable<{
+  id: string
+  /** 归属检测参数编码 */
+  parameterCode: string
+  /** 算法类型：simple_avg=多样本均值, compressive_strength=混凝土±15%规则 */
+  algorithmType: string
+  /** 每组试件数量（CON002=3） */
+  specimenCount: number
+  /** 单位（MPa等） */
+  unit?: string
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}>('cr')
 
 /** 检测标准码表（与报告类别的关联经 categoryStandardTable 维护） */
 export const testStandardTable = new MockTable<{
@@ -562,6 +579,42 @@ export interface EvaluationResult {
   autoPassed: boolean | null
   /** 多样本检测时的代表值（平均值） */
   representativeValue?: number
+  /** 试验无效（±15%规则下所有值均超限） */
+  invalid?: boolean
+}
+
+/** 从样品规格自动派生 specimenArea 和 correctionFactor */
+function deriveSpecimenParams(parameterCode: string, specimenArea?: number, correctionFactor?: number, spec?: string): { specimenArea: number; correctionFactor: number } {
+  // 如果外部已传入（兼容旧逻辑），直接用
+  if (specimenArea !== undefined && correctionFactor !== undefined) {
+    return { specimenArea, correctionFactor }
+  }
+  if (!spec) return { specimenArea: 22500, correctionFactor: 1.0 }
+
+  // 混凝土：从 "150×150×150mm" 或 "100×100×100mm" 解析
+  if (parameterCode === 'CON002') {
+    const match = spec.match(/(\d+)×(\d+)×(\d+)mm/)
+    if (match) {
+      const side = Number(match[1])
+      const area = side * side
+      const cf = side >= 150 ? 1.0 : 0.95
+      return { specimenArea: area, correctionFactor: cf }
+    }
+  }
+
+  // 钢材：从 "Φ22" 等解析公称面积（GB/T 228）
+  const diamMatch = spec.match(/Φ(\d+)/)
+  if (diamMatch) {
+    const d = Number(diamMatch[1])
+    const steelAreas: Record<number, number> = {
+      12: 113.1, 14: 153.9, 16: 201.1, 18: 254.5,
+      20: 314.2, 22: 380.1, 25: 490.9, 28: 615.8, 32: 804.2,
+    }
+    const area = steelAreas[d]
+    if (area) return { specimenArea: area, correctionFactor: 1.0 }
+  }
+
+  return { specimenArea: 22500, correctionFactor: 1.0 }
 }
 
 /** 按 报告类别 + 参数编码 + 牌号/型号/等级/规格 匹配最合适的技术要求并自动评定。
@@ -576,8 +629,20 @@ export function evaluateTestResult(input: {
   grade?: string
   specification?: string
   resultValue: string
-  testValues?: number[]
+  loads?: number[]
+  specimenArea?: number
+  correctionFactor?: number
+  algorithmType?: string
 }): EvaluationResult {
+  const derived = deriveSpecimenParams(
+    input.parameterCode,
+    input.specimenArea,
+    input.correctionFactor,
+    input.specification,
+  )
+  const specimenArea = input.specimenArea ?? derived.specimenArea
+  const correctionFactor = input.correctionFactor ?? derived.correctionFactor
+
   const all = technicalRequirementTable.all()
   const candidates = all.filter((r) => {
     if (r.parameterCode !== input.parameterCode) return false
@@ -610,12 +675,46 @@ export function evaluateTestResult(input: {
   const requirement =
     best.comparison === 'range' ? `${best.value}${unitSuffix}` : `${best.comparison} ${best.value}${unitSuffix}`
 
-  // 多样本时取平均值作为代表值
+  // 算法 compressive_strength: 荷载(kN) → 强度(MPa) → ±15%规则 → 代表值
+  // 算法 steel_tensile: F(kN)/A(mm²) → MPa → 修约 → 代表值
   let representativeValue: number | undefined
+  let invalid = false
   let num: number
-  if (input.testValues && input.testValues.length > 0) {
-    const sum = input.testValues.reduce((a, b) => a + b, 0)
-    representativeValue = Math.round((sum / input.testValues.length) * 100) / 100
+  if (input.algorithmType === 'compressive_strength' && input.loads && input.loads.length > 0 && specimenArea !== undefined && correctionFactor !== undefined) {
+    // 各试件强度(MPa) = 荷载(kN)×1000 / 面积(mm²) × 换算系数
+    const strengths = input.loads.map(F => (F * 1000 / specimenArea!) * correctionFactor!)
+    const sorted = [...strengths].sort((a, b) => a - b)
+    const mid = sorted[1]!
+    const low = sorted[0]!
+    const high = sorted[sorted.length - 1]!
+    const range15 = mid * 0.15
+    if (high - mid > range15 && mid - low > range15) {
+      // 都超限 → 试验无效，取中间值
+      invalid = true
+      representativeValue = Math.round(mid * 100) / 100
+      num = representativeValue
+    } else if (high - mid > range15 || mid - low > range15) {
+      // 有一个超限 → 取中间值
+      representativeValue = Math.round(mid * 100) / 100
+      num = representativeValue
+    } else {
+      // 全部合规 → 算术平均值
+      const avg = strengths.reduce((a, b) => a + b, 0) / strengths.length
+      representativeValue = Math.round(avg * 100) / 100
+      num = representativeValue
+    }
+  } else if (input.algorithmType === 'steel_tensile' && input.loads && input.loads.length > 0 && specimenArea !== undefined) {
+    // 钢材抗拉：F/A → MPa → 修约到 5 MPa（GB/T 228）
+    const stresses = input.loads.map(F => (F * 1000) / specimenArea!)
+    const avg = stresses.reduce((a, b) => a + b, 0) / stresses.length
+    // 修约：>200MPa 修约到 5，≤200MPa 修约到 1
+    const rounded = avg > 200 ? Math.round(avg / 5) * 5 : Math.round(avg)
+    representativeValue = rounded
+    num = rounded
+  } else if (input.loads && input.loads.length > 1) {
+    // 普通多样本均值
+    const avg = input.loads.reduce((a, b) => a + b, 0) / input.loads.length
+    representativeValue = Math.round(avg * 100) / 100
     num = representativeValue
   } else {
     num = Number.parseFloat(input.resultValue)
@@ -648,9 +747,8 @@ export function evaluateTestResult(input: {
       autoPassed = null
   }
 
-  return { matched: true, requirementCode: best.code, standardCode: best.standardCode, requirement, autoPassed, representativeValue }
+  return { matched: true, requirementCode: best.code, standardCode: best.standardCode, requirement, autoPassed, representativeValue, invalid }
 }
-
 /** 取接样单下全部样品 */
 export function samplesOfReceipt(receiptId: string) {
   return sampleTable.all().filter((s) => s.receiptId === receiptId)
@@ -674,8 +772,10 @@ export function syncReceiptResult(receiptId: string) {
     receiptTable.update(receiptId, { result: '', conclusion: '' } as never)
     return
   }
-  const allPassed = items.every((i) => i.passed)
-  const failedCodes = [...new Set(items.filter((i) => !i.passed).map((i) => i.parameterCode))]
+  // 只有明确判为不合格/不符合（passed===false）才算不通过；
+  // 未评定（——，passed=null）与合格/符合一律按通过处理
+  const allPassed = !items.some((i) => i.passed === false)
+  const failedCodes = [...new Set(items.filter((i) => i.passed === false).map((i) => i.parameterCode))]
   receiptTable.update(receiptId, {
     result: allPassed ? 'pass' : 'fail',
     conclusion: allPassed
@@ -1064,6 +1164,13 @@ function seedTestParameter(code: string, name: string, categoryCode: string, gro
   testParameterTable.insert({ id: `tp-${code}`, code, name, categoryCode, group, unit, valueCount })
 }
 
+function seedCalculationRule(parameterCode: string, algorithmType: string, specimenCount: number, unit?: string, remark?: string) {
+  calculationRuleTable.insert({
+    id: `cr-${parameterCode}`,
+    parameterCode, algorithmType, specimenCount, unit, remark,
+  })
+}
+
 function seedTestStandard(code: string, name: string, type: 'national' | 'industry' | 'local' | 'enterprise', categories: string[]) {
   testStandardTable.insert({ id: `ts-${code}`, code, name, type })
   categories.forEach((cat) => {
@@ -1111,6 +1218,9 @@ function seedReceipt(input: {
   commissionDate?: string
   receivedBy?: string
   sampleCount?: number
+  judgmentBasis?: string[]
+  testingBasis?: string[]
+  testParameters?: string[]
 }) {
   const flowStatus = input.flowStatus ?? 'receiving'
   const idx = FLOW_STAGE_ORDER.indexOf(flowStatus)
@@ -1148,6 +1258,9 @@ function seedReceipt(input: {
     conclusion: reported ? '所检项目均符合相应标准的技术要求。' : undefined,
     result: reported ? 'pass' : undefined,
     issuedAt: issued ? '2024-05-08T10:00:00Z' : null,
+    judgmentBasis: input.judgmentBasis,
+    testingBasis: input.testingBasis,
+    testParameters: input.testParameters,
   } as never)
 
   // 每个接样单 seed 1-N 个样品（数据录入及之后的阶段附带检测项）
@@ -1231,7 +1344,17 @@ export function seedData() {
   seedTestParameter('CEM012', '3天抗压强度', 'cement', 'strength', 'MPa')
   seedTestParameter('CEM014', '28天抗压强度', 'cement', 'strength', 'MPa')
   seedTestParameter('CON001', '立方体抗压强度', 'concrete', 'mechanical', 'MPa')
-  seedTestParameter('CON002', '抗压强度代表值', 'concrete', 'mechanical', 'MPa', 3)
+  seedTestParameter('CON002', '抗压强度', 'concrete', 'mechanical', 'MPa', 3)
+
+  // ===== 计算规则 =====  // algorithmType: simple_avg=多样本均值, compressive_strength=混凝土±15%规则
+  seedCalculationRule('STE001', 'steel_tensile', 1, 'MPa')
+  seedCalculationRule('STE003', 'steel_tensile', 1, 'MPa')
+  seedCalculationRule('STE004', 'simple_avg', 1, '%')
+  seedCalculationRule('STE005', 'simple_avg', 1, '%')
+  seedCalculationRule('STE006', 'simple_avg', 1, '')
+  seedCalculationRule('CON001', 'simple_avg', 1, 'MPa')
+  seedCalculationRule('CON002', 'compressive_strength', 3, 'MPa')
+  seedCalculationRule('CON006', 'simple_avg', 1, 'MPa')
   seedTestParameter('CON006', '抗折强度', 'concrete', 'mechanical', 'MPa')
   seedTestParameter('SND001', '颗粒级配（细度模数）', 'sand', 'gradation', '')
   seedTestParameter('SND002', '含泥量', 'sand', 'physical', '%')
@@ -1375,7 +1498,7 @@ export function seedData() {
   seedReceipt({ id: 'rc-005-02', contractId: 'c-005', commissionCode: 'RC-2024-0620-01', categoryCode: 'cement', flowStatus: 'data_entry', commissionDate: '2024-06-20', receivedBy: '赵工' })
   seedReceipt({ id: 'rc-006-01', contractId: 'c-006', commissionCode: 'RC-2024-0625-01', categoryCode: 'rebar_mech', flowStatus: 'archived', commissionDate: '2024-06-25', receivedBy: '陈工', sampleCount: 3 })
   seedReceipt({ id: 'rc-006-02', contractId: 'c-006', commissionCode: 'RC-2024-0701-01', categoryCode: 'steel', flowStatus: 'receiving', commissionDate: '2024-07-01', receivedBy: '陈工' })
-  seedReceipt({ id: 'rc-007-01', contractId: 'c-007', commissionCode: 'RC-2024-0705-01', categoryCode: 'concrete', flowStatus: 'data_entry', commissionDate: '2024-07-05', receivedBy: '周工', sampleCount: 3 })
+  seedReceipt({ id: 'rc-007-01', contractId: 'c-007', commissionCode: 'RC-2024-0705-01', categoryCode: 'concrete', flowStatus: 'data_entry', commissionDate: '2024-07-05', receivedBy: '周工', sampleCount: 3, judgmentBasis: ['GB/T 50081-2019'], testingBasis: ['GB/T 50081-2019'], testParameters: ['CON002'] })
   seedReceipt({ id: 'rc-007-02', contractId: 'c-007', commissionCode: 'RC-2024-0710-01', categoryCode: 'sand', flowStatus: 'task_assignment', commissionDate: '2024-07-10', receivedBy: '周工' })
   seedReceipt({ id: 'rc-008-01', contractId: 'c-008', commissionCode: 'RC-2024-0712-01', categoryCode: 'steel', flowStatus: 'receiving', commissionDate: '2024-07-12', receivedBy: '吴工' })
   seedReceipt({ id: 'rc-008-02', contractId: 'c-008', commissionCode: 'RC-2024-0715-01', categoryCode: 'cement', flowStatus: 'task_assignment', commissionDate: '2024-07-15', receivedBy: '吴工' })

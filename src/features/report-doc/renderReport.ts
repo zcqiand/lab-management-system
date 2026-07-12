@@ -50,7 +50,7 @@ function buildTestItemsTable(ctx: ReportContext): string {
       paramName(i.parameterCode),
       i.requirement || '—',
       `${i.result}${i.unit ? ` ${i.unit}` : ''}`,
-      i.passed ? '合格' : '不合格',
+      i.verdict ? i.verdict : (i.passed === false ? '不合格' : '合格'),
     ]
     return `<tr>${cells.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`
   })

@@ -7,10 +7,7 @@ import { apiClient } from '../../api/client'
 import { useCategories, categoryName } from '../categories/useCategories'
 import type { SampleReceipt } from '../../types/api'
 
-/** v2.0：接样管理——流程线首环节（flowStatus='receiving'）。
- * 在此新建/编辑接样单；提交（支持批量）后进入「任务安排」；
- * 已提交但未被处理的单据可由提交人在下方「我提交的（可撤回）」区块撤回。
- */
+/** v2.0：接样管理——显示全部接样单，已提交到后续阶段的单不可编辑/删除，仅可查看。 */
 function ReceiptRowActions({ receipt, onEdit, onDelete }: { receipt: SampleReceipt; onEdit: (r: SampleReceipt) => void; onDelete: (r: SampleReceipt) => void }) {
   return (
     <>
@@ -107,9 +104,12 @@ export function ReceiptList() {
     )
   }, [])
 
-  const rowAction = useCallback((r: SampleReceipt) => (
-    <ReceiptRowActions receipt={r} onEdit={(r) => { setFormMode('edit'); setEditing(r); setFormOpen(true) }} onDelete={setDeleteTarget} />
-  ), [])
+  const rowActions = useCallback((r: SampleReceipt) => {
+    if (r.flowStatus === 'receiving') {
+      return <ReceiptRowActions receipt={r} onEdit={(r) => { setFormMode('edit'); setEditing(r); setFormOpen(true) }} onDelete={setDeleteTarget} />
+    }
+    return <span className="text-gray-400 text-xs">已提交</span>
+  }, [])
 
   return (
     <>
@@ -123,7 +123,7 @@ export function ReceiptList() {
           { header: '检测类别', render: (r) => r.testCategory },
         ]}
         toolbar={toolbarAction}
-        rowActions={rowAction}
+        rowActions={rowActions}
       />
 
       <ReceiptFormModal

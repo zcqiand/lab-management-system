@@ -1,152 +1,205 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiClient } from '../../api/client'
-import { SampleFormModalV2, type SampleFormValuesV2 } from '../samples/SampleFormModal.v2'
-import { ConfirmModal } from '../../components/ConfirmModal'
+import type { TestParameter } from '../../types/api'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnySample = any
+interface ExtField { key: string; label: string }
+
+interface TestItem {
+  id: string
+  sampleId: string
+  parameterCode: string
+  requirementCode?: string
+  requirement: string
+  result: string
+  unit?: string
+  testValues?: number[]
+  representativeValue?: number
+  autoPassed: boolean | null
+  passed: boolean
+  remark?: string
+}
+
+interface Sample {
+  id: string
+  sampleCode?: string
+  sampleName?: string
+  materialType?: string
+  specification?: string
+  grade?: string
+  model?: string
+  brand?: string
+  manufacturer?: string
+  structuralPart?: string
+  representQuantity?: string
+  sampleQuantity?: string
+  batchNumber?: string
+  supplyUnit?: string
+  arrivalDate?: string
+  samplingDate?: string
+  curingCondition?: string
+  age?: string
+  remark?: string
+  ext?: Record<string, string>
+  status?: string
+}
 
 interface ReceiptDetailProps {
   receiptId: string
-  contractId: string
+  categoryCode: string
   onClose: () => void
 }
 
-export function ReceiptDetail({ receiptId, contractId, onClose }: ReceiptDetailProps) {
-  const [samples, setSamples] = useState<AnySample[]>([])
+export function ReceiptDetail({ receiptId, categoryCode, onClose }: ReceiptDetailProps) {
+  const [samples, setSamples] = useState<Sample[]>([])
+  const [testItems, setTestItems] = useState<TestItem[]>([])
+  const [parameters, setParameters] = useState<TestParameter[]>([])
+  const [extFields, setExtFields] = useState<ExtField[]>([])
+  const [activeSampleId, setActiveSampleId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [formOpen, setFormOpen] = useState(false)
-  const [formMode, setFormMode] = useState<'create' | 'edit'>('create')
-  const [editing, setEditing] = useState<AnySample>(null)
-  const [submitting, setSubmitting] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<AnySample>(null)
-  const [deleting, setDeleting] = useState(false)
 
-  const fetchSamples = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get('/samples', { params: { receiptId, page: 1, pageSize: 100 } })
-      setSamples(res.data.items ?? [])
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      const [sRes, tiRes, pRes, catRes] = await Promise.all([
+        apiClient.get('/samples', { params: { receiptId, page: '1', pageSize: '200' } }),
+        apiClient.get('/test-items', { params: { receiptId, page: '1', pageSize: '500' } }),
+        apiClient.get<{ items: TestParameter[] }>('/test-parameters', { params: { page: '1', pageSize: '200' } }),
+        apiClient.get<{ extFields: ExtField[] }>(`/report-categories/${categoryCode}`),
+      ])
+      const sItems: Sample[] = sRes.data.items ?? []
+      const tiItems: TestItem[] = tiRes.data.items ?? []
+      setSamples(sItems)
+      setTestItems(tiItems)
+      setParameters(pRes.data.items ?? [])
+      setExtFields(catRes.data.extFields ?? [])
+      if (sItems.length > 0 && !activeSampleId) {
+        setActiveSampleId(sItems[0].id)
+      }
+    } catch {
+      setExtFields([])
     } finally {
       setLoading(false)
     }
-  }, [receiptId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- activeSampleId 仅为初始选中态，不参与数据获取
+  }, [receiptId, categoryCode])
 
-  useEffect(() => { fetchSamples() }, [fetchSamples])
+  useEffect(() => { fetchData() }, [fetchData])
 
-  const statusLabel = (s: string) =>
-    ({ pending: '待检', testing: '检测中', completed: '已完成', rejected: '已拒收' }[s] ?? s)
+  const paramName = (code?: string) => parameters.find(p => p.code === code)?.name ?? code ?? '—'
 
-  const materialLabel = (m?: string) =>
-    ({ steel: '钢筋原材', cement: '水泥', concrete: '混凝土', sand: '砂', gravel: '碎（卵）石', rebar_mech: '钢筋机械连接', rebar_weld: '钢筋焊接' }[m ?? ''] ?? m ?? '')
-
-  const openCreate = () => { setFormMode('create'); setEditing(null); setFormOpen(true) }
-  const openEdit = (s: AnySample) => { setFormMode('edit'); setEditing(s); setFormOpen(true) }
-
-  const handleSubmit = async (values: SampleFormValuesV2) => {
-    setSubmitting(true)
-    try {
-      if (formMode === 'create') {
-        await apiClient.post('/samples', { ...values, materialDetails: { kind: values.materialType } })
-      } else if (values.id) {
-        const { receiptId: _ri, contractId: _ci, sampleCode: _sc, ...patch } = values
-        void _ri; void _ci; void _sc
-        await apiClient.put(`/samples/${values.id}`, patch)
-      }
-      setFormOpen(false)
-      await fetchSamples()
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  const handleDelete = async () => {
-    if (!deleteTarget) return
-    setDeleting(true)
-    try {
-      await apiClient.delete(`/samples/${deleteTarget.id}`)
-      setDeleteTarget(null)
-      await fetchSamples()
-    } finally {
-      setDeleting(false)
-    }
-  }
+  const activeSample = samples.find((s) => s.id === activeSampleId)
+  const activeItems = testItems.filter((i) => i.sampleId === activeSampleId)
 
   return (
     <div className="bg-white rounded shadow p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold text-gray-700">样品列表</h3>
-        <div className="flex items-center gap-2">
-          <button onClick={openCreate} className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">新增样品</button>
-          <button onClick={onClose} className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 border rounded">关闭</button>
-        </div>
+        <h3 className="text-base font-semibold text-gray-700">详情信息</h3>
+        <button onClick={onClose} className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 border rounded">关闭</button>
       </div>
 
-      {loading && <p className="text-sm text-gray-400">加载中...</p>}
-      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
-
-      {!loading && !error && samples.length === 0 && (
-        <p className="text-sm text-gray-400 text-center py-4">该接样下暂无样品</p>
+      {samples.length > 0 && (
+        <div className="flex border-b text-sm overflow-x-auto">
+          {samples.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setActiveSampleId(s.id)}
+              className={`px-4 py-2 whitespace-nowrap border-b-2 ${s.id === activeSampleId ? 'border-blue-600 text-blue-600 font-semibold' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+            >
+              {s.sampleCode ?? s.sampleName ?? s.id}
+            </button>
+          ))}
+        </div>
       )}
 
-      {!loading && !error && samples.length > 0 && (
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
-            <tr>
-              <th className="px-3 py-1.5 text-left">样品编号</th>
-              <th className="px-3 py-1.5 text-left">样品名称</th>
-              <th className="px-3 py-1.5 text-left">材料类型</th>
-              <th className="px-3 py-1.5 text-left">规格</th>
-              <th className="px-3 py-1.5 text-left">生产厂家</th>
-              <th className="px-3 py-1.5 text-left">结构部位</th>
-              <th className="px-3 py-1.5 text-left">代表数量</th>
-              <th className="px-3 py-1.5 text-left">状态</th>
-              <th className="px-3 py-1.5 text-right">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {samples.map((s) => (
-              <tr key={s.id} className="border-t">
-                <td className="px-3 py-1.5">{s.sampleCode ?? s.code}</td>
-                <td className="px-3 py-1.5">{s.sampleName ?? s.name ?? '—'}</td>
-                <td className="px-3 py-1.5">{materialLabel(s.materialType)}</td>
-                <td className="px-3 py-1.5">{s.specification ?? '—'}</td>
-                <td className="px-3 py-1.5">{s.manufacturer ?? '—'}</td>
-                <td className="px-3 py-1.5">{s.structuralPart ?? '—'}</td>
-                <td className="px-3 py-1.5">{s.representQuantity ?? '—'}</td>
-                <td className="px-3 py-1.5">{statusLabel(s.status)}</td>
-                <td className="px-3 py-1.5 text-right space-x-2">
-                  <button onClick={() => openEdit(s)} className="text-blue-600 hover:underline">编辑</button>
-                  <button onClick={() => setDeleteTarget(s)} className="text-red-600 hover:underline">删除</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      {loading && <p className="text-sm text-gray-400 py-4 text-center">加载中...</p>}
+      {error && <p role="alert" className="text-sm text-red-600 py-2">{error}</p>}
 
-      <SampleFormModalV2
-        open={formOpen}
-        mode={formMode}
-        initialValues={editing}
-        contractId={contractId}
-        receiptId={receiptId}
-        onSubmit={handleSubmit}
-        onCancel={() => setFormOpen(false)}
-        loading={submitting}
-      />
-      <ConfirmModal
-        open={deleteTarget !== null}
-        title="删除确认"
-        message={`确定删除样品「${deleteTarget?.sampleCode ?? deleteTarget?.code ?? ''}」？`}
-        loading={deleting}
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteTarget(null)}
-      />
+      {activeSample && (
+        <>
+          <div>
+            <h4 className="text-sm font-semibold text-gray-600 mb-2">样品信息</h4>
+            <div className="grid grid-cols-4 gap-x-4 gap-y-1 text-sm">
+              {/* 基本信息 */}
+              <div><span className="text-gray-500">样品编号：</span>{activeSample.sampleCode ?? '—'}</div>
+              <div><span className="text-gray-500">样品名称：</span>{activeSample.sampleName ?? '—'}</div>
+              {/* 规格信息 */}
+              <div><span className="text-gray-500">型号：</span>{activeSample.model ?? '—'}</div>
+              <div><span className="text-gray-500">规格：</span>{activeSample.specification ?? '—'}</div>
+              <div><span className="text-gray-500">等级：</span>{activeSample.grade ?? '—'}</div>
+              <div><span className="text-gray-500">牌号：</span>{activeSample.brand ?? '—'}</div>
+              {/* 生产信息 */}
+              <div><span className="text-gray-500">出厂编号/批号：</span>{activeSample.batchNumber ?? '—'}</div>
+              <div><span className="text-gray-500">生产厂家/产地：</span>{activeSample.manufacturer ?? '—'}</div>
+              <div><span className="text-gray-500">供销单位：</span>{activeSample.supplyUnit ?? '—'}</div>
+              <div><span className="text-gray-500">进场日期：</span>{activeSample.arrivalDate ?? '—'}</div>
+              {/* 施工信息 */}
+              <div><span className="text-gray-500">结构部位：</span>{activeSample.structuralPart ?? '—'}</div>
+              <div><span className="text-gray-500">取（制）样日期：</span>{activeSample.samplingDate ?? '—'}</div>
+              <div><span className="text-gray-500">养护条件：</span>{activeSample.curingCondition ?? '—'}</div>
+              <div><span className="text-gray-500">龄期：</span>{activeSample.age ?? '—'}</div>
+              {/* 数量 */}
+              <div><span className="text-gray-500">代表数量：</span>{activeSample.representQuantity ?? '—'}</div>
+              <div><span className="text-gray-500">样品数量：</span>{activeSample.sampleQuantity ?? '—'}</div>
+              {/* 备注 */}
+              {activeSample.remark && <div className="col-span-4"><span className="text-gray-500">备注：</span>{activeSample.remark}</div>}
+            </div>
+            {/* 扩展属性 */}
+            {extFields.length > 0 && (
+              <div className="mt-2 pt-2 border-t grid grid-cols-4 gap-x-4 gap-y-1 text-sm">
+                {extFields.map(f => (
+                  <div key={f.key}>
+                    <span className="text-gray-500">{f.label}：</span>{activeSample.ext?.[f.key] ?? '—'}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold text-gray-600 mb-2">检测数据</h4>
+            {activeItems.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-2">暂无检测数据</p>
+            ) : (
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 text-gray-600">
+                  <tr>
+                    <th className="px-3 py-1.5 text-left">检测参数</th>
+                    <th className="px-3 py-1.5 text-left">技术要求</th>
+                    <th className="px-3 py-1.5 text-left">检测值</th>
+                    <th className="px-3 py-1.5 text-left">单位</th>
+                    <th className="px-3 py-1.5 text-left">代表值</th>
+                    <th className="px-3 py-1.5 text-left">单项结论</th>
+                    <th className="px-3 py-1.5 text-left">自动评定</th>
+                    <th className="px-3 py-1.5 text-left">备注</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activeItems.map((item) => (
+                    <tr key={item.id} className="border-t">
+                      <td className="px-3 py-1.5">{item.parameterCode}-{paramName(item.parameterCode)}</td>
+                      <td className="px-3 py-1.5">{item.requirement ?? '—'}</td>
+                      <td className="px-3 py-1.5">{item.testValues ? item.testValues.join(', ') : (item.result || '—')}</td>
+                      <td className="px-3 py-1.5">{item.unit ?? '—'}</td>
+                      <td className="px-3 py-1.5">{item.representativeValue ?? '—'}</td>
+                      <td className="px-3 py-1.5">
+                        <span className={item.passed === false ? 'text-red-600' : 'text-green-600'}>
+                          {item.verdict ? item.verdict : (item.passed === false ? '不合格' : '合格')}
+                        </span>
+                      </td>
+                      <td className="px-3 py-1.5">
+                        {item.autoPassed === null ? '—' : (item.autoPassed ? '合格' : '不合格')}
+                      </td>
+                      <td className="px-3 py-1.5">{item.remark ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }

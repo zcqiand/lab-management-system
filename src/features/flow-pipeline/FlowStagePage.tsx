@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router'
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { apiClient } from '../../api/client'
 import { useAuthStore } from '../auth/authStore'
@@ -23,11 +24,15 @@ interface PageResp {
   total: number
 }
 
+export type StageFilter = 'all' | 'not_yet' | 'submitted'
+
 export interface FlowStagePageProps {
   /** 页面标题（如「报告审核」） */
   title: string
-  /** 本页面对应的流程阶段 */
-  stage: FlowStage
+  /** 本页面对应的流程阶段（不填则显示全部，不按阶段过滤） */
+  stage?: FlowStage
+  /** 三态过滤器：有 stage 时默认 not_yet，无 stage 时默认 all */
+  defaultFilter?: StageFilter
   /** 标题右侧说明文字 */
   subtitle?: string
   /** 标题栏右侧的自定义按钮（如「新建接样」） */
@@ -52,6 +57,7 @@ export interface FlowStagePageProps {
 export function FlowStagePage({
   title,
   stage,
+  defaultFilter,
   subtitle,
   toolbar,
   rowActions,
@@ -62,10 +68,11 @@ export function FlowStagePage({
 }: FlowStagePageProps) {
   const user = useAuthStore((s) => s.user)
   const operator = user?.id ?? user?.username ?? 'anonymous'
+  const navigate = useNavigate()
 
-  const stageIdx = FLOW_STAGE_ORDER.indexOf(stage)
-  const nextStage = FLOW_STAGE_ORDER[stageIdx + 1] as FlowStage | undefined
-  const prevStage = FLOW_STAGE_ORDER[stageIdx - 1] as FlowStage | undefined
+  const stageIdx = stage ? FLOW_STAGE_ORDER.indexOf(stage) : -1
+  const nextStage = stage ? (FLOW_STAGE_ORDER[stageIdx + 1] as FlowStage | undefined) : undefined
+  const prevStage = stage ? (FLOW_STAGE_ORDER[stageIdx - 1] as FlowStage | undefined) : undefined
   const allowSubmit = canSubmit ?? Boolean(nextStage)
   const allowReturn = canReturn ?? Boolean(prevStage)
 
@@ -78,6 +85,11 @@ export function FlowStagePage({
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [processing, setProcessing] = useState(false)
+  // 三态过滤器：全部/未提交/已提交；接样页（无 stage）默认全部，其他页面默认未提交
+  const [filter, setFilter] = useState<StageFilter>(() => {
+    if (defaultFilter !== undefined) return defaultFilter
+    return stage ? 'not_yet' : 'all'
+  })
 
   // 「我提交的（可撤回）」——已提交至下一环节且最近提交人为本人
   const [submittedList, setSubmittedList] = useState<SampleReceipt[]>([])
@@ -91,9 +103,10 @@ export function FlowStagePage({
         const params: Record<string, string> = {
           page: String(p),
           pageSize: String(PAGE_SIZE),
-          flowStatus: stage,
         }
+        if (stage) params.flowStatus = stage
         if (kw) params.keyword = kw
+        if (filter !== 'all') params.filter = filter
         const res = await apiClient.get<PageResp>('/receipts', { params })
         setList(res.data.items)
         setTotal(res.data.total)
@@ -103,7 +116,7 @@ export function FlowStagePage({
         setLoading(false)
       }
     },
-    [stage],
+    [stage, filter],
   )
 
   const fetchSubmitted = useCallback(async () => {
@@ -133,7 +146,7 @@ export function FlowStagePage({
     setSelected(new Set())
     setSubmittedSelected(new Set())
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, stage])
+  }, [page, stage, filter])
 
   const handleSearch = () => {
     setPage(1)
@@ -188,7 +201,7 @@ export function FlowStagePage({
         <div>
           <h2 className="text-2xl font-bold">{title}</h2>
           <p className="text-xs text-gray-500 mt-1">
-            当前环节：{FLOW_STAGE_LABELS[stage]}
+            当前环节：{stage ? FLOW_STAGE_LABELS[stage] : '全部'}
             {nextStage && allowSubmit && ` ｜ 提交后进入：${FLOW_STAGE_LABELS[nextStage]}`}
             {prevStage && allowReturn && ` ｜ 退回至：${FLOW_STAGE_LABELS[prevStage]}`}
             {subtitle ? ` ｜ ${subtitle}` : ''}
@@ -198,6 +211,15 @@ export function FlowStagePage({
       </div>
 
       <div className="flex items-center gap-2 bg-white p-3 rounded shadow-sm">
+        <select
+          value={filter}
+          onChange={(e) => { setFilter(e.target.value as StageFilter); setPage(1) }}
+          className="border rounded px-2 py-1.5 text-sm"
+        >
+          <option value="all">全部</option>
+          <option value="not_yet">未提交</option>
+          <option value="submitted">已提交</option>
+        </select>
         <input
           placeholder="搜索接样编号/报告编号/收样人"
           value={keyword}
@@ -262,6 +284,7 @@ export function FlowStagePage({
                 </th>
               ))}
               <th className="px-4 py-2 text-left">检测结果</th>
+              <th className="px-4 py-2 text-left">状态</th>
               <th className="px-4 py-2 text-right">操作</th>
             </tr>
           </thead>
@@ -276,7 +299,7 @@ export function FlowStagePage({
             {!loading && list.length === 0 && (
               <tr>
                 <td colSpan={colSpan} className="px-4 py-8 text-center text-gray-400">
-                  暂无「{FLOW_STAGE_LABELS[stage]}」环节的单据
+                  暂无「{stage ? FLOW_STAGE_LABELS[stage] : '全部'}」环节的单据
                 </td>
               </tr>
             )}
@@ -300,7 +323,14 @@ export function FlowStagePage({
                   </td>
                 ))}
                 <td className="px-4 py-2"><ResultLabel result={r.result} /></td>
+                <td className="px-4 py-2">{FLOW_STAGE_LABELS[r.flowStatus]}</td>
                 <td className="px-4 py-2 text-right space-x-2 whitespace-nowrap">
+                  <button
+                    onClick={() => navigate(`/receipt/${r.id}`)}
+                    className="px-2 py-1 text-gray-600 hover:underline"
+                  >
+                    查看
+                  </button>
                   {rowActions?.(r, refresh)}
                   {allowSubmit && (
                     <button

@@ -9,6 +9,7 @@ import type {
   DashboardStats,
   ChangePasswordInput,
 } from '../src/types/api'
+import { FLOW_STAGE_ORDER } from '../src/types/api'
 import { signJwt, verifyJwt } from './jwt'
 import {
   MockTable,
@@ -27,6 +28,7 @@ import {
   testParameterTable,
   testStandardTable,
   technicalRequirementTable,
+  calculationRuleTable,
   reportTemplateTable,
   orgInfoTable,
   userTable,
@@ -452,19 +454,52 @@ export const handlers = [
   // ===========================================================
   http.get('*/receipts', ({ request }) => {
     const url = new URL(request.url)
-    const result = receiptTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '10'),
-      keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['commissionCode', 'reportCode', 'receivedBy', 'projectName', 'clientUnit'],
-      filters: {
-        contractId: url.searchParams.get('contractId') ?? undefined,
-        categoryCode: url.searchParams.get('categoryCode') ?? undefined,
-        flowStatus: url.searchParams.get('flowStatus') ?? undefined,
-        lastSubmittedBy: url.searchParams.get('lastSubmittedBy') ?? undefined,
-      } as never,
-    })
-    return HttpResponse.json(result)
+    const filter = url.searchParams.get('filter') as 'all' | 'not_yet' | 'submitted' | null
+    const targetStage = url.searchParams.get('flowStatus')
+
+    let rows = receiptTable.all()
+
+    // filter 只有在指定了 targetStage 时才有意义
+    if (targetStage) {
+      const stageIdx = FLOW_STAGE_ORDER.indexOf(targetStage as never)
+      rows = rows.filter((r) => {
+        const idx = FLOW_STAGE_ORDER.indexOf(r.flowStatus as never)
+        if (filter === 'not_yet') return idx === stageIdx
+        if (filter === 'submitted') return idx >= stageIdx
+        return true
+      })
+    } else if (filter === 'not_yet' || filter === 'submitted') {
+      // 无 targetStage 时，filter 无意义，当 all 处理
+    }
+
+    // keyword 过滤
+    const keyword = url.searchParams.get('keyword') ?? undefined
+    if (keyword) {
+      const kw = keyword.toLowerCase()
+      rows = rows.filter(
+        (r) =>
+          r.commissionCode?.toLowerCase().includes(kw) ||
+          r.reportCode?.toLowerCase().includes(kw) ||
+          r.receivedBy?.toLowerCase().includes(kw) ||
+          r.projectName?.toLowerCase().includes(kw) ||
+          r.clientUnit?.toLowerCase().includes(kw),
+      )
+    }
+
+    // 额外精确过滤
+    const contractId = url.searchParams.get('contractId')
+    if (contractId) rows = rows.filter((r) => r.contractId === contractId)
+    const categoryCode = url.searchParams.get('categoryCode')
+    if (categoryCode) rows = rows.filter((r) => r.categoryCode === categoryCode)
+    const lastSubmittedBy = url.searchParams.get('lastSubmittedBy')
+    if (lastSubmittedBy) rows = rows.filter((r) => r.lastSubmittedBy === lastSubmittedBy)
+
+    // 分页
+    const page = Number(url.searchParams.get('page') ?? '1')
+    const pageSize = Number(url.searchParams.get('pageSize') ?? '10')
+    const total = rows.length
+    const items = rows.slice((page - 1) * pageSize, page * pageSize)
+    return HttpResponse.json({ items, total, page, pageSize })
   }),
 
   http.post('*/receipts', async ({ request }) => {
@@ -558,9 +593,15 @@ export const handlers = [
 
   http.put('*/receipts/:id', async ({ params, request }) => {
     const body = (await request.json()) as Record<string, unknown>
-    const updated = receiptTable.update(String(params.id), body)
-    if (!updated) return HttpResponse.json({ message: '接样单不存在' }, { status: 404 })
-    return HttpResponse.json(updated)
+    const id = String(params.id)
+    const existing = receiptTable.findById(id)
+    if (existing) {
+      const updated = receiptTable.update(id, { ...body, id, updatedAt: new Date().toISOString() })
+      return HttpResponse.json(updated)
+    }
+    // 不存在则upsert：创建最小结构
+    const created = receiptTable.insert({ id, ...body, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as never)
+    return HttpResponse.json(created)
   }),
 
   http.delete('*/receipts/:id', ({ params }) => {
@@ -691,7 +732,10 @@ export const handlers = [
       sampleId: string
       parameterCode: string
       result: string
+      loads: number[]
       testValues: number[]
+      specimenArea: number
+      correctionFactor: number
       unit: string
       passed: boolean
       remark: string
@@ -700,8 +744,9 @@ export const handlers = [
       return HttpResponse.json({ message: 'sampleId/parameterCode 必填' }, { status: 400 })
     }
     const sample = sampleTable.findById(body.sampleId)
-    if (!sample) return HttpResponse.json({ message: '样品不存在' }, { status: 400 })
+    if (!sample) return HttpResponse.json({ message: '样品不存在' }, { status: 404 })
     const receipt = receiptTable.findById(sample.receiptId)
+    const rule = calculationRuleTable.all().find((r) => r.parameterCode === body.parameterCode)
     const evaluation = evaluateTestResult({
       parameterCode: body.parameterCode,
       categoryCode: receipt?.categoryCode,
@@ -710,21 +755,33 @@ export const handlers = [
       grade: sample.grade,
       specification: sample.specification,
       resultValue: body.result ?? '',
-      testValues: body.testValues,
+      loads: body.loads ?? body.testValues,
+      specimenArea: body.specimenArea,
+      correctionFactor: body.correctionFactor,
+      algorithmType: rule?.algorithmType,
     })
     const parameter = testParameterTable.all().find((p) => p.code === body.parameterCode)
+    const repVal = evaluation.representativeValue
+    const rawLoads = body.loads ?? body.testValues
+    // compressive_strength / steel_tensile 已算出 repVal（MPa），优先显示
+    // simple_avg 或无 repVal 时才显示原始录入值
+    const displayResult = (repVal !== undefined)
+      ? String(repVal)
+      : ((rawLoads && rawLoads.length > 0) ? rawLoads.join(', ') : (body.result ?? ''))
+    // CON002 抗压强度：由人工确认，不做自动评定
+    const isManualParam = body.parameterCode === 'CON002'
     const created = testItemTable.insert({
       sampleId: body.sampleId,
       parameterCode: body.parameterCode,
       standardCode: evaluation.standardCode,
       requirementCode: evaluation.requirementCode,
       requirement: evaluation.requirement,
-      result: body.result ?? (evaluation.representativeValue !== undefined ? String(evaluation.representativeValue) : ''),
-      testValues: body.testValues,
-      representativeValue: evaluation.representativeValue,
+      result: displayResult,
+      testValues: rawLoads,
+      representativeValue: repVal,
       unit: body.unit ?? parameter?.unit,
-      autoPassed: evaluation.autoPassed,
-      passed: body.passed ?? evaluation.autoPassed ?? false,
+      autoPassed: isManualParam ? null : evaluation.autoPassed,
+      passed: isManualParam ? null : (body.passed ?? evaluation.autoPassed ?? false),
       remark: body.remark,
     })
     syncReceiptResult(sample.receiptId)
@@ -742,8 +799,9 @@ export const handlers = [
     const body = (await request.json()) as Record<string, unknown>
     const existing = testItemTable.findById(id)
     if (!existing) return HttpResponse.json({ message: '检测记录不存在' }, { status: 404 })
-    // 修改检测值且未显式传 passed 时重新自动评定；显式传 passed 即手工修正
-    if (typeof body.result === 'string' && body.passed === undefined) {
+    // CON002 抗压强度：由人工确认，不做自动评定（passed 需显式传入）
+    const isManual = existing.parameterCode === 'CON002'
+    if (!isManual && typeof body.result === 'string' && body.passed === undefined) {
       const sample = sampleTable.findById(existing.sampleId)
       const receipt = sample ? receiptTable.findById(sample.receiptId) : undefined
       const evaluation = evaluateTestResult({
@@ -1081,6 +1139,49 @@ export const handlers = [
   http.delete('*/roles/:id', ({ params }) => {
     const ok = roleTable.remove(String(params.id))
     if (!ok) return HttpResponse.json({ message: '角色不存在' }, { status: 404 })
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // ===========================================================
+  // /calculation-rules：计算规则（归属检测参数）
+  // ===========================================================
+  http.get('*/calculation-rules', ({ request }) => {
+    const url = new URL(request.url)
+    const parameterCode = url.searchParams.get('parameterCode') ?? undefined
+    const all = calculationRuleTable.all()
+    const filtered = parameterCode ? all.filter((r) => r.parameterCode === parameterCode) : all
+    return HttpResponse.json({ items: filtered })
+  }),
+
+  http.post('*/calculation-rules', async ({ request }) => {
+    const body = await request.json() as {
+      parameterCode: string; algorithmType: string; specimenCount: number; unit?: string; remark?: string;
+    }
+    if (!body.parameterCode || !body.algorithmType || body.specimenCount === undefined) {
+      return HttpResponse.json({ message: 'parameterCode/algorithmType/specimenCount 必填' }, { status: 400 })
+    }
+    const id = `cr-${body.parameterCode}`
+    const existing = calculationRuleTable.findById(id)
+    if (existing) {
+      calculationRuleTable.update(id, body)
+      return HttpResponse.json(calculationRuleTable.findById(id))
+    }
+    const created = calculationRuleTable.insert({ id, ...body })
+    return HttpResponse.json(created, { status: 201 })
+  }),
+
+  http.put('*/calculation-rules/:id', async ({ params, request }) => {
+    const body = await request.json() as Partial<{ algorithmType: string; specimenCount: number; unit: string; remark: string; }>
+    const existing = calculationRuleTable.findById(String(params.id))
+    if (!existing) return HttpResponse.json({ message: '记录不存在' }, { status: 404 })
+    calculationRuleTable.update(String(params.id), body)
+    return HttpResponse.json(calculationRuleTable.findById(String(params.id)))
+  }),
+
+  http.delete('*/calculation-rules/:id', ({ params }) => {
+    const existing = calculationRuleTable.findById(String(params.id))
+    if (!existing) return HttpResponse.json({ message: '记录不存在' }, { status: 404 })
+    calculationRuleTable.remove(String(params.id))
     return new HttpResponse(null, { status: 204 })
   }),
 ]

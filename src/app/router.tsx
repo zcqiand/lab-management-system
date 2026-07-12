@@ -12,6 +12,7 @@ import OrgInfo from '../pages/OrgInfo'
 import { TestParameterList } from '../features/codes/TestParameterList'
 import { TestStandardList } from '../features/codes/TestStandardList'
 import { TechnicalRequirementList } from '../features/codes/TechnicalRequirementList'
+import { CalculationRuleList } from '../features/codes/CalculationRuleList'
 import { ReportCategoryList } from '../features/categories/ReportCategoryList'
 import { ContractCategoryList } from '../features/contracts/ContractCategoryList'
 import { CategoryDictList } from '../features/dicts/CategoryDictList'
@@ -22,6 +23,7 @@ import { ReportApprovePage } from '../features/reports/ReportApprovePage'
 import { ReportArchivePage } from '../features/reports/ReportArchivePage'
 import { ReportIssuePage } from '../features/reports/ReportIssuePage'
 import { DataEntryPage } from '../features/data-entry/DataEntryPage'
+import { ReceiptDetailPage } from '../features/receipts/ReceiptDetailPage'
 import { SummaryPage } from '../features/summary/SummaryPage'
 
 // v3: single flow pipeline — receiving → task-assignment → data-entry → review → approve → issue → archive
@@ -40,6 +42,7 @@ export const routes: RouteObject[] = [
       // ----- 业务管理（流程线）-----
       { path: 'contracts', element: <Contracts /> },
       { path: 'receipts', element: <Receipts /> },
+      { path: 'receipt/:id', element: <ReceiptDetailPage /> },
       { path: 'task-assignment', element: <TaskAssignmentPage /> },
       { path: 'data-entry', element: <DataEntryPage /> },
       { path: 'report-review', element: <ReportReviewPage /> },
@@ -59,6 +62,7 @@ export const routes: RouteObject[] = [
       { path: 'grades', element: <CategoryDictList key="grades" endpoint="grades" title="等级管理" hint="指机械连接接头等级Ⅰ/Ⅱ/Ⅲ级、砂石用途类别Ⅰ/Ⅱ/Ⅲ类；型号已含等级的钢材/水泥/混凝土留空" /> },
       { path: 'brands', element: <CategoryDictList key="brands" endpoint="brands" title="牌号管理" hint="指钢筋牌号：HRB400 等" /> },
       { path: 'report-templates', element: <ReportTemplateList /> },
+      { path: 'calculation-rules', element: <CalculationRuleList /> },
       {
         path: 'settings',
         children: [

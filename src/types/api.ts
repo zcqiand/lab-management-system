@@ -386,6 +386,8 @@ export interface TestItem {
   autoPassed: boolean | null
   /** 最终评定结果（默认取 autoPassed，可手工修正） */
   passed: boolean
+  /** 单项评定文本（改判用）：''=未评定、合格、不合格、符合、不符合 */
+  verdict?: string
   remark?: string
   createdAt: string
   updatedAt: string
@@ -693,6 +695,29 @@ export interface TaskUpdateInput {
   plannedTestDate?: string
   status?: TaskStatus
 }
+
+// =============================================================================
+// 计算规则 & 试件尺寸
+// =============================================================================
+
+/** 算法类型枚举 */
+export type AlgorithmType = 'simple_avg' | 'compressive_strength'
+
+/** 计算规则 */
+export interface CalculationRule {
+  id: string
+  parameterCode: string
+  algorithmType: AlgorithmType
+  specimenCount: number
+  unit?: string
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}
+
+// =============================================================================
+// 样品状态
+// =============================================================================
 
 /** 样品状态 */
 export type SampleStatus = string

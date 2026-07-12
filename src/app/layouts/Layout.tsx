@@ -49,6 +49,7 @@ const MASTER_MENU: MenuGroup = {
     { to: '/contract-categories', label: '合同类别', permission: 'user:read' },
     { to: '/test-standards', label: '标准管理', permission: 'user:read' },
     { to: '/test-parameters', label: '检测参数', permission: 'user:read' },
+    { to: '/calculation-rules', label: '计算规则', permission: 'user:read' },
     { to: '/technical-requirements', label: '技术要求', permission: 'user:read' },
     { to: '/models', label: '型号维护', permission: 'user:read' },
     { to: '/specifications', label: '规格维护', permission: 'user:read' },
