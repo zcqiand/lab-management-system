@@ -184,8 +184,8 @@ export function ReceiptDetail({ receiptId, categoryCode, onClose }: ReceiptDetai
                       <td className="px-3 py-1.5">{item.unit ?? '—'}</td>
                       <td className="px-3 py-1.5">{item.representativeValue ?? '—'}</td>
                       <td className="px-3 py-1.5">
-                        <span className={item.passed === false ? 'text-red-600' : item.passed === true ? 'text-green-600' : 'text-gray-400'}>
-                          {item.passed === false ? '不合格' : item.passed === true ? '合格' : '—'}
+                        <span className={item.passed === false ? 'text-red-600' : 'text-green-600'}>
+                          {item.verdict ? item.verdict : (item.passed === false ? '不合格' : '合格')}
                         </span>
                       </td>
                       <td className="px-3 py-1.5">

@@ -2,11 +2,16 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor, within, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
+import { MemoryRouter } from "react-router";
 import { server } from "../../../msw/server";
 import { FlowStagePage } from "../../../src/features/flow-pipeline/FlowStagePage";
 import { useAuthStore } from "../../../src/features/auth/authStore";
 import { resetApiClient, setToken } from "../../../src/api/client";
 import type { User, SampleReceipt } from "../../../src/types/api";
+
+function renderWithRouter(ui: React.ReactElement) {
+  return render(<MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>);
+}
 
 function makeUser(overrides?: Partial<User>): User {
   return {
@@ -93,7 +98,7 @@ describe("基础渲染", () => {
     server.use(
       mockReceiptsHandler([makeReceipt({ id: "rc-empty", commissionCode: "RC-EMPTY" })]),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("接样管理")).toBeInTheDocument());
     expect(screen.getByText(/当前环节：接样/)).toBeInTheDocument();
     expect(screen.getByText(/提交后进入：任务安排/)).toBeInTheDocument();
@@ -101,14 +106,14 @@ describe("基础渲染", () => {
 
   it("receiving 环节不显示退回（首环节不允许退回）", async () => {
     server.use(mockReceiptsHandler([]));
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText(/暂无「接样」环节/)).toBeInTheDocument());
     expect(screen.queryByRole("button", { name: /退回/ })).not.toBeInTheDocument();
   });
 
   it("review 环节同时显示提交和退回按钮", async () => {
     server.use(mockReceiptsHandler([makeReceipt({ flowStatus: "review" })]));
-    render(<FlowStagePage title="报告审核" stage="review" />);
+    renderWithRouter(<FlowStagePage title="报告审核" stage="review" />);
     await waitFor(() => expect(screen.getByText("报告审核")).toBeInTheDocument());
     // 批量操作栏应同时有提交和退回
     expect(screen.getByText(/批量提交/)).toBeInTheDocument();
@@ -122,7 +127,7 @@ describe("基础渲染", () => {
 describe("空列表", () => {
   it('无数据时显示"暂无"提示', async () => {
     server.use(mockReceiptsHandler([]));
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() =>
       expect(screen.getByText(/暂无「接样」环节的单据/)).toBeInTheDocument(),
     );
@@ -144,7 +149,7 @@ describe("加载中", () => {
         { once: true },
       ),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     expect(screen.getByText("加载中...")).toBeInTheDocument();
   });
 });
@@ -163,7 +168,7 @@ describe("列表渲染", () => {
       result: "pass",
     });
     server.use(mockReceiptsHandler([receipt]));
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("RC-LIST-001")).toBeInTheDocument());
     expect(screen.getByText("R-2024-010")).toBeInTheDocument();
     expect(screen.getByText("2024-07-01")).toBeInTheDocument();
@@ -175,13 +180,13 @@ describe("列表渲染", () => {
 
   it("result 为 fail 显示不合格", async () => {
     server.use(mockReceiptsHandler([makeReceipt({ id: "rc-fail", result: "fail" })]));
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("不合格")).toBeInTheDocument());
   });
 
   it("result 为空显示占位符 —", async () => {
     server.use(mockReceiptsHandler([makeReceipt({ id: "rc-none", result: undefined })]));
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("—")).toBeInTheDocument());
   });
 });
@@ -203,7 +208,7 @@ describe("搜索", () => {
         return HttpResponse.json({ items: [], total: 0 });
       }),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() =>
       expect(screen.getByPlaceholderText(/搜索接样编号/)).toBeInTheDocument(),
     );
@@ -222,7 +227,7 @@ describe("分页", () => {
       makeReceipt({ id: `rc-page-${i}`, commissionCode: `RC-PAGE-${i}` }),
     );
     server.use(mockReceiptsHandler(items, [], 25));
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("共 25 条")).toBeInTheDocument());
     expect(screen.getByText("1 / 3")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "下一页" })).toBeInTheDocument();
@@ -245,7 +250,7 @@ describe("分页", () => {
         });
       }),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("1 / 3")).toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: "下一页" }));
     await waitFor(() => expect(screen.getByText("2 / 3")).toBeInTheDocument());
@@ -271,7 +276,7 @@ describe("单个提交", () => {
         });
       }),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("RC-SUBMIT-1")).toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: "提交" }));
     await waitFor(() => expect(flowCall).not.toBeNull());
@@ -297,7 +302,7 @@ describe("单个提交", () => {
         return HttpResponse.json({ results: [{ id: "rc-op-1", ok: true }] });
       }),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("RC-OP-1")).toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: "提交" }));
     await waitFor(() => expect(capturedOperator).toBe("only-username"));
@@ -326,7 +331,7 @@ describe("批量提交", () => {
         });
       }),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("RC-BATCH-1")).toBeInTheDocument());
     // 选中两条
     const rows = screen.getAllByRole("row");
@@ -363,7 +368,7 @@ describe("退回", () => {
         return HttpResponse.json({ results: [{ id: "rc-return-1", ok: true }] });
       }),
     );
-    render(<FlowStagePage title="报告审核" stage="review" />);
+    renderWithRouter(<FlowStagePage title="报告审核" stage="review" />);
     await waitFor(() => expect(screen.getByText("RC-RETURN-1")).toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: "退回" }));
     await waitFor(() => expect(flowCall?.action).toBe("return"));
@@ -388,7 +393,7 @@ describe("撤回", () => {
         ],
       ),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() =>
       expect(screen.getByText("我提交的（可撤回）")).toBeInTheDocument(),
     );
@@ -415,7 +420,7 @@ describe("撤回", () => {
         return HttpResponse.json({ results: [{ id: "rc-wd-act-1", ok: true }] });
       }),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() =>
       expect(screen.getByText("我提交的（可撤回）")).toBeInTheDocument(),
     );
@@ -425,7 +430,7 @@ describe("撤回", () => {
 
   it("无可撤回的单据时显示提示", async () => {
     server.use(mockReceiptsHandler([]));
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() =>
       expect(screen.getByText("我提交的（可撤回）")).toBeInTheDocument(),
     );
@@ -447,7 +452,7 @@ describe("extraColumns", () => {
         }),
       ]),
     );
-    render(
+    renderWithRouter(
       <FlowStagePage
         title="报告发放"
         stage="issuance"
@@ -477,7 +482,7 @@ describe("rowActions", () => {
         makeReceipt({ id: "rc-action-1", commissionCode: "RC-ACTION-1" }),
       ]),
     );
-    render(
+    renderWithRouter(
       <FlowStagePage
         title="接样管理"
         stage="receiving"
@@ -515,7 +520,7 @@ describe("权限处理", () => {
         return HttpResponse.json({ results: [{ id: "rc-op-id", ok: true }] });
       }),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("RC-OP-ID")).toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: "提交" }));
     await waitFor(() => expect(capturedOperator).toBe("u-001"));
@@ -537,7 +542,7 @@ describe("操作失败", () => {
         }),
       ),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("RC-FAIL-1")).toBeInTheDocument());
     const submitBtn = screen.getByRole("button", { name: "提交" });
     expect(submitBtn).not.toBeDisabled();
@@ -555,7 +560,7 @@ describe("操作失败", () => {
       mockReceiptsHandler([makeReceipt({ id: "rc-net-err", commissionCode: "RC-NET-ERR" })]),
       http.post("*/receipts/flow", () => HttpResponse.error()),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("RC-NET-ERR")).toBeInTheDocument());
     const submitBtn = screen.getByRole("button", { name: "提交" });
     expect(submitBtn).not.toBeDisabled();
@@ -573,7 +578,7 @@ describe("操作失败", () => {
         HttpResponse.json({ results: [{ id: "rc-ok-1", ok: true }] }),
       ),
     );
-    render(<FlowStagePage title="接样管理" stage="receiving" />);
+    renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("RC-OK-1")).toBeInTheDocument());
     const submitBtn = screen.getByRole("button", { name: "提交" });
     expect(submitBtn).not.toBeDisabled();

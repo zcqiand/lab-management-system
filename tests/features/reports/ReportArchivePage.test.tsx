@@ -1,5 +1,6 @@
 import { describe, expect, beforeEach } from "vitest";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 import { ReportArchivePage } from "../../../src/features/reports/ReportArchivePage";
 import { useAuthStore } from "../../../src/features/auth/authStore";
 import { fnTest } from "../../fn";
@@ -16,6 +17,10 @@ function makeUser(perms: string[]): User {
   };
 }
 
+function renderWithRouter(ui: React.ReactElement) {
+  return render(<MemoryRouter initialEntries={["/"]}>{ui}</MemoryRouter>);
+}
+
 beforeEach(() => {
   cleanup();
   localStorage.clear();
@@ -26,7 +31,7 @@ beforeEach(() => {
 
 describe("ReportArchivePage", () => {
   fnTest(["M03.F08.I01"], "渲染页面标题和流程信息", async () => {
-    render(<ReportArchivePage />);
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() => expect(screen.getByText("报告归档")).toBeInTheDocument());
     await waitFor(() =>
       expect(screen.getByText(/当前环节.*已归档/)).toBeInTheDocument(),
@@ -34,14 +39,14 @@ describe("ReportArchivePage", () => {
   });
 
   fnTest(["M03.F08.I03"], "显示归档页特有的提示信息", async () => {
-    render(<ReportArchivePage />);
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() =>
       expect(screen.getByText(/流程终点.*如需回溯可退回报告发放/)).toBeInTheDocument(),
     );
   });
 
   fnTest(["M03.F08.I03"], "不显示批量提交按钮（canSubmit=false）", async () => {
-    render(<ReportArchivePage />);
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() => {
       // 归档页不应显示批量审核通过/批量批准等提交类按钮
       expect(
@@ -54,7 +59,7 @@ describe("ReportArchivePage", () => {
   });
 
   fnTest(["M03.F08.I03"], "显示批量退回按钮（canReturn默认为true，有上一阶段）", async () => {
-    render(<ReportArchivePage />);
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() => {
       // 归档页有上一阶段 issuance，可以退回
       expect(screen.getByRole("button", { name: /批量退回/ })).toBeInTheDocument();
@@ -62,29 +67,29 @@ describe("ReportArchivePage", () => {
   });
 
   fnTest(["M03.F08.I01"], "显示搜索框", async () => {
-    render(<ReportArchivePage />);
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() =>
       expect(screen.getByPlaceholderText(/搜索接样编号/)).toBeInTheDocument(),
     );
   });
 
   fnTest(["M03.F08.I01"], "报告类别列正确渲染", async () => {
-    render(<ReportArchivePage />);
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() => expect(screen.getByText("报告类别")).toBeInTheDocument());
   });
 
   fnTest(["M03.F08.I01"], "签发时间列正确渲染", async () => {
-    render(<ReportArchivePage />);
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() => expect(screen.getByText("签发时间")).toBeInTheDocument());
   });
 
   fnTest(["M03.F08.I01"], "结论列正确渲染", async () => {
-    render(<ReportArchivePage />);
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() => expect(screen.getByText("结论")).toBeInTheDocument());
   });
 
   fnTest(["M03.F08.I01"], "不显示我提交的（可撤回）区块（归档为终点无下一阶段）", async () => {
-    render(<ReportArchivePage />);
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() => {
       // 归档是终点，没有下一阶段，所以不应显示"我提交的（可撤回）"
       expect(screen.queryByText(/我提交的.*可撤回/)).not.toBeInTheDocument();
@@ -92,7 +97,7 @@ describe("ReportArchivePage", () => {
   });
 
   fnTest(["M03.F08.I01"], "分页控件正常显示", async () => {
-    render(<ReportArchivePage />);
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() => {
       expect(screen.getByText(/共 \d+ 条/)).toBeInTheDocument();
     });
@@ -105,7 +110,7 @@ describe("ReportArchivePage", () => {
       status: "authenticated",
       error: null,
     });
-    render(<ReportArchivePage />);
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() => expect(screen.getByText("报告归档")).toBeInTheDocument());
   });
 });

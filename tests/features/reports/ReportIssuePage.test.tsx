@@ -2,6 +2,7 @@ import { describe, expect, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor, within, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
+import { MemoryRouter } from "react-router";
 import { server } from "../../../msw/server";
 import { ReportIssuePage } from "../../../src/features/reports/ReportIssuePage";
 import { useAuthStore } from "../../../src/features/auth/authStore";
@@ -46,6 +47,10 @@ function makeReceipt(overrides: Partial<SampleReceipt> = {}): SampleReceipt {
   };
 }
 
+function renderWithRouter(ui: React.ReactElement) {
+  return render(<MemoryRouter initialEntries={["/"]}>{ui}</MemoryRouter>);
+}
+
 /**
  * Helper: creates an MSW handler for GET /receipts that properly distinguishes
  * between the main list (no lastSubmittedBy) and submitted list (has lastSubmittedBy).
@@ -87,7 +92,7 @@ afterEach(() => {
 describe("ReportIssuePage 基础信息", () => {
   fnTest(["M03.F07.I01"], '标题显示"报告发放"', async () => {
     server.use(mockReceiptsHandler([]));
-    render(<ReportIssuePage />);
+    renderWithRouter(<ReportIssuePage />);
     await waitFor(() => expect(screen.getByText("报告发放")).toBeInTheDocument());
   });
 
@@ -97,7 +102,7 @@ describe("ReportIssuePage 基础信息", () => {
         makeReceipt({ id: "rc-submit-label", commissionCode: "RC-SUBLABEL" }),
       ]),
     );
-    render(<ReportIssuePage />);
+    renderWithRouter(<ReportIssuePage />);
     await waitFor(() => expect(screen.getByText("RC-SUBLABEL")).toBeInTheDocument());
     expect(screen.getByRole("button", { name: "批量发放并归档" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "发放并归档" })).toBeInTheDocument();
@@ -105,7 +110,7 @@ describe("ReportIssuePage 基础信息", () => {
 
   fnTest(["M03.F07.I03"], "stage 为 issuance，提交后进入已归档", async () => {
     server.use(mockReceiptsHandler([]));
-    render(<ReportIssuePage />);
+    renderWithRouter(<ReportIssuePage />);
     await waitFor(() =>
       expect(screen.getByText(/提交后进入：已归档/)).toBeInTheDocument(),
     );
@@ -129,7 +134,7 @@ describe("extraColumns 渲染", () => {
         }),
       ),
     );
-    render(<ReportIssuePage />);
+    renderWithRouter(<ReportIssuePage />);
     await waitFor(() => expect(screen.getByText("报告类别")).toBeInTheDocument());
     await waitFor(() => expect(screen.getByText("混凝土")).toBeInTheDocument());
   });
@@ -144,7 +149,7 @@ describe("extraColumns 渲染", () => {
           makeReceipt({ id: "rc-time-2", issuedAt: undefined }),
         ]),
       );
-      render(<ReportIssuePage />);
+      renderWithRouter(<ReportIssuePage />);
       await waitFor(() => expect(screen.getByText("签发时间")).toBeInTheDocument());
       await waitFor(() => expect(screen.getByText(/2024\/7\/1/)).toBeInTheDocument());
       expect(screen.getAllByText("—").length).toBeGreaterThan(0);
@@ -163,7 +168,7 @@ describe('"查看报告"按钮', () => {
         makeReceipt({ id: "rc-preview-1", commissionCode: "RC-PREVIEW-1" }),
       ]),
     );
-    render(<ReportIssuePage />);
+    renderWithRouter(<ReportIssuePage />);
     await waitFor(() => expect(screen.getByText("RC-PREVIEW-1")).toBeInTheDocument());
     const previewBtn = screen.getByRole("button", { name: "查看报告" });
     await user.click(previewBtn);
@@ -192,7 +197,7 @@ describe("发放并归档流程", () => {
         });
       }),
     );
-    render(<ReportIssuePage />);
+    renderWithRouter(<ReportIssuePage />);
     await waitFor(() => expect(screen.getByText("RC-ISSUE-1")).toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: "发放并归档" }));
     await waitFor(() => expect(flowCall?.action).toBe("submit"));
@@ -218,7 +223,7 @@ describe("发放并归档流程", () => {
         });
       }),
     );
-    render(<ReportIssuePage />);
+    renderWithRouter(<ReportIssuePage />);
     await waitFor(() => expect(screen.getByText("RC-BATCH-ISS-1")).toBeInTheDocument());
     const rows = screen.getAllByRole("row");
     await user.click(within(rows[1]!).getByRole("checkbox"));
@@ -238,7 +243,7 @@ describe("发放并归档流程", () => {
         return HttpResponse.json({ results: [{ id: "rc-iss-return-1", ok: true }] });
       }),
     );
-    render(<ReportIssuePage />);
+    renderWithRouter(<ReportIssuePage />);
     await waitFor(() =>
       expect(screen.getByText(/退回至：报告批准/)).toBeInTheDocument(),
     );

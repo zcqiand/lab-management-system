@@ -470,13 +470,6 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                                     {rep > 0 ? rep : '—'}
                                   </div>
                                 </div>
-                                {/* 单项评定 */}
-                                <div>
-                                  <p className="text-xs text-gray-500 mb-1.5">单项评定</p>
-                                  <div className={`w-24 text-center border rounded px-3 py-1.5 text-sm font-medium ${verdictColorClass(effectiveVerdict(existingItem!))}`}>
-                                    {effectiveVerdict(existingItem!) || '—'}
-                                  </div>
-                                </div>
                               </>
                             ) : (
                               /* 其他参数：直接填值 */
@@ -502,13 +495,6 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                                     {numLoads.length > 0 ? numLoads[0] : '—'}
                                   </div>
                                 </div>
-                                {/* 单项评定 */}
-                                <div>
-                                  <p className="text-xs text-gray-500 mb-1.5">单项评定</p>
-                                  <div className={`w-20 text-center border rounded px-3 py-1.5 text-sm font-medium ${verdictColorClass(effectiveVerdict(existingItem!))}`}>
-                                    {effectiveVerdict(existingItem!) || '—'}
-                                  </div>
-                                </div>
                               </div>
                             )}
 
@@ -517,6 +503,9 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                               <div className="ml-auto flex items-center gap-2">
                                 {existingItem && (
                                   <>
+                                    <span className={`text-xs font-medium ${verdictColorClass(effectiveVerdict(existingItem))}`}>
+                                      单项评定：{effectiveVerdict(existingItem) || '——'}
+                                    </span>
                                     {existingItem.autoPassed !== null && existingItem.passed !== existingItem.autoPassed && (
                                       <span className="text-xs text-amber-500">（已修正）</span>
                                     )}

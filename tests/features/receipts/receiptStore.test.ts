@@ -148,9 +148,10 @@ describe('receiptStore 状态流转', () => {
     expect(updated?.remark).toBe('复检')
   })
 
-  fnTest(['M03.F01.I03'], 'updateReceipt 不存在', async () => {
-    await useReceiptStore.getState().updateReceipt('nonexistent', { receivedBy: 'x' })
-    expect(useReceiptStore.getState().error).toBeTruthy()
+  fnTest(['M03.F01.I03'], 'updateReceipt 不存在时upsert成功', async () => {
+    // receiptTable.update 不存在时 handler 会 upsert，不报错
+    await useReceiptStore.getState().updateReceipt('rc-upsert-test', { receivedBy: '测试员' })
+    expect(useReceiptStore.getState().error).toBeNull()
   })
 
   fnTest(['M03.F01.I04'], 'deleteReceipt 成功', async () => {

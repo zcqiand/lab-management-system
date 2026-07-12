@@ -1,26 +1,32 @@
 {
   "schema": 1,
   "project": "lab-management-system",
-  "current_task": "数据录入左右分栏UI + valueCount动态列数",
+  "current_task": "数据录入 UI 重构 + 计算引擎",
   "done": [
-    "数据录入 EntryModal 改为左右分栏：左侧样品清单（橙色未录入高亮），右侧动态列数录入表单",
-    "TestParameter 新增 valueCount 字段控制录入列数",
-    "TestItem 新增 testValues（多样本原始值）+ representativeValue（代表值）",
-    "后端 evaluateTestResult 支持 testValues 数组计算平均值代表值",
-    "混凝土 CON002（抗压强度代表值）设置 valueCount=3，其他参数默认1列",
-    "计算引擎需求已澄清：所有参数都支持，但本次先做UI；计算引擎作为独立需求后续处理"
+    "msw/db.ts: evaluateTestResult 缺 } 导致 L3 parse error（已修复）",
+    "msw/handlers.ts: testItemTable.insert 传 loads/invalid（已修复）",
+    "新增 M04.F11 计算规则 + M04.F12 试件尺寸功能清单（已废弃）",
+    "msw/handlers.ts: 新增 /calculation-rules 全套 CRUD",
+    "src/features/codes/CalculationRuleList.tsx: 计算规则管理页",
+    "删 SpecimenSizeList.tsx + specimenSizeTable + /specimen-sizes handlers",
+    "重构计算引擎：deriveSpecimenParams() 从样品 specification 自动派生参数",
+    "  - 混凝土：解析 \"150×150×150mm\" → 面积 + 换算系数",
+    "  - 钢材：解析 \"Φ22\" → 查 GB/T 228 公称面积表",
+    "新增 steel_tensile 算法（STE001/STE003）",
+    "废弃 M04.F12 + I01-I03（状态改为已废弃）",
+    "重构 EntryModal：左侧样品列表 + 右侧每个样品一个保存按钮",
+    "  - 混凝土：3个荷载(kN) → 实时显示3个抗压强度(MPa) → 代表值",
+    "  - 修复 useEffect 依赖：保存后 loads 不再被覆盖成1个"
   ],
-  "next": "计算引擎作为独立需求处理（管理员维护计算规则，根据型号/规格/牌号确定输入面积，按参数类型执行不同算法）",
-  "open_questions": [
-    "计算引擎：管理员维护计算规则（公式、尺寸换算系数、±15%规则等）",
-    "计算引擎：管理员维护试件尺寸表（按型号/规格/牌号决定面积）",
-    "计算引擎：CON002具体算法（荷载→强度→±15%规则→代表值）"
-  ],
+  "next": "功能开发",
+  "open_questions": [],
   "blocked_by": [],
   "dont": [
     "不要改 .harness/stack.json 让门变松",
     "不要给 skip 的测试挂功能 ID",
-    "不要在 ReceiptFormModal 的 grid grid-cols-4 内嵌套同级 div"
+    "不要在 ReceiptFormModal 的 grid grid-cols-4 内嵌套同级 div",
+    "不要在 testItemTable.insert 里传 loads 或 invalid",
+    "useEffect 依赖数组必须完整，避免 loads 被旧数据覆盖"
   ],
   "last_handoff_at": "2026-07-12"
 }

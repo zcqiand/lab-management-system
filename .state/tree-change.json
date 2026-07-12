@@ -1,34 +1,27 @@
 {
+  "schema": 1,
   "approved": true,
-  "summary": "新增1个功能模块：合同类别码表管理(M04.F10)，共3个子项，状态均为规划",
+  "base_sha": "b7bc790ed2bdd1b1",
+  "summary": "新增 M03.F09 接样单详情：各列表页加查看按钮 + 详情页（含接样信息/样品信息/检测数据）",
   "changes": [
     {
-      "id": "M04.F10",
+      "id": "M03.F09",
       "action": "新增",
-      "name": "合同类别码表管理",
-      "reason": "REQ-2026-001 需求，合同类别需形成码表支持 CRUD"
+      "name": "接样单详情",
+      "reason": "已提交的单据需支持查看完整信息（接样+样品+检测数据）"
     },
     {
-      "id": "M04.F10.I01",
+      "id": "M03.F09.I01",
       "action": "新增",
-      "name": "合同类别列表",
-      "reason": "合同类别码表管理页面"
+      "name": "查看按钮",
+      "reason": "各流程列表页 rowActions 加查看按钮，触发详情页"
     },
     {
-      "id": "M04.F10.I02",
+      "id": "M03.F09.I02",
       "action": "新增",
-      "name": "合同类别新建/编辑",
-      "reason": "合同类别增删改操作入口"
-    },
-    {
-      "id": "M04.F10.I03",
-      "action": "新增",
-      "name": "合同类别删除",
-      "reason": "合同类别删除操作入口"
+      "name": "详情页",
+      "reason": "展示接样信息、样品列表、检测数据，支持录入检测结果"
     }
   ],
-  "sync_files": [
-    "output/lab-management-system/docs/requirements/REQ-2026-001.md"
-  ],
-  "base_sha": "f58cd75ee73e3d9a"
+  "sync_files": []
 }
