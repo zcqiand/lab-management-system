@@ -6,13 +6,12 @@
     "features": 31,
     "items": 106
   },
-  "warnings_total": 30,
+  "warnings_total": 37,
   "warnings": {
     "已上线但无设计映射": [
       "M03.F01.I06",
       "M03.F02.I04",
       "M03.F03.I07",
-      "M03.F04.I05",
       "M03.F05.I04",
       "M03.F06.I04",
       "M03.F07.I04",
@@ -24,7 +23,6 @@
       "M03.F01.I06",
       "M03.F02.I04",
       "M03.F03.I07",
-      "M03.F04.I05",
       "M03.F05.I04",
       "M03.F06.I04",
       "M03.F07.I04",
@@ -36,96 +34,29 @@
       "M03.F01.I06",
       "M03.F02.I04",
       "M03.F03.I07",
-      "M03.F04.I05",
       "M03.F05.I04",
       "M03.F06.I04",
       "M03.F07.I04",
       "M03.F08.I04",
       "M03.F09.I01",
       "M03.F09.I02"
+    ],
+    "开发中但无需求文档引用": [
+      "M01.F03.I04",
+      "M03.F04.I01",
+      "M03.F04.I02",
+      "M03.F04.I03",
+      "M03.F04.I05"
+    ],
+    "开发中但代码里无 UI 入口(用户还点不到)": [
+      "M01.F03.I04",
+      "M03.F04.I01",
+      "M03.F04.I02",
+      "M03.F04.I03",
+      "M03.F04.I05"
     ]
   },
-  "unreachable_shipped": [
-    "M01.F02.I01",
-    "M01.F02.I02",
-    "M01.F02.I03",
-    "M01.F03.I01",
-    "M01.F03.I02",
-    "M01.F03.I03",
-    "M01.F03.I04",
-    "M01.F04.I01",
-    "M01.F04.I02",
-    "M01.F04.I03",
-    "M01.F05.I01",
-    "M02.F01.I01",
-    "M02.F01.I02",
-    "M02.F01.I03",
-    "M03.F01.I01",
-    "M03.F01.I02",
-    "M03.F01.I03",
-    "M03.F01.I04",
-    "M03.F01.I06",
-    "M03.F02.I01",
-    "M03.F02.I02",
-    "M03.F02.I04",
-    "M03.F03.I01",
-    "M03.F03.I02",
-    "M03.F03.I03",
-    "M03.F03.I04",
-    "M03.F03.I06",
-    "M03.F03.I07",
-    "M03.F04.I01",
-    "M03.F04.I02",
-    "M03.F04.I03",
-    "M03.F04.I05",
-    "M03.F05.I01",
-    "M03.F05.I02",
-    "M03.F05.I03",
-    "M03.F05.I04",
-    "M03.F06.I01",
-    "M03.F06.I02",
-    "M03.F06.I03",
-    "M03.F06.I04",
-    "M03.F07.I01",
-    "M03.F07.I02",
-    "M03.F07.I03",
-    "M03.F07.I04",
-    "M03.F08.I01",
-    "M03.F08.I02",
-    "M03.F08.I03",
-    "M03.F08.I04",
-    "M03.F09.I01",
-    "M03.F09.I02",
-    "M04.F01.I01",
-    "M04.F01.I02",
-    "M04.F01.I03",
-    "M04.F01.I04",
-    "M04.F02.I01",
-    "M04.F02.I02",
-    "M04.F03.I01",
-    "M04.F03.I02",
-    "M04.F03.I03",
-    "M04.F03.I04",
-    "M04.F04.I01",
-    "M04.F04.I02",
-    "M04.F04.I03",
-    "M04.F05.I01",
-    "M04.F05.I02",
-    "M04.F05.I03",
-    "M04.F06.I01",
-    "M04.F06.I02",
-    "M04.F06.I03",
-    "M04.F07.I01",
-    "M04.F07.I02",
-    "M04.F07.I03",
-    "M04.F08.I01",
-    "M04.F08.I02",
-    "M04.F08.I03",
-    "M04.F09.I01",
-    "M04.F09.I02",
-    "M04.F09.I03",
-    "M05.F01.I01"
-  ],
+  "unreachable_shipped": [],
   "function_map": {
     "M01.F01.I01": {
       "name": "机构信息维护",
@@ -142,7 +73,9 @@
         "MSW org-info handlers GET /org-info 返回机构信息（已初始化）",
         "MSW org-info handlers PUT /org-info 更新机构信息"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\org\\OrgInfoForm.tsx"
+      ]
     },
     "M01.F02.I01": {
       "name": "角色列表",
@@ -159,7 +92,9 @@
         "roleStore fetchRoles 成功",
         "roleStore 网络错误后 error"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\roles\\RoleList.tsx"
+      ]
     },
     "M01.F02.I02": {
       "name": "角色新建/编辑",
@@ -176,7 +111,9 @@
         "roleStore createRole 成功",
         "roleStore updateRole 成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\roles\\RoleList.tsx"
+      ]
     },
     "M01.F02.I03": {
       "name": "角色删除",
@@ -192,7 +129,9 @@
       "tests": [
         "roleStore deleteRole 成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\roles\\RoleList.tsx"
+      ]
     },
     "M01.F03.I01": {
       "name": "用户列表",
@@ -212,7 +151,9 @@
         "userStore fetchUsers 成功",
         "userStore 网络错误后 error"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\users\\UserList.tsx"
+      ]
     },
     "M01.F03.I02": {
       "name": "用户新建/编辑",
@@ -229,7 +170,9 @@
         "userStore createUser 成功",
         "userStore updateUser 成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\users\\UserList.tsx"
+      ]
     },
     "M01.F03.I03": {
       "name": "用户删除",
@@ -245,11 +188,13 @@
       "tests": [
         "userStore deleteUser 成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\users\\UserList.tsx"
+      ]
     },
     "M01.F03.I04": {
       "name": "密码修改",
-      "status": "已上线",
+      "status": "开发中",
       "type": "按钮",
       "requirements": [],
       "flows": [
@@ -328,7 +273,9 @@
         "流程集成测试：FlowPanel 状态流转端到端 非法转换守卫：draft 上直接 APPROVE 应保持不变且显示错误",
         "流程集成测试：FlowPanel 状态流转端到端 非法转换端到端：FlowPanel 中 draft 状态无通过按钮（UI 守卫）"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\roles\\RoleList.tsx"
+      ]
     },
     "M01.F04.I02": {
       "name": "路由守卫",
@@ -344,7 +291,9 @@
       "tests": [
         "HasPermission 组件 未登录时不渲染 children"
       ],
-      "entry": []
+      "entry": [
+        "src\\app\\router.tsx"
+      ]
     },
     "M01.F04.I03": {
       "name": "权限指令",
@@ -373,7 +322,9 @@
         "usePermission 未登录时任意权限返回 false",
         "usePermission 权限变更后响应更新"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\auth\\hasPermission.tsx"
+      ]
     },
     "M01.F05.I01": {
       "name": "JWT 登录",
@@ -407,7 +358,9 @@
         "types/store store 状态类型（v3） AuthState 未登录态可构造",
         "认证集成测试：App 全链路登录→Dashboard 未登录访问 /login 渲染登录表单"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\auth\\Login.tsx"
+      ]
     },
     "M01.F05.I02": {
       "name": "Token 校验",
@@ -464,7 +417,9 @@
         "contractStore 状态流转 初始状态: list=[], loading=false, error=null",
         "types/api 业务实体（v3） Contract 类型可构造且字段符合预期"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\contracts\\ContractList.tsx"
+      ]
     },
     "M02.F01.I02": {
       "name": "合同新建/编辑",
@@ -483,7 +438,9 @@
         "contractStore 状态流转 createContract 失败后 error 填充",
         "contractStore 状态流转 createContract 成功后追加到 list"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\contracts\\ContractList.tsx"
+      ]
     },
     "M02.F01.I03": {
       "name": "合同删除",
@@ -502,7 +459,9 @@
         "contractStore 状态流转 updateContract 不存在时 error 填充",
         "contractStore 状态流转 updateContract 成功后 list 中对应项更新"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\contracts\\ContractList.tsx"
+      ]
     },
     "M02.F01.I04": {
       "name": "合同汇总",
@@ -669,7 +628,9 @@
         "types/api 业务实体（v3） Page 分页结构与 PageQuery 查询参数",
         "types/api 业务实体（v3） SampleReceipt 携带报告类别与合并的报告字段"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\receipts\\ReceiptList.tsx"
+      ]
     },
     "M03.F01.I02": {
       "name": "接样单新建",
@@ -688,7 +649,9 @@
         "receiptStore 状态流转 createReceipt 失败",
         "receiptStore 状态流转 createReceipt 成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\receipts\\ReceiptList.tsx"
+      ]
     },
     "M03.F01.I03": {
       "name": "接样单编辑",
@@ -707,7 +670,9 @@
         "receiptStore 状态流转 updateReceipt 不存在时upsert成功",
         "receiptStore 状态流转 updateReceipt 成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\receipts\\ReceiptList.tsx"
+      ]
     },
     "M03.F01.I04": {
       "name": "接样单删除",
@@ -724,7 +689,9 @@
         "receiptStore 状态流转 deleteReceipt 不存在",
         "receiptStore 状态流转 deleteReceipt 成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\receipts\\ReceiptList.tsx"
+      ]
     },
     "M03.F01.I05": {
       "name": "接样单详情",
@@ -748,7 +715,9 @@
       "flows": [],
       "designs": [],
       "tests": [],
-      "entry": []
+      "entry": [
+        "src\\features\\receipts\\ReceiptList.tsx"
+      ]
     },
     "M03.F02.I01": {
       "name": "任务分配",
@@ -769,7 +738,9 @@
         "sampleStore fetchSamples 网络错误后 error 填充",
         "sampleStore 初始状态"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\task-assignment\\TaskAssignmentPage.tsx"
+      ]
     },
     "M03.F02.I02": {
       "name": "任务编辑",
@@ -788,7 +759,9 @@
         "sampleStore updateSample 不存在时 error 填充",
         "sampleStore updateSample 成功后 list 中对应项更新"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\task-assignment\\TaskAssignmentPage.tsx"
+      ]
     },
     "M03.F02.I03": {
       "name": "任务取消",
@@ -813,7 +786,9 @@
       "flows": [],
       "designs": [],
       "tests": [],
-      "entry": []
+      "entry": [
+        "src\\features\\task-assignment\\TaskAssignmentPage.tsx"
+      ]
     },
     "M03.F03.I01": {
       "name": "数据录入页面",
@@ -829,7 +804,9 @@
       "tests": [
         "types/api 业务实体（v3） Sample 归属接样单 receiptId，含型号/规格/等级/牌号与扩展属性"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\data-entry\\DataEntryPage.tsx"
+      ]
     },
     "M03.F03.I02": {
       "name": "检测数据保存",
@@ -868,7 +845,9 @@
         "useFetch 数据获取 hook 初始 loading=true，resolve 后 loading=false 且 data 填充",
         "useFetch 数据获取 hook 请求期间组件卸载不报错"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\data-entry\\DataEntryPage.tsx"
+      ]
     },
     "M03.F03.I03": {
       "name": "检测项编辑",
@@ -884,7 +863,9 @@
       "tests": [
         "MSW test-items handlers POST /test-items 创建检测项"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\data-entry\\DataEntryPage.tsx"
+      ]
     },
     "M03.F03.I04": {
       "name": "检测项删除",
@@ -900,7 +881,9 @@
       "tests": [
         "MSW test-items handlers DELETE /test-items/:id 删除检测项"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\data-entry\\DataEntryPage.tsx"
+      ]
     },
     "M03.F03.I05": {
       "name": "自动评定",
@@ -916,7 +899,9 @@
       "tests": [
         "MSW test-items handlers POST /test-items 自动评定"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\data-entry\\DataEntryPage.tsx"
+      ]
     },
     "M03.F03.I06": {
       "name": "人工改判",
@@ -932,7 +917,9 @@
       "tests": [
         "MSW test-items handlers POST /test-items 人工改判（传 passed 覆盖自动评定）"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\data-entry\\DataEntryPage.tsx"
+      ]
     },
     "M03.F03.I07": {
       "name": "数据录入三态过滤器",
@@ -942,11 +929,13 @@
       "flows": [],
       "designs": [],
       "tests": [],
-      "entry": []
+      "entry": [
+        "src\\features\\data-entry\\DataEntryPage.tsx"
+      ]
     },
     "M03.F04.I01": {
       "name": "报告列表",
-      "status": "已上线",
+      "status": "开发中",
       "type": "页面",
       "requirements": [],
       "flows": [
@@ -973,7 +962,7 @@
     },
     "M03.F04.I02": {
       "name": "报告新建/编辑",
-      "status": "已上线",
+      "status": "开发中",
       "type": "按钮",
       "requirements": [],
       "flows": [
@@ -991,7 +980,7 @@
     },
     "M03.F04.I03": {
       "name": "报告预览",
-      "status": "已上线",
+      "status": "开发中",
       "type": "按钮",
       "requirements": [],
       "flows": [
@@ -1025,7 +1014,7 @@
     },
     "M03.F04.I05": {
       "name": "报告编制三态过滤器",
-      "status": "已上线",
+      "status": "开发中",
       "type": "查询",
       "requirements": [],
       "flows": [],
@@ -1053,7 +1042,9 @@
         "ReportReviewPage 渲染页面标题和流程信息",
         "ReportReviewPage 结论列正确渲染"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportReviewPage.tsx"
+      ]
     },
     "M03.F05.I02": {
       "name": "报告查看",
@@ -1069,7 +1060,9 @@
       "tests": [
         "ReportReviewPage 无 report:write 权限时仍可查看列表"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportReviewPage.tsx"
+      ]
     },
     "M03.F05.I03": {
       "name": "审核操作",
@@ -1087,7 +1080,9 @@
         "ReportReviewPage 显示提交后进入报告批准的提示",
         "ReportReviewPage 显示退回至数据录入的提示"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportReviewPage.tsx"
+      ]
     },
     "M03.F05.I04": {
       "name": "报告审核三态过滤器",
@@ -1097,7 +1092,9 @@
       "flows": [],
       "designs": [],
       "tests": [],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportReviewPage.tsx"
+      ]
     },
     "M03.F06.I01": {
       "name": "报告批准页面",
@@ -1118,7 +1115,9 @@
         "ReportApprovePage 渲染页面标题和流程信息",
         "ReportApprovePage 结论列正确渲染"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportApprovePage.tsx"
+      ]
     },
     "M03.F06.I02": {
       "name": "报告查看",
@@ -1134,7 +1133,9 @@
       "tests": [
         "ReportApprovePage 无 report:write 权限时仍可查看列表"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportApprovePage.tsx"
+      ]
     },
     "M03.F06.I03": {
       "name": "批准操作",
@@ -1154,7 +1155,9 @@
         "ReportApprovePage 显示提交后进入报告发放的提示",
         "ReportApprovePage 显示退回至报告审核的提示"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportApprovePage.tsx"
+      ]
     },
     "M03.F06.I04": {
       "name": "报告批准三态过滤器",
@@ -1164,7 +1167,9 @@
       "flows": [],
       "designs": [],
       "tests": [],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportApprovePage.tsx"
+      ]
     },
     "M03.F07.I01": {
       "name": "报告发放页面",
@@ -1182,7 +1187,9 @@
         "extraColumns 渲染 报告类别列正确渲染",
         "extraColumns 渲染 签发时间列正确渲染（有时显示格式化时间，无时显示占位符）"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportIssuePage.tsx"
+      ]
     },
     "M03.F07.I02": {
       "name": "报告查看",
@@ -1198,7 +1205,9 @@
       "tests": [
         "\"查看报告\"按钮 \"查看报告\"按钮可点击"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportIssuePage.tsx"
+      ]
     },
     "M03.F07.I03": {
       "name": "发放操作",
@@ -1218,7 +1227,9 @@
         "发放并归档流程 批量发放并归档",
         "发放并归档流程 退回至 approval（报告批准）"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportIssuePage.tsx"
+      ]
     },
     "M03.F07.I04": {
       "name": "报告发放三态过滤器",
@@ -1228,7 +1239,9 @@
       "flows": [],
       "designs": [],
       "tests": [],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportIssuePage.tsx"
+      ]
     },
     "M03.F08.I01": {
       "name": "报告归档页面",
@@ -1250,7 +1263,9 @@
         "ReportArchivePage 签发时间列正确渲染",
         "ReportArchivePage 结论列正确渲染"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportArchivePage.tsx"
+      ]
     },
     "M03.F08.I02": {
       "name": "报告查看",
@@ -1266,7 +1281,9 @@
       "tests": [
         "ReportArchivePage 无权限时仍可查看列表"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportArchivePage.tsx"
+      ]
     },
     "M03.F08.I03": {
       "name": "归档操作",
@@ -1284,7 +1301,9 @@
         "ReportArchivePage 显示归档页特有的提示信息",
         "ReportArchivePage 显示批量退回按钮（canReturn默认为true，有上一阶段）"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportArchivePage.tsx"
+      ]
     },
     "M03.F08.I04": {
       "name": "报告归档三态过滤器",
@@ -1294,7 +1313,9 @@
       "flows": [],
       "designs": [],
       "tests": [],
-      "entry": []
+      "entry": [
+        "src\\features\\reports\\ReportArchivePage.tsx"
+      ]
     },
     "M03.F09.I01": {
       "name": "查看按钮",
@@ -1304,7 +1325,9 @@
       "flows": [],
       "designs": [],
       "tests": [],
-      "entry": []
+      "entry": [
+        "src\\features\\receipts\\ReceiptDetailPage.tsx"
+      ]
     },
     "M03.F09.I02": {
       "name": "详情页",
@@ -1314,7 +1337,9 @@
       "flows": [],
       "designs": [],
       "tests": [],
-      "entry": []
+      "entry": [
+        "src\\features\\receipts\\ReceiptDetailPage.tsx"
+      ]
     },
     "M04.F01.I01": {
       "name": "报告类别列表",
@@ -1334,7 +1359,9 @@
         "useCategories 加载后 categories 填充",
         "useCategories 空 categories 时不崩溃"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\categories\\ReportCategoryList.tsx"
+      ]
     },
     "M04.F01.I02": {
       "name": "报告类别新建/编辑",
@@ -1350,7 +1377,9 @@
       "tests": [
         "MSW report-category CRUD (M04.F01.I02/I03) POST /report-categories 创建类别"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\categories\\ReportCategoryList.tsx"
+      ]
     },
     "M04.F01.I03": {
       "name": "报告类别删除",
@@ -1366,7 +1395,9 @@
       "tests": [
         "MSW report-category CRUD (M04.F01.I02/I03) DELETE /report-categories/:code 删除类别"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\categories\\ReportCategoryList.tsx"
+      ]
     },
     "M04.F01.I04": {
       "name": "类别标准关联",
@@ -1382,7 +1413,9 @@
       "tests": [
         "types/api 业务实体（v3） CategoryStandard / CategoryDictItem 均归属报告类别"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\categories\\ReportCategoryList.tsx"
+      ]
     },
     "M04.F02.I01": {
       "name": "模板列表",
@@ -1399,7 +1432,9 @@
         "MSW report-templates handlers GET /report-templates 返回列表",
         "types/api 业务实体（v3） ReportTemplate 每类别一份，SummaryData 列+行结构"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\templates\\ReportTemplateList.tsx"
+      ]
     },
     "M04.F02.I02": {
       "name": "模板新建/编辑",
@@ -1415,7 +1450,9 @@
       "tests": [
         "MSW report-templates handlers POST /report-templates 创建成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\templates\\ReportTemplateList.tsx"
+      ]
     },
     "M04.F02.I03": {
       "name": "模板删除",
@@ -1446,7 +1483,9 @@
         "MSW test-standards handlers GET /test-standards 返回列表",
         "MSW test-standards handlers GET /test-standards/:code 获取单个"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\codes\\TestStandardList.tsx"
+      ]
     },
     "M04.F03.I02": {
       "name": "检测标准新建/编辑",
@@ -1462,7 +1501,9 @@
       "tests": [
         "MSW test-standards handlers POST /test-standards 创建成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\codes\\TestStandardList.tsx"
+      ]
     },
     "M04.F03.I03": {
       "name": "检测标准删除",
@@ -1478,7 +1519,9 @@
       "tests": [
         "MSW test-standards handlers DELETE /test-standards/:code 删除成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\codes\\TestStandardList.tsx"
+      ]
     },
     "M04.F03.I04": {
       "name": "标准参数关联",
@@ -1496,7 +1539,9 @@
         "MSW category-standards handlers (M04.F03.I04) GET /category-standards 返回列表",
         "MSW category-standards handlers (M04.F03.I04) POST /category-standards 创建类别-标准关联"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\codes\\TestStandardFormModal.tsx"
+      ]
     },
     "M04.F04.I01": {
       "name": "检测参数列表",
@@ -1513,7 +1558,9 @@
         "MSW test-parameters handlers GET /test-parameters 返回列表",
         "MSW test-parameters handlers GET /test-parameters/:code 获取单个"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\codes\\TestParameterList.tsx"
+      ]
     },
     "M04.F04.I02": {
       "name": "检测参数新建/编辑",
@@ -1529,7 +1576,9 @@
       "tests": [
         "MSW test-parameters handlers POST /test-parameters 创建成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\codes\\TestParameterList.tsx"
+      ]
     },
     "M04.F04.I03": {
       "name": "检测参数删除",
@@ -1545,7 +1594,9 @@
       "tests": [
         "MSW test-parameters handlers DELETE /test-parameters/:code 删除成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\codes\\TestParameterList.tsx"
+      ]
     },
     "M04.F05.I01": {
       "name": "技术要求列表",
@@ -1562,7 +1613,9 @@
         "MSW technical-requirements handlers GET /technical-requirements 返回列表",
         "MSW technical-requirements handlers GET /technical-requirements/:code 获取单个"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\codes\\TechnicalRequirementList.tsx"
+      ]
     },
     "M04.F05.I02": {
       "name": "技术要求新建/编辑",
@@ -1578,7 +1631,9 @@
       "tests": [
         "MSW technical-requirements handlers POST /technical-requirements 创建成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\codes\\TechnicalRequirementList.tsx"
+      ]
     },
     "M04.F05.I03": {
       "name": "技术要求删除",
@@ -1594,7 +1649,9 @@
       "tests": [
         "MSW technical-requirements handlers DELETE /technical-requirements/:code 删除成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\codes\\TechnicalRequirementList.tsx"
+      ]
     },
     "M04.F06.I01": {
       "name": "型号列表",
@@ -1610,7 +1667,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers GET /models 返回列表"
       ],
-      "entry": []
+      "entry": [
+        "src\\app\\router.tsx"
+      ]
     },
     "M04.F06.I02": {
       "name": "型号新建/编辑",
@@ -1626,7 +1685,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers POST /models 创建成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\dicts\\CategoryDictList.tsx"
+      ]
     },
     "M04.F06.I03": {
       "name": "型号删除",
@@ -1642,7 +1703,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers DELETE /models/:id 删除成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\dicts\\CategoryDictList.tsx"
+      ]
     },
     "M04.F07.I01": {
       "name": "规格列表",
@@ -1658,7 +1721,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers GET /specifications 返回列表"
       ],
-      "entry": []
+      "entry": [
+        "src\\app\\router.tsx"
+      ]
     },
     "M04.F07.I02": {
       "name": "规格新建/编辑",
@@ -1674,7 +1739,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers POST /specifications 创建成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\dicts\\CategoryDictList.tsx"
+      ]
     },
     "M04.F07.I03": {
       "name": "规格删除",
@@ -1690,7 +1757,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers DELETE /specifications/:id 删除成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\dicts\\CategoryDictList.tsx"
+      ]
     },
     "M04.F08.I01": {
       "name": "等级列表",
@@ -1706,7 +1775,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers GET /grades 返回列表"
       ],
-      "entry": []
+      "entry": [
+        "src\\app\\router.tsx"
+      ]
     },
     "M04.F08.I02": {
       "name": "等级新建/编辑",
@@ -1722,7 +1793,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers POST /grades 创建成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\dicts\\CategoryDictList.tsx"
+      ]
     },
     "M04.F08.I03": {
       "name": "等级删除",
@@ -1738,7 +1811,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers DELETE /grades/:id 删除成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\dicts\\CategoryDictList.tsx"
+      ]
     },
     "M04.F09.I01": {
       "name": "牌号列表",
@@ -1754,7 +1829,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers GET /brands 返回列表"
       ],
-      "entry": []
+      "entry": [
+        "src\\app\\router.tsx"
+      ]
     },
     "M04.F09.I02": {
       "name": "牌号新建/编辑",
@@ -1770,7 +1847,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers POST /brands 创建成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\dicts\\CategoryDictList.tsx"
+      ]
     },
     "M04.F09.I03": {
       "name": "牌号删除",
@@ -1786,7 +1865,9 @@
       "tests": [
         "MSW model/specification/grade/brand handlers DELETE /brands/:id 删除成功"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\dicts\\CategoryDictList.tsx"
+      ]
     },
     "M04.F10.I01": {
       "name": "合同类别列表",
@@ -1898,7 +1979,9 @@
       "tests": [
         "MSW stats handler GET /stats 返回聚合统计（pendingTaskCount = 任务安排阶段的接样单数）"
       ],
-      "entry": []
+      "entry": [
+        "src\\features\\summary\\SummaryPage.tsx"
+      ]
     },
     "M05.F01.I02": {
       "name": "汇总类型",

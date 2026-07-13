@@ -93,7 +93,7 @@ export function OrgInfoForm() {
   }
 
   return (
-    <div className="max-w-3xl space-y-4">
+    <div className="max-w-3xl space-y-4" data-fn="M01.F01.I01">
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="bg-blue-50 px-6 py-4 border-b border-blue-100">
           <h2 className="text-lg font-bold text-blue-900">机构信息</h2>

@@ -4,6 +4,7 @@ import { apiClient } from '../../api/client'
 import { FLOW_STAGE_LABELS, type SampleReceipt, type TestParameter } from '../../types/api'
 import { ReceiptDetail } from './ReceiptDetail'
 
+// @entry M03.F09.I01
 export function ReceiptDetailPage() {
   const { id } = useParams<{ id: string }>()
   const [receipt, setReceipt] = useState<SampleReceipt | null>(null)
@@ -39,7 +40,7 @@ export function ReceiptDetailPage() {
   const paramLabels = receipt.testParameters?.map(c => `${c}-${paramName(c)}`).join(', ') ?? '—'
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn="M03.F09.I02">
       {/* 接样信息 —— 顺序与表单一致 */}
       <div className="bg-white rounded shadow p-4">
         <h3 className="text-base font-semibold text-gray-700 mb-3">接样信息</h3>

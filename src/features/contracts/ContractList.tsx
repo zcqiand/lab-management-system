@@ -117,11 +117,12 @@ export function ContractList() {
   const statusLabel = (s: ContractStatus) => (s === 'active' ? '进行中' : '已归档')
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn="M02.F01.I01">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">合同管理</h2>
         <button
           onClick={openCreate}
+          data-fn="M02.F01.I02"
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
         >
           新建合同
@@ -205,12 +206,14 @@ export function ContractList() {
                 <td className="px-4 py-2 text-right space-x-2">
                   <button
                     onClick={() => openEdit(c)}
+                    data-fn="M02.F01.I02"
                     className="px-2 py-1 text-blue-600 hover:underline"
                   >
                     编辑
                   </button>
                   <button
                     onClick={() => setDeleteTarget(c)}
+                    data-fn="M02.F01.I03"
                     className="px-2 py-1 text-red-600 hover:underline"
                   >
                     删除

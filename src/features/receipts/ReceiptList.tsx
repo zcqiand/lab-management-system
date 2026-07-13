@@ -11,8 +11,8 @@ import type { SampleReceipt } from '../../types/api'
 function ReceiptRowActions({ receipt, onEdit, onDelete }: { receipt: SampleReceipt; onEdit: (r: SampleReceipt) => void; onDelete: (r: SampleReceipt) => void }) {
   return (
     <>
-      <button onClick={() => onEdit(receipt)} className="px-2 py-1 text-blue-600 hover:underline">编辑</button>
-      <button onClick={() => onDelete(receipt)} className="px-2 py-1 text-red-600 hover:underline">删除</button>
+      <button onClick={() => onEdit(receipt)} data-fn="M03.F01.I03" className="px-2 py-1 text-blue-600 hover:underline">编辑</button>
+      <button onClick={() => onDelete(receipt)} data-fn="M03.F01.I04" className="px-2 py-1 text-red-600 hover:underline">删除</button>
     </>
   )
 }
@@ -97,6 +97,7 @@ export function ReceiptList() {
           setEditing(null)
           setFormOpen(true)
         }}
+        data-fn="M03.F01.I02"
         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
       >
         新建接样
@@ -112,11 +113,15 @@ export function ReceiptList() {
   }, [])
 
   return (
+    // @entry M03.F01.I01
+    // @entry M03.F01.I06
     <>
       <FlowStagePage
         title="接样管理"
         stage="receiving"
         submitLabel="提交"
+        dataFn="M03.F01.I01"
+        filterDataFn="M03.F01.I06"
         extraColumns={[
           { header: '合同编号', render: (r) => contractCode(r.contractId) },
           { header: '报告类别', render: (r) => categoryName(categories, r.categoryCode) },

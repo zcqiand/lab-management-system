@@ -84,7 +84,7 @@ export function TestStandardList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn="M04.F03.I01">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">标准管理</h2>
         <button
@@ -93,6 +93,7 @@ export function TestStandardList() {
             setModalMode('create')
             setModalOpen(true)
           }}
+          data-fn="M04.F03.I02"
           className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700"
         >
           新增标准
@@ -152,6 +153,7 @@ export function TestStandardList() {
                         setModalMode('edit')
                         setModalOpen(true)
                       }}
+                      data-fn="M04.F03.I02"
                       className="text-blue-600 hover:text-blue-800 text-xs"
                     >
                       编辑
@@ -159,6 +161,7 @@ export function TestStandardList() {
                     <button
                       onClick={() => handleDelete(s.code)}
                       disabled={deleteLoading === s.code}
+                      data-fn="M04.F03.I03"
                       className="text-red-600 hover:text-red-800 text-xs disabled:opacity-50"
                     >
                       {deleteLoading === s.code ? '删除中...' : '删除'}

@@ -9,10 +9,26 @@ interface Props {
   endpoint: string
   title: string
   hint?: string
+  /** 功能 ID（用于 data-fn 入口标记），格式 Mxx.Fyy.Izz */
+  dataFn?: string
+  /** 新建按钮 data-fn */
+  createDataFn?: string
+  /** 编辑按钮 data-fn */
+  editDataFn?: string
+  /** 删除按钮 data-fn */
+  deleteDataFn?: string
 }
 
+// @entry M04.F06.I02
+// @entry M04.F06.I03
+// @entry M04.F07.I02
+// @entry M04.F07.I03
+// @entry M04.F08.I02
+// @entry M04.F08.I03
+// @entry M04.F09.I02
+// @entry M04.F09.I03
 /** 型号/规格/等级/牌号 通用码表管理页（均归属报告类别，可维护） */
-export function CategoryDictList({ endpoint, title, hint }: Props) {
+export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, editDataFn, deleteDataFn }: Props) {
   const { categories } = useCategories()
   const [categoryCode, setCategoryCode] = useState('')
   const [list, setList] = useState<CategoryDictItem[]>([])
@@ -96,13 +112,13 @@ export function CategoryDictList({ endpoint, title, hint }: Props) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn={dataFn}>
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">{title}</h2>
           {hint && <p className="text-xs text-gray-500 mt-1">{hint}</p>}
         </div>
-        <button onClick={openCreate} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+        <button onClick={openCreate} data-fn={createDataFn} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
           新建
         </button>
       </div>
@@ -148,8 +164,8 @@ export function CategoryDictList({ endpoint, title, hint }: Props) {
                 <td className="px-4 py-2">{item.name}</td>
                 <td className="px-4 py-2 text-gray-500">{item.remark ?? ''}</td>
                 <td className="px-4 py-2 text-right space-x-2">
-                  <button onClick={() => openEdit(item)} className="px-2 py-1 text-blue-600 hover:underline">编辑</button>
-                  <button onClick={() => setDeleteTarget(item)} className="px-2 py-1 text-red-600 hover:underline">删除</button>
+                  <button onClick={() => openEdit(item)} data-fn={editDataFn} className="px-2 py-1 text-blue-600 hover:underline">编辑</button>
+                  <button onClick={() => setDeleteTarget(item)} data-fn={deleteDataFn} className="px-2 py-1 text-red-600 hover:underline">删除</button>
                 </td>
               </tr>
             ))}

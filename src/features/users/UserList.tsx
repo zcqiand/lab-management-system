@@ -48,10 +48,10 @@ export function UserList() {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn="M01.F03.I01">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">用户管理</h2>
-        <HasPermission permission="user:create"><button onClick={openCreate} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">新增用户</button></HasPermission>
+        <HasPermission permission="user:create"><button onClick={openCreate} data-fn="M01.F03.I02" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">新增用户</button></HasPermission>
       </div>
       <div className="flex items-center gap-2 bg-white p-3 rounded shadow-sm">
         <label className="text-sm text-gray-600 flex items-center gap-1">角色筛选
@@ -75,8 +75,8 @@ export function UserList() {
                   <td className="px-4 py-2">{u.username}</td><td className="px-4 py-2">{u.displayName}</td><td className="px-4 py-2">{u.email}</td>
                   <td className="px-4 py-2">{role?.name ?? u.roleId}</td><td className="px-4 py-2">{u.status}</td>
                   <td className="px-4 py-2 text-right space-x-2">
-                    <HasPermission permission="user:update"><button onClick={() => openEdit(u)} className="px-2 py-1 text-blue-600 hover:underline">编辑</button></HasPermission>
-                    <HasPermission permission="user:delete"><button onClick={() => setDeleteTarget(u)} className="px-2 py-1 text-red-600 hover:underline">删除</button></HasPermission>
+                    <HasPermission permission="user:update"><button onClick={() => openEdit(u)} data-fn="M01.F03.I02" className="px-2 py-1 text-blue-600 hover:underline">编辑</button></HasPermission>
+                    <HasPermission permission="user:delete"><button onClick={() => setDeleteTarget(u)} data-fn="M01.F03.I03" className="px-2 py-1 text-red-600 hover:underline">删除</button></HasPermission>
                   </td>
                 </tr>
               )

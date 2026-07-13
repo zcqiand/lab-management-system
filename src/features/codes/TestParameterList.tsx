@@ -95,11 +95,12 @@ export function TestParameterList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn="M04.F04.I01">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">参数管理</h2>
         <button
           onClick={openCreate}
+          data-fn="M04.F04.I02"
           className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700"
         >
           新增参数
@@ -172,6 +173,7 @@ export function TestParameterList() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => openEdit(p)}
+                      data-fn="M04.F04.I02"
                       className="text-blue-600 hover:text-blue-800 text-xs"
                     >
                       编辑
@@ -179,6 +181,7 @@ export function TestParameterList() {
                     <button
                       onClick={() => handleDelete(p.code)}
                       disabled={deleteLoading === p.code}
+                      data-fn="M04.F04.I03"
                       className="text-red-600 hover:text-red-800 text-xs disabled:opacity-50"
                     >
                       {deleteLoading === p.code ? '删除中...' : '删除'}

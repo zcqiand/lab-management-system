@@ -8,8 +8,8 @@ import type { ReportCategory, Sample, SampleReceipt, TestItem, TestParameter, Te
 function DataEntryRowActions({ receipt, onEntry, onPreview }: { receipt: SampleReceipt; onEntry: (r: SampleReceipt) => void; onPreview: (r: SampleReceipt) => void }) {
   return (
     <>
-      <button onClick={() => onEntry(receipt)} className="px-2 py-1 text-blue-600 hover:underline">录入结果</button>
-      <button onClick={() => onPreview(receipt)} className="px-2 py-1 text-emerald-700 hover:underline">生成报告</button>
+      <button onClick={() => onEntry(receipt)} data-fn="M03.F03.I03" className="px-2 py-1 text-blue-600 hover:underline">录入结果</button>
+      <button onClick={() => onPreview(receipt)} data-fn="M03.F03.I05" className="px-2 py-1 text-emerald-700 hover:underline">生成报告</button>
     </>
   )
 }
@@ -22,6 +22,8 @@ export function DataEntryPage() {
     <DataEntryRowActions receipt={r} onEntry={setEntryTarget} onPreview={setPreviewTarget} />
   ), [])
   return (
+    // @entry M03.F03.I01
+    // @entry M03.F03.I07
     <>
       <FlowStagePage
         title="数据录入"
@@ -29,6 +31,8 @@ export function DataEntryPage() {
         subtitle="录入各样品的检测结果；系统按报告类别与样品的牌号/型号/等级/规格自动匹配技术要求并评定"
         submitLabel="提交审核"
         canReturn
+        dataFn="M03.F03.I01"
+        filterDataFn="M03.F03.I07"
         extraColumns={[
           { header: '报告类别', render: (r) => categoryName(categories, r.categoryCode) },
           { header: '检测人员', render: (r) => r.assigneeName ?? '—' },
@@ -828,6 +832,7 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                                   <select
                                     value={effectiveVerdict(existingItem)}
                                     onChange={(e) => handleSetVerdict(existingItem, e.target.value)}
+                                    data-fn="M03.F03.I06"
                                     className="border rounded px-1 py-0.5 text-xs text-gray-700"
                                   >
                                     {VERDICT_OPTIONS.map((opt) => (
@@ -835,7 +840,7 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                                     ))}
                                   </select>
                                 </label>
-                                <button onClick={() => handleDelete(existingItem)} className="text-xs text-red-600 hover:underline">删除</button>
+                                <button onClick={() => handleDelete(existingItem)} data-fn="M03.F03.I04" className="text-xs text-red-600 hover:underline">删除</button>
                               </div>
                             )}
                           </div>
@@ -864,6 +869,7 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
             <button
               onClick={() => { if (selectedSample) handleSaveSample(selectedSample.id) }}
               disabled={saving || !selectedSample || !isEntered(selectedSample.id, parameters[0]?.code)}
+              data-fn="M03.F03.I02"
               className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
               保存
             </button>

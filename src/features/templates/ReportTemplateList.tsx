@@ -113,7 +113,7 @@ export function ReportTemplateList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn="M04.F02.I01">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">报告模板</h2>
@@ -124,6 +124,7 @@ export function ReportTemplateList() {
         <button
           onClick={handleSave}
           disabled={saving || loading || !content.trim()}
+          data-fn="M04.F02.I02"
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm disabled:opacity-50"
         >
           {saving ? '保存中...' : '保存模板'}

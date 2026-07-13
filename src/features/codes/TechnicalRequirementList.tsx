@@ -79,7 +79,7 @@ export function TechnicalRequirementList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn="M04.F05.I01">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">技术要求</h2>
@@ -91,6 +91,7 @@ export function TechnicalRequirementList() {
             setModalMode('create')
             setModalOpen(true)
           }}
+          data-fn="M04.F05.I02"
           className="px-4 py-2 text-sm rounded text-white bg-blue-600 hover:bg-blue-700"
         >
           新增技术要求
@@ -159,6 +160,7 @@ export function TechnicalRequirementList() {
                         setModalMode('edit')
                         setModalOpen(true)
                       }}
+                      data-fn="M04.F05.I02"
                       className="text-blue-600 hover:text-blue-800 text-xs"
                     >
                       编辑
@@ -166,6 +168,7 @@ export function TechnicalRequirementList() {
                     <button
                       onClick={() => handleDelete(r.code)}
                       disabled={deleteLoading === r.code}
+                      data-fn="M04.F05.I03"
                       className="text-red-600 hover:text-red-800 text-xs disabled:opacity-50"
                     >
                       {deleteLoading === r.code ? '删除中...' : '删除'}

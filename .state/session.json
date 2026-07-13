@@ -1,32 +1,29 @@
 {
   "schema": 1,
   "project": "lab-management-system",
-  "current_task": "数据录入 UI 重构 + 计算引擎",
+  "current_task": "L5 UI 入口 + 子代理并行补全",
   "done": [
-    "msw/db.ts: evaluateTestResult 缺 } 导致 L3 parse error（已修复）",
-    "msw/handlers.ts: testItemTable.insert 传 loads/invalid（已修复）",
-    "新增 M04.F11 计算规则 + M04.F12 试件尺寸功能清单（已废弃）",
-    "msw/handlers.ts: 新增 /calculation-rules 全套 CRUD",
-    "src/features/codes/CalculationRuleList.tsx: 计算规则管理页",
-    "删 SpecimenSizeList.tsx + specimenSizeTable + /specimen-sizes handlers",
-    "重构计算引擎：deriveSpecimenParams() 从样品 specification 自动派生参数",
-    "  - 混凝土：解析 \"150×150×150mm\" → 面积 + 换算系数",
-    "  - 钢材：解析 \"Φ22\" → 查 GB/T 228 公称面积表",
-    "新增 steel_tensile 算法（STE001/STE003）",
-    "废弃 M04.F12 + I01-I03（状态改为已废弃）",
-    "重构 EntryModal：左侧样品列表 + 右侧每个样品一个保存按钮",
-    "  - 混凝土：3个荷载(kN) → 实时显示3个抗压强度(MPa) → 代表值",
-    "  - 修复 useEffect 依赖：保存后 loads 不再被覆盖成1个"
+    "79 个已上线面向用户子项全部加 data-fn",
+    "FlowStagePage: 新增 dataFn/filterDataFn props，stage-aware data-fn",
+    "CategoryDictList: 新增 createDataFn/editDataFn/deleteDataFn props",
+    "HasPermission: 新增 dataFn prop",
+    "ReceiptRowActions: 新建/编辑/删除按钮 data-fn",
+    "TaskAssignmentPage: 安排按钮 data-fn",
+    "DataEntryPage: 录入/编辑/删除/改判/三态过滤器 data-fn",
+    "所有报告页面（Review/Approve/Issue/Archive）: 查看+操作按钮 data-fn",
+    "AppSidebar router: ProtectedRoute 包裹加 data-fn",
+    "OrgInfo: M01.F01.I01 data-fn",
+    "SummaryPage: M05.F01.I01 data-fn",
+    "M01.F03.I04 密码修改状态改为开发中（无此 UI）",
+    "M03.F04.I01/I02/I03/I05 报告编制相关状态改为开发中（未接入路由）"
   ],
-  "next": "功能开发",
+  "next": "待人类分配新任务",
   "open_questions": [],
   "blocked_by": [],
   "dont": [
     "不要改 .harness/stack.json 让门变松",
     "不要给 skip 的测试挂功能 ID",
-    "不要在 ReceiptFormModal 的 grid grid-cols-4 内嵌套同级 div",
-    "不要在 testItemTable.insert 里传 loads 或 invalid",
-    "useEffect 依赖数组必须完整，避免 loads 被旧数据覆盖"
+    "useEffect 依赖数组必须完整"
   ],
-  "last_handoff_at": "2026-07-12"
+  "last_handoff_at": "2026-07-13"
 }

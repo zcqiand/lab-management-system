@@ -41,10 +41,10 @@ export function RoleList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn="M01.F02.I01">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">角色管理</h2>
-        <HasPermission permission="role:write"><button onClick={openCreate} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">新增角色</button></HasPermission>
+        <HasPermission permission="role:write"><button onClick={openCreate} data-fn="M01.F02.I02" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">新增角色</button></HasPermission>
       </div>
       {error && <div role="alert" className="text-red-600 text-sm bg-red-50 p-2 rounded">{error}</div>}
       <div className="bg-white rounded shadow overflow-hidden">
@@ -56,10 +56,10 @@ export function RoleList() {
             {list.map((r) => (
               <tr key={r.id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-2">{r.name}</td><td className="px-4 py-2">{r.description}</td>
-                <td className="px-4 py-2"><span className="text-xs text-gray-500">{r.permissions.length} 项</span></td>
+                <td className="px-4 py-2"><span className="text-xs text-gray-500" data-fn="M01.F04.I01">{r.permissions.length} 项</span></td>
                 <td className="px-4 py-2 text-right space-x-2">
-                  <HasPermission permission="role:write"><button onClick={() => openEdit(r)} className="px-2 py-1 text-blue-600 hover:underline">编辑</button></HasPermission>
-                  <HasPermission permission="role:write"><button onClick={() => setDeleteTarget(r)} className="px-2 py-1 text-red-600 hover:underline">删除</button></HasPermission>
+                  <HasPermission permission="role:write"><button onClick={() => openEdit(r)} data-fn="M01.F02.I02" className="px-2 py-1 text-blue-600 hover:underline">编辑</button></HasPermission>
+                  <HasPermission permission="role:write"><button onClick={() => setDeleteTarget(r)} data-fn="M01.F02.I03" className="px-2 py-1 text-red-600 hover:underline">删除</button></HasPermission>
                 </td>
               </tr>
             ))}

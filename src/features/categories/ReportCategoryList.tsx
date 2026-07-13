@@ -175,7 +175,7 @@ export function ReportCategoryList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn="M04.F01.I01">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">报告类别</h2>
@@ -183,7 +183,7 @@ export function ReportCategoryList() {
             报告类别决定：样品扩展属性、可选型号/规格/等级/牌号、关联的检测标准、报告模板与统计汇总口径
           </p>
         </div>
-        <button onClick={openCreate} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+        <button onClick={openCreate} data-fn="M04.F01.I02" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
           新建类别
         </button>
       </div>
@@ -236,8 +236,8 @@ export function ReportCategoryList() {
                 <td className="px-4 py-2 text-gray-500 text-xs">{SUMMARY_TYPE_LABELS[c.summaryType].split('（')[0]}</td>
                 <td className="px-4 py-2 text-gray-500 text-xs">{c.extFields.map((f) => f.label).join('、') || '—'}</td>
                 <td className="px-4 py-2 text-right space-x-2 whitespace-nowrap">
-                  <button onClick={() => openEdit(c)} className="px-2 py-1 text-blue-600 hover:underline">编辑</button>
-                  <button onClick={() => setDeleteTarget(c)} className="px-2 py-1 text-red-600 hover:underline">删除</button>
+                  <button onClick={() => openEdit(c)} data-fn="M04.F01.I02" className="px-2 py-1 text-blue-600 hover:underline">编辑</button>
+                  <button onClick={() => setDeleteTarget(c)} data-fn="M04.F01.I03" className="px-2 py-1 text-red-600 hover:underline">删除</button>
                 </td>
               </tr>
             ))}
@@ -263,6 +263,7 @@ export function ReportCategoryList() {
               </button>
               <button
                 onClick={() => setActiveTab('standards')}
+                data-fn="M04.F01.I04"
                 className={`px-5 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${activeTab === 'standards' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
               >
                 关联检测标准 ({linkedStandards.length})

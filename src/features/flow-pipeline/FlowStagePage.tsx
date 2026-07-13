@@ -47,6 +47,10 @@ export interface FlowStagePageProps {
   canSubmit?: boolean
   /** 是否允许退回（接样页为首环节默认关闭） */
   canReturn?: boolean
+  /** 功能 ID（用于 data-fn 入口标记），格式 Mxx.Fyy.Izz */
+  dataFn?: string
+  /** 三态过滤器的 data-fn ID，如 M03.F01.I06 */
+  filterDataFn?: string
 }
 
 /** v2.0：流程阶段通用页面——
@@ -65,6 +69,8 @@ export function FlowStagePage({
   submitLabel,
   canSubmit,
   canReturn,
+  dataFn,
+  filterDataFn,
 }: FlowStagePageProps) {
   const user = useAuthStore((s) => s.user)
   const operator = user?.id ?? user?.username ?? 'anonymous'
@@ -196,7 +202,7 @@ export function FlowStagePage({
 
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn={dataFn}>
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">{title}</h2>
@@ -214,6 +220,7 @@ export function FlowStagePage({
         <select
           value={filter}
           onChange={(e) => { setFilter(e.target.value as StageFilter); setPage(1) }}
+          data-fn={filterDataFn}
           className="border rounded px-2 py-1.5 text-sm"
         >
           <option value="all">全部</option>

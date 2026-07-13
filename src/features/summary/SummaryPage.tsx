@@ -50,7 +50,7 @@ export function SummaryPage() {
   const contractName = contracts.find((c) => c.id === contractId)?.projectName
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-fn="M05.F01.I01">
       <div>
         <h2 className="text-2xl font-bold">统计汇总</h2>
         <p className="text-xs text-gray-500 mt-1">

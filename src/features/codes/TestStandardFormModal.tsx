@@ -171,6 +171,7 @@ export function TestStandardFormModal({
                 <button
                   type="button"
                   onClick={() => setAddParamOpen(true)}
+                  // @entry M04.F03.I04
                   className="text-xs text-blue-600 hover:underline"
                 >
                   + 添加关联

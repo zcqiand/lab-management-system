@@ -9,7 +9,7 @@ import type { SampleReceipt } from '../../types/api'
  */
 function ReportPreviewButton({ receipt, onClick }: { receipt: SampleReceipt; onClick: (r: SampleReceipt) => void }) {
   return (
-    <button onClick={() => onClick(receipt)} className="px-2 py-1 text-emerald-700 hover:underline">
+    <button onClick={() => onClick(receipt)} data-fn="M03.F07.I02" className="px-2 py-1 text-emerald-700 hover:underline">
       查看报告
     </button>
   )
@@ -22,12 +22,17 @@ export function ReportIssuePage() {
     <ReportPreviewButton receipt={r} onClick={setPreviewTarget} />
   ), [])
   return (
+    // @entry M03.F07.I01
+    // @entry M03.F07.I03
+    // @entry M03.F07.I04
     <>
     <FlowStagePage
       title="报告发放"
       stage="issuance"
       submitLabel="发放并归档"
       subtitle="发放后进入报告归档"
+      dataFn="M03.F07.I01"
+      filterDataFn="M03.F07.I04"
       rowActions={rowAction}
       extraColumns={[
         { header: '报告类别', render: (r) => categoryName(categories, r.categoryCode) },

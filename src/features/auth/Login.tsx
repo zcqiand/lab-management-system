@@ -73,6 +73,7 @@ export function Login() {
         <button
           type="submit"
           disabled={loading}
+          data-fn="M01.F05.I01"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? '登录中...' : '登录'}
