@@ -372,6 +372,8 @@ export const testItemTable = new MockTable<{
   passed: boolean | null
   verdict?: string
   remark?: string
+  /** 试验方法（用于安定性检测 CEM005） */
+  testMethod?: string
   createdAt: string
   updatedAt: string
 }>('ti')

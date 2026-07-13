@@ -266,15 +266,24 @@ export interface SampleReceipt {
   testCategory: string
   /** 检测环境（在数据录入环节维护） */
   testEnvironment?: string
-  /** 主要设备（在数据录入环节维护） */
+  /** 检测设备（在数据录入环节维护） */
   mainEquipment?: string
+  /** 检测人员（在数据录入环节维护） */
+  testOperator?: string
+  /** 检测开始日期（在数据录入环节维护） */
+  testStartDate?: string
+  /** 检测结束日期（在数据录入环节维护） */
+  testEndDate?: string
+  /** 原始记录单号（在数据录入环节维护） */
+  originalRecordNo?: string
+  /** 备注（在数据录入环节维护） */
+  remark?: string
   /** 判定依据：检测标准编码数组 */
   judgmentBasis?: string[]
   /** 检测依据：检测标准编码数组 */
   testingBasis?: string[]
   /** 检测参数编码数组（按判定依据∪检测依据过滤） */
   testParameters?: string[]
-  remark?: string
   // ----- 流程管线 -----
   flowStatus: FlowStage
   flowHistory: FlowHistoryEntry[]
@@ -392,6 +401,8 @@ export interface TestItem {
   loads?: number[]
   /** 各试件是否作废标记，用于抗折强度 */
   disqualified?: boolean[]
+  /** 试验方法（用于安定性检测：CEM005） */
+  testMethod?: string
   remark?: string
   createdAt: string
   updatedAt: string

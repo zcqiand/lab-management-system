@@ -45,10 +45,92 @@
       "M03.F09.I02"
     ]
   },
+  "unreachable_shipped": [
+    "M01.F02.I01",
+    "M01.F02.I02",
+    "M01.F02.I03",
+    "M01.F03.I01",
+    "M01.F03.I02",
+    "M01.F03.I03",
+    "M01.F03.I04",
+    "M01.F04.I01",
+    "M01.F04.I02",
+    "M01.F04.I03",
+    "M01.F05.I01",
+    "M02.F01.I01",
+    "M02.F01.I02",
+    "M02.F01.I03",
+    "M03.F01.I01",
+    "M03.F01.I02",
+    "M03.F01.I03",
+    "M03.F01.I04",
+    "M03.F01.I06",
+    "M03.F02.I01",
+    "M03.F02.I02",
+    "M03.F02.I04",
+    "M03.F03.I01",
+    "M03.F03.I02",
+    "M03.F03.I03",
+    "M03.F03.I04",
+    "M03.F03.I06",
+    "M03.F03.I07",
+    "M03.F04.I01",
+    "M03.F04.I02",
+    "M03.F04.I03",
+    "M03.F04.I05",
+    "M03.F05.I01",
+    "M03.F05.I02",
+    "M03.F05.I03",
+    "M03.F05.I04",
+    "M03.F06.I01",
+    "M03.F06.I02",
+    "M03.F06.I03",
+    "M03.F06.I04",
+    "M03.F07.I01",
+    "M03.F07.I02",
+    "M03.F07.I03",
+    "M03.F07.I04",
+    "M03.F08.I01",
+    "M03.F08.I02",
+    "M03.F08.I03",
+    "M03.F08.I04",
+    "M03.F09.I01",
+    "M03.F09.I02",
+    "M04.F01.I01",
+    "M04.F01.I02",
+    "M04.F01.I03",
+    "M04.F01.I04",
+    "M04.F02.I01",
+    "M04.F02.I02",
+    "M04.F03.I01",
+    "M04.F03.I02",
+    "M04.F03.I03",
+    "M04.F03.I04",
+    "M04.F04.I01",
+    "M04.F04.I02",
+    "M04.F04.I03",
+    "M04.F05.I01",
+    "M04.F05.I02",
+    "M04.F05.I03",
+    "M04.F06.I01",
+    "M04.F06.I02",
+    "M04.F06.I03",
+    "M04.F07.I01",
+    "M04.F07.I02",
+    "M04.F07.I03",
+    "M04.F08.I01",
+    "M04.F08.I02",
+    "M04.F08.I03",
+    "M04.F09.I01",
+    "M04.F09.I02",
+    "M04.F09.I03",
+    "M05.F01.I01"
+  ],
   "function_map": {
     "M01.F01.I01": {
       "name": "机构信息维护",
       "status": "已上线",
+      "type": null,
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -59,11 +141,13 @@
       "tests": [
         "MSW org-info handlers GET /org-info 返回机构信息（已初始化）",
         "MSW org-info handlers PUT /org-info 更新机构信息"
-      ]
+      ],
+      "entry": []
     },
     "M01.F02.I01": {
       "name": "角色列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -74,11 +158,13 @@
       "tests": [
         "roleStore fetchRoles 成功",
         "roleStore 网络错误后 error"
-      ]
+      ],
+      "entry": []
     },
     "M01.F02.I02": {
       "name": "角色新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -89,11 +175,13 @@
       "tests": [
         "roleStore createRole 成功",
         "roleStore updateRole 成功"
-      ]
+      ],
+      "entry": []
     },
     "M01.F02.I03": {
       "name": "角色删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -103,11 +191,13 @@
       ],
       "tests": [
         "roleStore deleteRole 成功"
-      ]
+      ],
+      "entry": []
     },
     "M01.F03.I01": {
       "name": "用户列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -121,11 +211,13 @@
         "userStore fetchUsers role 筛选",
         "userStore fetchUsers 成功",
         "userStore 网络错误后 error"
-      ]
+      ],
+      "entry": []
     },
     "M01.F03.I02": {
       "name": "用户新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -136,11 +228,13 @@
       "tests": [
         "userStore createUser 成功",
         "userStore updateUser 成功"
-      ]
+      ],
+      "entry": []
     },
     "M01.F03.I03": {
       "name": "用户删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -150,11 +244,13 @@
       ],
       "tests": [
         "userStore deleteUser 成功"
-      ]
+      ],
+      "entry": []
     },
     "M01.F03.I04": {
       "name": "密码修改",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -166,11 +262,13 @@
         "MSW auth/change-password handler 新密码不足 6 位返回 400",
         "MSW auth/change-password handler 旧密码错误返回 400",
         "MSW auth/change-password handler 正确旧密码 + 合规新密码返回成功"
-      ]
+      ],
+      "entry": []
     },
     "M01.F04.I01": {
       "name": "RBAC 角色权限",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -229,11 +327,13 @@
         "流程集成测试：FlowPanel 状态流转端到端 重置：任何状态回到 draft",
         "流程集成测试：FlowPanel 状态流转端到端 非法转换守卫：draft 上直接 APPROVE 应保持不变且显示错误",
         "流程集成测试：FlowPanel 状态流转端到端 非法转换端到端：FlowPanel 中 draft 状态无通过按钮（UI 守卫）"
-      ]
+      ],
+      "entry": []
     },
     "M01.F04.I02": {
       "name": "路由守卫",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -243,11 +343,13 @@
       ],
       "tests": [
         "HasPermission 组件 未登录时不渲染 children"
-      ]
+      ],
+      "entry": []
     },
     "M01.F04.I03": {
       "name": "权限指令",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -270,11 +372,13 @@
         "usePermission technician 用户有 project:read 返回 true",
         "usePermission 未登录时任意权限返回 false",
         "usePermission 权限变更后响应更新"
-      ]
+      ],
+      "entry": []
     },
     "M01.F05.I01": {
       "name": "JWT 登录",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -302,11 +406,13 @@
         "types/store store 状态类型（v3） AuthState 已登录态可构造",
         "types/store store 状态类型（v3） AuthState 未登录态可构造",
         "认证集成测试：App 全链路登录→Dashboard 未登录访问 /login 渲染登录表单"
-      ]
+      ],
+      "entry": []
     },
     "M01.F05.I02": {
       "name": "Token 校验",
       "status": "已上线",
+      "type": "接口",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -331,11 +437,13 @@
         "mock JWT 工具 verifyJwt 拒绝篡改 signature 的 token",
         "mock JWT 工具 verifyJwt 拒绝过期 token",
         "mock JWT 工具 verifyJwt 校验有效 token 返回 payload"
-      ]
+      ],
+      "entry": []
     },
     "M02.F01.I01": {
       "name": "合同列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [
         "docs\\requirements\\REQ-2026-001.md"
       ],
@@ -355,11 +463,13 @@
         "contractStore 状态流转 fetchContracts 网络错误后 error 填充",
         "contractStore 状态流转 初始状态: list=[], loading=false, error=null",
         "types/api 业务实体（v3） Contract 类型可构造且字段符合预期"
-      ]
+      ],
+      "entry": []
     },
     "M02.F01.I02": {
       "name": "合同新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [
         "docs\\requirements\\REQ-2026-001.md"
       ],
@@ -372,11 +482,13 @@
       "tests": [
         "contractStore 状态流转 createContract 失败后 error 填充",
         "contractStore 状态流转 createContract 成功后追加到 list"
-      ]
+      ],
+      "entry": []
     },
     "M02.F01.I03": {
       "name": "合同删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -389,11 +501,13 @@
         "contractStore 状态流转 deleteContract 成功后从 list 移除",
         "contractStore 状态流转 updateContract 不存在时 error 填充",
         "contractStore 状态流转 updateContract 成功后 list 中对应项更新"
-      ]
+      ],
+      "entry": []
     },
     "M02.F01.I04": {
       "name": "合同汇总",
       "status": "已废弃",
+      "type": "报表",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -401,11 +515,13 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M02.F02.I01": {
       "name": "人员列表",
       "status": "规划",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -413,11 +529,13 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M02.F02.I02": {
       "name": "人员新建/编辑",
       "status": "规划",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -425,11 +543,13 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M02.F02.I03": {
       "name": "人员删除",
       "status": "规划",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -437,11 +557,13 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M02.F03.I01": {
       "name": "设备列表",
       "status": "规划",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -449,11 +571,13 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M02.F03.I02": {
       "name": "设备新建/编辑",
       "status": "规划",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -461,11 +585,13 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M02.F03.I03": {
       "name": "设备删除",
       "status": "规划",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -473,11 +599,13 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M02.F04.I01": {
       "name": "设施列表",
       "status": "规划",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -485,11 +613,13 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M02.F04.I02": {
       "name": "设施新建/编辑",
       "status": "规划",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -497,11 +627,13 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M02.F04.I03": {
       "name": "设施删除",
       "status": "规划",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -509,11 +641,13 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F01.I01": {
       "name": "接样单列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [
         "docs\\requirements\\REQ-2026-002-接样单表单重构.md"
       ],
@@ -534,11 +668,13 @@
         "types/api 业务实体（v3） FLOW_STAGE_ORDER 覆盖七个阶段且有中文名",
         "types/api 业务实体（v3） Page 分页结构与 PageQuery 查询参数",
         "types/api 业务实体（v3） SampleReceipt 携带报告类别与合并的报告字段"
-      ]
+      ],
+      "entry": []
     },
     "M03.F01.I02": {
       "name": "接样单新建",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [
         "docs\\requirements\\REQ-2026-002-接样单表单重构.md"
       ],
@@ -551,11 +687,13 @@
       "tests": [
         "receiptStore 状态流转 createReceipt 失败",
         "receiptStore 状态流转 createReceipt 成功"
-      ]
+      ],
+      "entry": []
     },
     "M03.F01.I03": {
       "name": "接样单编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [
         "docs\\requirements\\REQ-2026-002-接样单表单重构.md"
       ],
@@ -568,11 +706,13 @@
       "tests": [
         "receiptStore 状态流转 updateReceipt 不存在时upsert成功",
         "receiptStore 状态流转 updateReceipt 成功"
-      ]
+      ],
+      "entry": []
     },
     "M03.F01.I04": {
       "name": "接样单删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -583,11 +723,13 @@
       "tests": [
         "receiptStore 状态流转 deleteReceipt 不存在",
         "receiptStore 状态流转 deleteReceipt 成功"
-      ]
+      ],
+      "entry": []
     },
     "M03.F01.I05": {
       "name": "接样单详情",
       "status": "已废弃",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -595,19 +737,23 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F01.I06": {
       "name": "接样单三态过滤器",
       "status": "已上线",
+      "type": "查询",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F02.I01": {
       "name": "任务分配",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -622,11 +768,13 @@
         "sampleStore fetchSamples 成功",
         "sampleStore fetchSamples 网络错误后 error 填充",
         "sampleStore 初始状态"
-      ]
+      ],
+      "entry": []
     },
     "M03.F02.I02": {
       "name": "任务编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -639,11 +787,13 @@
         "sampleStore createSample 成功后追加到 list",
         "sampleStore updateSample 不存在时 error 填充",
         "sampleStore updateSample 成功后 list 中对应项更新"
-      ]
+      ],
+      "entry": []
     },
     "M03.F02.I03": {
       "name": "任务取消",
       "status": "已废弃",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -652,19 +802,23 @@
       "tests": [
         "sampleStore deleteSample 不存在时 error 填充",
         "sampleStore deleteSample 成功后从 list 移除"
-      ]
+      ],
+      "entry": []
     },
     "M03.F02.I04": {
       "name": "任务分配三态过滤器",
       "status": "已上线",
+      "type": "查询",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F03.I01": {
       "name": "数据录入页面",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -674,11 +828,13 @@
       ],
       "tests": [
         "types/api 业务实体（v3） Sample 归属接样单 receiptId，含型号/规格/等级/牌号与扩展属性"
-      ]
+      ],
+      "entry": []
     },
     "M03.F03.I02": {
       "name": "检测数据保存",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -711,11 +867,13 @@
         "useFetch 数据获取 hook refetch 手动触发重新获取",
         "useFetch 数据获取 hook 初始 loading=true，resolve 后 loading=false 且 data 填充",
         "useFetch 数据获取 hook 请求期间组件卸载不报错"
-      ]
+      ],
+      "entry": []
     },
     "M03.F03.I03": {
       "name": "检测项编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -725,11 +883,13 @@
       ],
       "tests": [
         "MSW test-items handlers POST /test-items 创建检测项"
-      ]
+      ],
+      "entry": []
     },
     "M03.F03.I04": {
       "name": "检测项删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -739,11 +899,13 @@
       ],
       "tests": [
         "MSW test-items handlers DELETE /test-items/:id 删除检测项"
-      ]
+      ],
+      "entry": []
     },
     "M03.F03.I05": {
       "name": "自动评定",
       "status": "已上线",
+      "type": null,
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -753,11 +915,13 @@
       ],
       "tests": [
         "MSW test-items handlers POST /test-items 自动评定"
-      ]
+      ],
+      "entry": []
     },
     "M03.F03.I06": {
       "name": "人工改判",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -767,19 +931,23 @@
       ],
       "tests": [
         "MSW test-items handlers POST /test-items 人工改判（传 passed 覆盖自动评定）"
-      ]
+      ],
+      "entry": []
     },
     "M03.F03.I07": {
       "name": "数据录入三态过滤器",
       "status": "已上线",
+      "type": "查询",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F04.I01": {
       "name": "报告列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -800,11 +968,13 @@
         "ReportWorkflowList 空状态显示暂无数据",
         "ReportWorkflowList 翻页控件存在",
         "ReportWorkflowList 表格列标题正确"
-      ]
+      ],
+      "entry": []
     },
     "M03.F04.I02": {
       "name": "报告新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -816,11 +986,13 @@
         "ReportEditPage 无 report:write 权限时不渲染新建按钮",
         "ReportEditPage 有 report:write 权限时渲染新建按钮",
         "ReportWorkflowList 渲染新建报告按钮"
-      ]
+      ],
+      "entry": []
     },
     "M03.F04.I03": {
       "name": "报告预览",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -834,11 +1006,13 @@
         "renderReportHtml 报告模板渲染 {{testItemsTable}} 生成检测结果表（参数名/技术要求/评定）",
         "renderReportHtml 报告模板渲染 替换 {{路径.字段}} 标签，含 resultLabel 派生字段",
         "renderReportHtml 报告模板渲染 未知路径替换为空字符串；HTML 特殊字符转义"
-      ]
+      ],
+      "entry": []
     },
     "M03.F04.I04": {
       "name": "Word 下载",
       "status": "已废弃",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -846,19 +1020,23 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F04.I05": {
       "name": "报告编制三态过滤器",
       "status": "已上线",
+      "type": "查询",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F05.I01": {
       "name": "报告审核页面",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -874,11 +1052,13 @@
         "ReportReviewPage 显示搜索框",
         "ReportReviewPage 渲染页面标题和流程信息",
         "ReportReviewPage 结论列正确渲染"
-      ]
+      ],
+      "entry": []
     },
     "M03.F05.I02": {
       "name": "报告查看",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -888,11 +1068,13 @@
       ],
       "tests": [
         "ReportReviewPage 无 report:write 权限时仍可查看列表"
-      ]
+      ],
+      "entry": []
     },
     "M03.F05.I03": {
       "name": "审核操作",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -904,19 +1086,23 @@
         "ReportReviewPage 显示批量操作按钮",
         "ReportReviewPage 显示提交后进入报告批准的提示",
         "ReportReviewPage 显示退回至数据录入的提示"
-      ]
+      ],
+      "entry": []
     },
     "M03.F05.I04": {
       "name": "报告审核三态过滤器",
       "status": "已上线",
+      "type": "查询",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F06.I01": {
       "name": "报告批准页面",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -931,11 +1117,13 @@
         "ReportApprovePage 显示搜索框",
         "ReportApprovePage 渲染页面标题和流程信息",
         "ReportApprovePage 结论列正确渲染"
-      ]
+      ],
+      "entry": []
     },
     "M03.F06.I02": {
       "name": "报告查看",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -945,11 +1133,13 @@
       ],
       "tests": [
         "ReportApprovePage 无 report:write 权限时仍可查看列表"
-      ]
+      ],
+      "entry": []
     },
     "M03.F06.I03": {
       "name": "批准操作",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -963,19 +1153,23 @@
         "ReportApprovePage 显示批量退回按钮",
         "ReportApprovePage 显示提交后进入报告发放的提示",
         "ReportApprovePage 显示退回至报告审核的提示"
-      ]
+      ],
+      "entry": []
     },
     "M03.F06.I04": {
       "name": "报告批准三态过滤器",
       "status": "已上线",
+      "type": "查询",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F07.I01": {
       "name": "报告发放页面",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -987,11 +1181,13 @@
         "ReportIssuePage 基础信息 标题显示\"报告发放\"",
         "extraColumns 渲染 报告类别列正确渲染",
         "extraColumns 渲染 签发时间列正确渲染（有时显示格式化时间，无时显示占位符）"
-      ]
+      ],
+      "entry": []
     },
     "M03.F07.I02": {
       "name": "报告查看",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1001,11 +1197,13 @@
       ],
       "tests": [
         "\"查看报告\"按钮 \"查看报告\"按钮可点击"
-      ]
+      ],
+      "entry": []
     },
     "M03.F07.I03": {
       "name": "发放操作",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1019,19 +1217,23 @@
         "发放并归档流程 单个发放并归档调用 POST /receipts/flow action=submit",
         "发放并归档流程 批量发放并归档",
         "发放并归档流程 退回至 approval（报告批准）"
-      ]
+      ],
+      "entry": []
     },
     "M03.F07.I04": {
       "name": "报告发放三态过滤器",
       "status": "已上线",
+      "type": "查询",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F08.I01": {
       "name": "报告归档页面",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1047,11 +1249,13 @@
         "ReportArchivePage 渲染页面标题和流程信息",
         "ReportArchivePage 签发时间列正确渲染",
         "ReportArchivePage 结论列正确渲染"
-      ]
+      ],
+      "entry": []
     },
     "M03.F08.I02": {
       "name": "报告查看",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1061,11 +1265,13 @@
       ],
       "tests": [
         "ReportArchivePage 无权限时仍可查看列表"
-      ]
+      ],
+      "entry": []
     },
     "M03.F08.I03": {
       "name": "归档操作",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1077,35 +1283,43 @@
         "ReportArchivePage 不显示批量提交按钮（canSubmit=false）",
         "ReportArchivePage 显示归档页特有的提示信息",
         "ReportArchivePage 显示批量退回按钮（canReturn默认为true，有上一阶段）"
-      ]
+      ],
+      "entry": []
     },
     "M03.F08.I04": {
       "name": "报告归档三态过滤器",
       "status": "已上线",
+      "type": "查询",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F09.I01": {
       "name": "查看按钮",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M03.F09.I02": {
       "name": "详情页",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M04.F01.I01": {
       "name": "报告类别列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1119,11 +1333,13 @@
         "types/api 业务实体（v3） ReportCategory 携带扩展属性定义与汇总口径",
         "useCategories 加载后 categories 填充",
         "useCategories 空 categories 时不崩溃"
-      ]
+      ],
+      "entry": []
     },
     "M04.F01.I02": {
       "name": "报告类别新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1133,11 +1349,13 @@
       ],
       "tests": [
         "MSW report-category CRUD (M04.F01.I02/I03) POST /report-categories 创建类别"
-      ]
+      ],
+      "entry": []
     },
     "M04.F01.I03": {
       "name": "报告类别删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1147,11 +1365,13 @@
       ],
       "tests": [
         "MSW report-category CRUD (M04.F01.I02/I03) DELETE /report-categories/:code 删除类别"
-      ]
+      ],
+      "entry": []
     },
     "M04.F01.I04": {
       "name": "类别标准关联",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1161,11 +1381,13 @@
       ],
       "tests": [
         "types/api 业务实体（v3） CategoryStandard / CategoryDictItem 均归属报告类别"
-      ]
+      ],
+      "entry": []
     },
     "M04.F02.I01": {
       "name": "模板列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1176,11 +1398,13 @@
       "tests": [
         "MSW report-templates handlers GET /report-templates 返回列表",
         "types/api 业务实体（v3） ReportTemplate 每类别一份，SummaryData 列+行结构"
-      ]
+      ],
+      "entry": []
     },
     "M04.F02.I02": {
       "name": "模板新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1190,11 +1414,13 @@
       ],
       "tests": [
         "MSW report-templates handlers POST /report-templates 创建成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F02.I03": {
       "name": "模板删除",
       "status": "已废弃",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1202,11 +1428,13 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M04.F03.I01": {
       "name": "检测标准列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1217,11 +1445,13 @@
       "tests": [
         "MSW test-standards handlers GET /test-standards 返回列表",
         "MSW test-standards handlers GET /test-standards/:code 获取单个"
-      ]
+      ],
+      "entry": []
     },
     "M04.F03.I02": {
       "name": "检测标准新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1231,11 +1461,13 @@
       ],
       "tests": [
         "MSW test-standards handlers POST /test-standards 创建成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F03.I03": {
       "name": "检测标准删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1245,11 +1477,13 @@
       ],
       "tests": [
         "MSW test-standards handlers DELETE /test-standards/:code 删除成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F03.I04": {
       "name": "标准参数关联",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1261,11 +1495,13 @@
         "MSW category-standards handlers (M04.F03.I04) DELETE /category-standards/:id 删除关联",
         "MSW category-standards handlers (M04.F03.I04) GET /category-standards 返回列表",
         "MSW category-standards handlers (M04.F03.I04) POST /category-standards 创建类别-标准关联"
-      ]
+      ],
+      "entry": []
     },
     "M04.F04.I01": {
       "name": "检测参数列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1276,11 +1512,13 @@
       "tests": [
         "MSW test-parameters handlers GET /test-parameters 返回列表",
         "MSW test-parameters handlers GET /test-parameters/:code 获取单个"
-      ]
+      ],
+      "entry": []
     },
     "M04.F04.I02": {
       "name": "检测参数新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1290,11 +1528,13 @@
       ],
       "tests": [
         "MSW test-parameters handlers POST /test-parameters 创建成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F04.I03": {
       "name": "检测参数删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1304,11 +1544,13 @@
       ],
       "tests": [
         "MSW test-parameters handlers DELETE /test-parameters/:code 删除成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F05.I01": {
       "name": "技术要求列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1319,11 +1561,13 @@
       "tests": [
         "MSW technical-requirements handlers GET /technical-requirements 返回列表",
         "MSW technical-requirements handlers GET /technical-requirements/:code 获取单个"
-      ]
+      ],
+      "entry": []
     },
     "M04.F05.I02": {
       "name": "技术要求新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1333,11 +1577,13 @@
       ],
       "tests": [
         "MSW technical-requirements handlers POST /technical-requirements 创建成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F05.I03": {
       "name": "技术要求删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1347,11 +1593,13 @@
       ],
       "tests": [
         "MSW technical-requirements handlers DELETE /technical-requirements/:code 删除成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F06.I01": {
       "name": "型号列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1361,11 +1609,13 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers GET /models 返回列表"
-      ]
+      ],
+      "entry": []
     },
     "M04.F06.I02": {
       "name": "型号新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1375,11 +1625,13 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers POST /models 创建成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F06.I03": {
       "name": "型号删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1389,11 +1641,13 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers DELETE /models/:id 删除成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F07.I01": {
       "name": "规格列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1403,11 +1657,13 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers GET /specifications 返回列表"
-      ]
+      ],
+      "entry": []
     },
     "M04.F07.I02": {
       "name": "规格新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1417,11 +1673,13 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers POST /specifications 创建成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F07.I03": {
       "name": "规格删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1431,11 +1689,13 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers DELETE /specifications/:id 删除成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F08.I01": {
       "name": "等级列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1445,11 +1705,13 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers GET /grades 返回列表"
-      ]
+      ],
+      "entry": []
     },
     "M04.F08.I02": {
       "name": "等级新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1459,11 +1721,13 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers POST /grades 创建成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F08.I03": {
       "name": "等级删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1473,11 +1737,13 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers DELETE /grades/:id 删除成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F09.I01": {
       "name": "牌号列表",
       "status": "已上线",
+      "type": "页面",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1487,11 +1753,13 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers GET /brands 返回列表"
-      ]
+      ],
+      "entry": []
     },
     "M04.F09.I02": {
       "name": "牌号新建/编辑",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1501,11 +1769,13 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers POST /brands 创建成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F09.I03": {
       "name": "牌号删除",
       "status": "已上线",
+      "type": "按钮",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1515,89 +1785,109 @@
       ],
       "tests": [
         "MSW model/specification/grade/brand handlers DELETE /brands/:id 删除成功"
-      ]
+      ],
+      "entry": []
     },
     "M04.F10.I01": {
       "name": "合同类别列表",
       "status": "规划",
+      "type": "页面",
       "requirements": [
         "docs\\requirements\\REQ-2026-001.md"
       ],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M04.F10.I02": {
       "name": "合同类别新建/编辑",
       "status": "规划",
+      "type": "按钮",
       "requirements": [
         "docs\\requirements\\REQ-2026-001.md"
       ],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M04.F10.I03": {
       "name": "合同类别删除",
       "status": "规划",
+      "type": "按钮",
       "requirements": [
         "docs\\requirements\\REQ-2026-001.md"
       ],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M04.F11.I01": {
       "name": "计算规则列表",
       "status": "规划",
+      "type": "页面",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M04.F11.I02": {
       "name": "计算规则新建/编辑",
       "status": "规划",
+      "type": "按钮",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M04.F11.I03": {
       "name": "计算规则删除",
       "status": "规划",
+      "type": "按钮",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M04.F12.I01": {
       "name": "试件尺寸列表",
       "status": "已废弃",
+      "type": "页面",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M04.F12.I02": {
       "name": "试件尺寸新建/编辑",
       "status": "已废弃",
+      "type": "按钮",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M04.F12.I03": {
       "name": "试件尺寸删除",
       "status": "已废弃",
+      "type": "按钮",
       "requirements": [],
       "flows": [],
       "designs": [],
-      "tests": []
+      "tests": [],
+      "entry": []
     },
     "M05.F01.I01": {
       "name": "汇总表",
       "status": "已上线",
+      "type": "报表",
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1607,11 +1897,13 @@
       ],
       "tests": [
         "MSW stats handler GET /stats 返回聚合统计（pendingTaskCount = 任务安排阶段的接样单数）"
-      ]
+      ],
+      "entry": []
     },
     "M05.F01.I02": {
       "name": "汇总类型",
       "status": "已废弃",
+      "type": null,
       "requirements": [],
       "flows": [
         "docs\\design\\flow-function-map.md"
@@ -1619,7 +1911,8 @@
       "designs": [
         "docs\\design\\design-function-map.md"
       ],
-      "tests": []
+      "tests": [],
+      "entry": []
     }
   }
 }

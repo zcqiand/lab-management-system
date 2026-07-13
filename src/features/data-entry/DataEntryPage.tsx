@@ -135,11 +135,18 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
   const [sampleId, setSampleId] = useState('')
   const [testEnvironment, setTestEnvironment] = useState(receipt.testEnvironment ?? '')
   const [mainEquipment, setMainEquipment] = useState(receipt.mainEquipment ?? '')
+  const [testOperator, setTestOperator] = useState(receipt.testOperator ?? '')
+  const [testStartDate, setTestStartDate] = useState(receipt.testStartDate ?? '')
+  const [testEndDate, setTestEndDate] = useState(receipt.testEndDate ?? '')
+  const [originalRecordNo, setOriginalRecordNo] = useState(receipt.originalRecordNo ?? '')
+  const [remark, setRemark] = useState(receipt.remark ?? '')
 
   // 每样品每参数的荷载输入：Record<sampleId, Record<paramCode, string[]>>
   const [loads, setLoads] = useState<Record<string, Record<string, string[]>>>({})
   // CON006 抗折强度：每样品每参数每试件的拉断面位置（mm）
   const [fracturePositions, setFracturePositions] = useState<Record<string, Record<string, string[]>>>({})
+  // CEM005 安定性：每样品每参数的试验方法（雷氏夹法/试饼法）
+  const [soundnessMethods, setSoundnessMethods] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
 
   const selectedSample = samples.find((s) => s.id === sampleId)
@@ -252,6 +259,19 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
       })
       return next
     })
+    // 同时初始化 soundnessMethods（CEM005 安定性试验方法）
+    setSoundnessMethods((prev) => {
+      const next = { ...prev }
+      samples.forEach((s) => {
+        const ex = items.find((i) => i.parameterCode === 'CEM005' && i.sampleId === s.id)
+        if (ex?.testMethod && next[s.id] === undefined) {
+          next[s.id] = ex.testMethod
+        } else if (next[s.id] === undefined) {
+          next[s.id] = ''
+        }
+      })
+      return next
+    })
   }, [selectedSample, items, samples, parameters])
 
   const matchReq = (paramCode: string, sample: Sample): TechnicalRequirement | undefined => {
@@ -306,7 +326,15 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
     setSaving(true)
     setError(null)
     try {
-      await apiClient.put(`/receipts/${receipt.id}`, { testEnvironment, mainEquipment })
+      await apiClient.put(`/receipts/${receipt.id}`, {
+        testEnvironment,
+        mainEquipment,
+        testOperator,
+        testStartDate,
+        testEndDate,
+        originalRecordNo,
+        remark,
+      })
       const sample = samples.find((s) => s.id === sid)!
       for (const param of parameters) {
         const vals = (loads[sid]?.[param.code] ?? []).map((v) => Number.parseFloat(v)).filter((v) => !Number.isNaN(v))
@@ -329,6 +357,16 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
           await (existing
             ? apiClient.put(`/test-items/${existing.id}`, { loads: vals, disqualified: isDisq, result: String(rep) })
             : apiClient.post('/test-items', { sampleId: sid, parameterCode: param.code, loads: vals, disqualified: isDisq, result: String(rep) }))
+        } else if (param.code === 'CEM005') {
+          // 安定性：试验方法（testMethod）+ 检测结果（result）
+          const method = soundnessMethods[sid] ?? ''
+          const rawValue = loads[sid]?.[param.code]?.[0] ?? ''
+          const result = method === '雷氏夹法'
+            ? String(Number.parseFloat(rawValue) || '')
+            : rawValue
+          await (existing
+            ? apiClient.put(`/test-items/${existing.id}`, { testMethod: method, result })
+            : apiClient.post('/test-items', { sampleId: sid, parameterCode: param.code, testMethod: method, result }))
         } else {
           await (existing
             ? apiClient.put(`/test-items/${existing.id}`, { result: String(vals[0]) })
@@ -379,22 +417,56 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
         </div>
 
-        {/* 检测环境/设备 */}
-        <div className="grid grid-cols-4 gap-3 items-end px-5 py-3 border-b bg-gray-50 shrink-0">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">检测环境</label>
-            <input value={testEnvironment} onChange={(e) => setTestEnvironment(e.target.value)}
-              placeholder="如 温度 20±2℃，湿度 50%RH"
-              className="w-full border rounded px-2 py-1.5 text-sm" />
+        {/* 检测信息 */}
+        <div className="grid grid-cols-3 gap-3 px-5 py-3 bg-gray-50 shrink-0">
+          <div className="space-y-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">检测环境</label>
+              <input value={testEnvironment} onChange={(e) => setTestEnvironment(e.target.value)}
+                placeholder="如 温度 20±2℃，湿度 50%RH"
+                className="w-full border rounded px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">检测设备</label>
+              <input value={mainEquipment} onChange={(e) => setMainEquipment(e.target.value)}
+                placeholder="如 WAW-1000 万能试验机"
+                className="w-full border rounded px-2 py-1.5 text-sm" />
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">主要检测设备</label>
-            <input value={mainEquipment} onChange={(e) => setMainEquipment(e.target.value)}
-              placeholder="如 WAW-1000 万能试验机"
-              className="w-full border rounded px-2 py-1.5 text-sm" />
+          <div className="space-y-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">检测人员</label>
+              <input value={testOperator} onChange={(e) => setTestOperator(e.target.value)}
+                placeholder="检测人员姓名"
+                className="w-full border rounded px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">原始记录单号</label>
+              <input value={originalRecordNo} onChange={(e) => setOriginalRecordNo(e.target.value)}
+                placeholder="原始记录单号"
+                className="w-full border rounded px-2 py-1.5 text-sm" />
+            </div>
           </div>
-          <div className="col-span-2 flex justify-end items-end gap-2">
-            <span className="text-xs text-gray-400">选左侧样品切换</span>
+          <div className="space-y-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">检测开始日期</label>
+              <input type="date" value={testStartDate} onChange={(e) => setTestStartDate(e.target.value)}
+                className="w-full border rounded px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">检测结束日期</label>
+              <input type="date" value={testEndDate} onChange={(e) => setTestEndDate(e.target.value)}
+                className="w-full border rounded px-2 py-1.5 text-sm" />
+            </div>
+          </div>
+        </div>
+        {/* 备注行 */}
+        <div className="px-5 py-2 border-b bg-gray-50 shrink-0">
+          <div className="flex items-center gap-3">
+            <label className="block text-xs font-medium text-gray-600">备注</label>
+            <input value={remark} onChange={(e) => setRemark(e.target.value)}
+              placeholder="备注信息"
+              className="flex-1 border rounded px-2 py-1 text-sm" />
           </div>
         </div>
 
@@ -470,16 +542,31 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                           ? calcConcreteRep(flexuralStrengths)
                           : (numLoads.length > 0 ? numLoads[0]! : 0)
                       const existingItem = items.find((i) => i.parameterCode === param.code && i.sampleId === selectedSample.id)
+                      // 抗折强度单项评定：代表值与技术要求比较
+                      const flexuralVerdict = isFlexural && req && rep > 0
+                        ? (req.comparison === '≥' ? (rep >= Number(req.value) ? '合格' : '不合格')
+                          : (req.comparison === '≤' ? (rep <= Number(req.value) ? '合格' : '不合格')
+                            : '—'))
+                        : ''
+                      // 混凝土抗压单项评定
+                      const concreteVerdict = isConcreteStrength && req && rep > 0
+                        ? (req.comparison === '≥' ? (rep >= Number(req.value) ? '合格' : '不合格')
+                          : (req.comparison === '≤' ? (rep <= Number(req.value) ? '合格' : '不合格')
+                            : '—'))
+                        : ''
+                      // 其他参数单项评定
+                      const otherVerdict = !isFlexural && !isConcreteStrength && req && numLoads.length > 0
+                        ? (req.comparison === '≥' ? (numLoads[0]! >= Number(req.value) ? '合格' : '不合格')
+                          : (req.comparison === '≤' ? (numLoads[0]! <= Number(req.value) ? '合格' : '不合格')
+                            : '—'))
+                        : ''
 
                       return (
                         <div key={param.code} className={`border rounded p-4 ${entered ? 'bg-white border-green-200' : 'bg-orange-50/40 border-orange-100'}`}>
-                          {/* 参数名 + 技术要求 */}
-                          <div className="flex items-center justify-between mb-3">
-                            <div>
-                              <span className="font-semibold text-gray-800">{param.name}</span>
-                              {param.unit && <span className="ml-1 text-gray-400">（{param.unit}）</span>}
-                            </div>
-                            <span className="text-xs text-gray-500">技术要求：<span className="text-orange-600 font-medium">{reqLabel}</span></span>
+                          {/* 参数名 */}
+                          <div className="flex items-center mb-3">
+                            <span className="font-semibold text-gray-800">{param.name}</span>
+                            {param.unit && <span className="ml-1 text-gray-400">（{param.unit}）</span>}
                           </div>
 
                           {/* 录入行 */}
@@ -489,10 +576,13 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                                 <table className="w-full text-xs">
                                   <thead>
                                     <tr>
-                                      <th className="w-5 text-center text-gray-500 font-medium pb-1">序号</th>
-                                      <th className="w-14 text-center text-gray-500 font-medium pb-1">极限荷载(kN)</th>
-                                      <th className="w-12 text-center text-gray-500 font-medium pb-1">抗折强度(MPa)</th>
-                                      <th className="text-center text-gray-500 font-medium pb-1">拉断面位置</th>
+                                      <th className="w-5 text-center text-gray-500 font-medium pb-1 px-1">序号</th>
+                                      <th className="w-16 text-center text-gray-500 font-medium pb-1 px-2">极限荷载(kN)</th>
+                                      <th className="w-14 text-center text-gray-500 font-medium pb-1 px-2">抗折强度(MPa)</th>
+                                      <th className="w-20 text-center text-gray-500 font-medium pb-1 px-2">拉断面位置</th>
+                                      <th className="w-16 text-center text-gray-500 font-medium pb-1 px-2">抗折强度代表值</th>
+                                      <th className="w-16 text-center text-gray-500 font-medium pb-1 px-2">技术要求</th>
+                                      <th className="w-12 text-center text-gray-500 font-medium pb-1 px-2">单项评定</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -502,8 +592,8 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                                       const fStrength = flexuralStrengths[i]
                                       return (
                                         <tr key={i}>
-                                          <td className={`w-5 text-center font-medium pr-2 ${disq ? 'text-red-500' : 'text-gray-600'}`}>#{i + 1}</td>
-                                          <td className="w-14 pr-2">
+                                          <td className={`w-5 text-center font-medium px-1 ${disq ? 'text-red-500' : 'text-gray-600'}`}>#{i + 1}</td>
+                                          <td className="w-16 px-2">
                                             <input
                                               type="number"
                                               value={sampleLoads[i] ?? ''}
@@ -518,10 +608,10 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                                               className="w-full border rounded px-2 py-1.5 text-center text-sm"
                                             />
                                           </td>
-                                          <td className={`w-12 text-center border rounded px-2 py-1.5 text-sm font-medium pr-2 ${disq ? 'bg-red-50 text-red-400 line-through' : 'bg-gray-50 text-blue-700'}`}>
+                                          <td className={`w-14 text-center border rounded px-2 py-1.5 text-sm font-medium ${disq ? 'bg-red-50 text-red-400 line-through' : 'bg-gray-50 text-blue-700'}`}>
                                             {fStrength ?? '—'}
                                           </td>
-                                          <td className="w-16">
+                                          <td className="w-20 px-2">
                                             <select
                                               value={pos}
                                               onChange={(e) => {
@@ -539,103 +629,197 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                                               <option value="集中荷载之外">集中荷载之外</option>
                                             </select>
                                           </td>
+                                          {i === 0 ? (
+                                            <>
+                                              <td className="w-16 px-2 text-xs text-gray-700 font-medium">{rep > 0 ? `${rep} MPa` : '—'}</td>
+                                              <td className="w-16 px-2 text-xs text-gray-500">{flexuralVerdict ? reqLabel : '—'}</td>
+                                              <td className={`w-12 px-2 text-xs font-medium ${existingItem ? verdictColorClass(effectiveVerdict(existingItem)) : ''}`}>
+                                                {existingItem ? (effectiveVerdict(existingItem) || '—') : '—'}
+                                              </td>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <td className="w-16 px-2"></td>
+                                              <td className="w-16 px-2"></td>
+                                              <td className="w-12 px-2"></td>
+                                            </>
+                                          )}
                                         </tr>
                                       )
                                     })}
                                   </tbody>
                                 </table>
-                                <div className="mt-2 pt-2 border-t shrink-0">
-                                  <span className="text-xs text-gray-500">代表值：</span>
-                                  <span className="font-bold text-blue-700 ml-1">{rep > 0 ? rep : '—'} MPa</span>
-                                </div>
                               </>
                             ) : isConcreteStrength ? (
                               <>
-                                {/* 荷载 kN */}
-                                <div>
-                                  <p className="text-xs text-gray-500 mb-1.5">极限荷载 kN</p>
-                                  <div className="flex gap-2">
+                                <table className="w-full text-xs">
+                                  <thead>
+                                    <tr>
+                                      <th className="w-5 text-center text-gray-500 font-medium pb-1 px-1">序号</th>
+                                      <th className="w-16 text-center text-gray-500 font-medium pb-1 px-2">极限荷载(kN)</th>
+                                      <th className="w-14 text-center text-gray-500 font-medium pb-1 px-2">抗压强度(MPa)</th>
+                                      <th className="w-16 text-center text-gray-500 font-medium pb-1 px-2">代表值</th>
+                                      <th className="w-16 text-center text-gray-500 font-medium pb-1 px-2">技术要求</th>
+                                      <th className="w-12 text-center text-gray-500 font-medium pb-1 px-2">单项评定</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
                                     {Array.from({ length: param.valueCount ?? 3 }).map((_, i) => (
-                                      <div key={i} className="text-center">
-                                        <p className="text-xs text-gray-400 mb-1">#{i + 1}</p>
+                                      <tr key={i}>
+                                        <td className="w-5 text-center font-medium px-1 text-gray-600">#{i + 1}</td>
+                                        <td className="w-16 px-2">
+                                          <input
+                                            type="number"
+                                            value={sampleLoads[i] ?? ''}
+                                            onChange={(e) => {
+                                              const next = [...sampleLoads]
+                                              next[i] = e.target.value
+                                              setLoads((prev) => ({
+                                                ...prev,
+                                                [selectedSample.id]: { ...prev[selectedSample.id], [param.code]: next },
+                                              }))
+                                            }}
+                                            className="w-full border rounded px-2 py-1.5 text-center text-sm"
+                                          />
+                                        </td>
+                                        <td className="w-14 text-center border rounded px-2 py-1.5 text-sm bg-gray-50 text-blue-700 font-medium">
+                                          {strengths[i] ?? '—'}
+                                        </td>
+                                        {i === 0 ? (
+                                          <>
+                                            <td className="w-16 px-2 text-xs text-gray-700 font-medium">{rep > 0 ? `${rep} MPa` : '—'}</td>
+                                            <td className="w-16 px-2 text-xs text-gray-500">{concreteVerdict ? reqLabel : '—'}</td>
+                                            <td className={`w-12 px-2 text-xs font-medium ${existingItem ? verdictColorClass(effectiveVerdict(existingItem)) : ''}`}>
+                                              {existingItem ? (effectiveVerdict(existingItem) || '—') : '—'}
+                                            </td>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <td className="w-16 px-2"></td>
+                                            <td className="w-16 px-2"></td>
+                                            <td className="w-12 px-2"></td>
+                                          </>
+                                        )}
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </>
+                            ) : param.code === 'CEM005' ? (
+                              <>
+                                <div className="flex items-end gap-4">
+                                  <div>
+                                    <label className="block text-xs text-gray-500 mb-1">试验方法</label>
+                                    <select
+                                      value={soundnessMethods[selectedSample.id] ?? ''}
+                                      onChange={(e) => {
+                                        setSoundnessMethods((prev) => ({
+                                          ...prev,
+                                          [selectedSample.id]: e.target.value,
+                                        }))
+                                        // 切换方法时清空检测值
+                                        setLoads((prev) => ({
+                                          ...prev,
+                                          [selectedSample.id]: { ...prev[selectedSample.id], [param.code]: [''] },
+                                        }))
+                                      }}
+                                      className="border rounded px-2 py-1.5 text-sm"
+                                    >
+                                      <option value="">请选择</option>
+                                      <option value="雷氏夹法">雷氏夹法</option>
+                                      <option value="试饼法">试饼法</option>
+                                    </select>
+                                  </div>
+                                  {soundnessMethods[selectedSample.id] === '雷氏夹法' && (
+                                    <div className="flex items-end gap-2">
+                                      <div>
+                                        <label className="block text-xs text-gray-500 mb-1">膨胀值(mm)</label>
                                         <input
                                           type="number"
-                                          value={sampleLoads[i] ?? ''}
+                                          step="0.1"
+                                          value={sampleLoads[0] ?? ''}
                                           onChange={(e) => {
-                                            const next = [...sampleLoads]
-                                            next[i] = e.target.value
                                             setLoads((prev) => ({
                                               ...prev,
-                                              [selectedSample.id]: { ...prev[selectedSample.id], [param.code]: next },
+                                              [selectedSample.id]: { ...prev[selectedSample.id], [param.code]: [e.target.value] },
                                             }))
                                           }}
-                                          className="w-20 border rounded px-2 py-1.5 text-center text-sm"
+                                          className="w-28 border rounded px-2 py-1.5 text-sm"
                                         />
                                       </div>
-                                    ))}
-                                  </div>
+                                      <span className="text-xs text-gray-400 pb-1">安定性合格：膨胀值 ≤ 5.0mm</span>
+                                    </div>
+                                  )}
+                                  {soundnessMethods[selectedSample.id] === '试饼法' && (
+                                    <div>
+                                      <label className="block text-xs text-gray-500 mb-1">检测结果</label>
+                                      <select
+                                        value={sampleLoads[0] ?? ''}
+                                        onChange={(e) => {
+                                          setLoads((prev) => ({
+                                            ...prev,
+                                            [selectedSample.id]: { ...prev[selectedSample.id], [param.code]: [e.target.value] },
+                                          }))
+                                        }}
+                                        className="border rounded px-2 py-1.5 text-sm"
+                                      >
+                                        <option value="">请选择</option>
+                                        <option value="无裂缝，无弯曲">无裂缝，无弯曲</option>
+                                        <option value="无裂缝，有弯曲">无裂缝，有弯曲</option>
+                                        <option value="有裂缝，无弯曲">有裂缝，无弯曲</option>
+                                        <option value="有裂缝，有弯曲">有裂缝，有弯曲</option>
+                                      </select>
+                                    </div>
+                                  )}
                                 </div>
-                                {/* → */}
-                                <div className="text-gray-400 text-lg self-center mb-1">→</div>
-                                {/* 抗压强度 MPa */}
-                                <div>
-                                  <p className="text-xs text-gray-500 mb-1.5">抗压强度 MPa</p>
-                                  <div className="flex gap-2">
-                                    {strengths.map((v, i) => (
-                                      <div key={i} className="w-20 text-center border rounded px-2 py-1.5 text-sm bg-gray-50 text-blue-700 font-medium">
-                                        {v}
-                                      </div>
-                                    ))}
-                                    {Array.from({ length: Math.max(0, (param.valueCount ?? 3) - strengths.length) }).map((_, i) => (
-                                      <div key={`empty-${i}`} className="w-20 text-center border border-dashed border-gray-200 rounded px-2 py-1.5 text-sm text-gray-300">
-                                        —
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                                {/* → */}
-                                <div className="text-gray-400 text-lg self-center mb-1">→</div>
-                                {/* 代表值 */}
-                                <div>
-                                  <p className="text-xs text-gray-500 mb-1.5">代表值 MPa</p>
-                                  <div className="w-24 text-center border-2 border-blue-300 rounded px-3 py-1.5 text-base font-bold text-blue-700 bg-blue-50">
-                                    {rep > 0 ? rep : '—'}
-                                  </div>
+                                {/* 安定性合格判定说明 */}
+                                <div className="mt-2 text-xs text-gray-500 bg-gray-50 rounded p-2">
+                                  <span className="font-medium">合格判定：</span>
+                                  雷氏夹法——膨胀值平均值 ≤ 5.0mm；试饼法——无裂缝且无弯曲
                                 </div>
                               </>
                             ) : (
-                              /* 其他参数：直接填值 */
-                              <div className="flex items-center gap-3">
-                                <div>
-                                  <p className="text-xs text-gray-500 mb-1.5">检测值</p>
-                                  <input
-                                    type="number"
-                                    value={sampleLoads[0] ?? ''}
-                                    onChange={(e) => {
-                                      setLoads((prev) => ({
-                                        ...prev,
-                                        [selectedSample.id]: { ...prev[selectedSample.id], [param.code]: [e.target.value] },
-                                      }))
-                                    }}
-                                    className="w-28 border rounded px-3 py-1.5 text-sm"
-                                  />
-                                </div>
-                                <div className="text-gray-400 text-lg">→</div>
-                                <div>
-                                  <p className="text-xs text-gray-500 mb-1.5">代表值</p>
-                                  <div className="w-20 text-center border rounded px-3 py-1.5 text-sm bg-gray-50 text-blue-700 font-medium">
-                                    {numLoads.length > 0 ? numLoads[0] : '—'}
-                                  </div>
-                                </div>
-                              </div>
+                              <>
+                                <table className="w-full text-xs">
+                                  <thead>
+                                    <tr>
+                                      <th className="w-5 text-center text-gray-500 font-medium pb-1 px-1">序号</th>
+                                      <th className="w-24 text-center text-gray-500 font-medium pb-1 px-2">检测结果</th>
+                                      <th className="w-16 text-center text-gray-500 font-medium pb-1 px-2">技术要求</th>
+                                      <th className="w-12 text-center text-gray-500 font-medium pb-1 px-2">单项评定</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td className="w-5 text-center font-medium px-1 text-gray-600">#1</td>
+                                      <td className="w-24 px-2">
+                                        <input
+                                          type="number"
+                                          value={sampleLoads[0] ?? ''}
+                                          onChange={(e) => {
+                                            setLoads((prev) => ({
+                                              ...prev,
+                                              [selectedSample.id]: { ...prev[selectedSample.id], [param.code]: [e.target.value] },
+                                            }))
+                                          }}
+                                          className="w-full border rounded px-2 py-1.5 text-center text-sm"
+                                        />
+                                      </td>
+                                      <td className="w-16 px-2 text-xs text-gray-500">
+                                        {otherVerdict ? reqLabel : '—'}
+                                      </td>
+                                      <td className={`w-12 px-2 text-xs font-medium ${existingItem ? verdictColorClass(effectiveVerdict(existingItem)) : ''}`}>
+                                        {existingItem ? (effectiveVerdict(existingItem) || '—') : '—'}
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </>
                             )}
 
                             {/* 已录入标识 */}
                             {entered && existingItem && (
                               <div className="ml-auto flex items-center gap-2">
-                                <span className={`text-xs font-medium ${verdictColorClass(effectiveVerdict(existingItem))}`}>
-                                  单项评定：{effectiveVerdict(existingItem) || '——'}
-                                </span>
                                 {existingItem.autoPassed !== null && existingItem.passed !== existingItem.autoPassed && (
                                   <span className="text-xs text-amber-500">（已修正）</span>
                                 )}
@@ -659,16 +843,6 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                       )
                     })}
 
-                    {/* 保存按钮 */}
-                    <div className="flex justify-end pt-2 border-t">
-                      <button
-                        onClick={() => handleSaveSample(selectedSample.id)}
-                        disabled={saving || !isEntered(selectedSample.id, parameters[0]?.code)}
-                        className="px-6 py-2.5 bg-blue-600 text-white rounded font-medium hover:bg-blue-700 disabled:opacity-40 text-sm"
-                      >
-                        {saving ? '保存中...' : '保存全部'}
-                      </button>
-                    </div>
                   </div>
                 </div>
               ) : (
@@ -687,6 +861,12 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
             全部合格 → 接样单整体结论「合格」
           </p>
           <div className="flex gap-2">
+            <button
+              onClick={() => { if (selectedSample) handleSaveSample(selectedSample.id) }}
+              disabled={saving || !selectedSample || !isEntered(selectedSample.id, parameters[0]?.code)}
+              className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+              保存
+            </button>
             <button onClick={() => { onClose(); onPreview() }}
               disabled={items.length === 0}
               className="px-4 py-2 text-sm bg-emerald-600 text-white rounded hover:bg-emerald-700 disabled:opacity-50">

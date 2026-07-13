@@ -20,6 +20,7 @@ interface TestItem {
   passed: boolean | null
   verdict?: string
   remark?: string
+  testMethod?: string
 }
 
 interface Sample {
