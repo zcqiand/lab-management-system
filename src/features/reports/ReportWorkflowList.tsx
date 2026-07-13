@@ -1,55 +1,62 @@
-import { useEffect, useState } from 'react'
-import { useReportStoreV2 } from './reportStore.v2'
-import type { ReportRecord } from '../../types/api'
-import { ReportWorkflowFormModal, type ReportWorkflowFormValues } from './ReportWorkflowFormModal'
-import { ConfirmModal } from '../../components/ConfirmModal'
-import { apiClient } from '../../api/client'
+import { useEffect, useState } from "react";
+import { useReportStoreV2 } from "./reportStore.v2";
+import type { ReportRecord } from "../../types/api";
+import {
+  ReportWorkflowFormModal,
+  type ReportWorkflowFormValues,
+} from "./ReportWorkflowFormModal";
+import { ConfirmModal } from "../../components/ConfirmModal";
+import { apiClient } from "../../api/client";
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 10;
 
 const STATUS_LABELS: Record<string, string> = {
-  draft: '草稿',
-  reviewing: '审核中',
-  issued: '已签发',
-  printed: '已发放',
-  archived: '已归档',
-}
+  draft: "草稿",
+  reviewing: "审核中",
+  issued: "已签发",
+  printed: "已发放",
+  archived: "已归档",
+};
 
 const MATERIAL_LABELS: Record<string, string> = {
-  steel: '钢材',
-  cement: '水泥',
-  concrete: '混凝土',
-  sand: '砂',
-  gravel: '碎石',
-  rebar_mech: '钢筋机械连接',
-  rebar_weld: '钢筋焊接',
-}
+  steel: "钢材",
+  cement: "水泥",
+  concrete: "混凝土",
+  sand: "砂",
+  gravel: "碎石",
+  rebar_mech: "钢筋机械连接",
+  rebar_weld: "钢筋焊接",
+};
 
 export function ReportWorkflowList() {
-  const { list, total, loading, error, fetchReports, createReport, deleteReport } = useReportStoreV2()
+  const { list, total, loading, error, fetchReports, createReport, deleteReport } =
+    useReportStoreV2();
 
-  const [page, setPage] = useState(1)
-  const [status, setStatus] = useState('draft')
-  const [formOpen, setFormOpen] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [actionTarget, setActionTarget] = useState<{ report: ReportRecord; action: WorkflowAction } | null>(null)
-  const [actionLoading, setActionLoading] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<ReportRecord | null>(null)
-  const [deleting, setDeleting] = useState(false)
+  const [page, setPage] = useState(1);
+  const [status, setStatus] = useState("draft");
+  const [formOpen, setFormOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [actionTarget, setActionTarget] = useState<{
+    report: ReportRecord;
+    action: WorkflowAction;
+  } | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<ReportRecord | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    fetchReports({ page, pageSize: PAGE_SIZE, status })
+    fetchReports({ page, pageSize: PAGE_SIZE, status });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, status])
+  }, [page, status]);
 
   const handleStatusChange = (val: string) => {
-    setStatus(val)
-    setPage(1)
-    fetchReports({ page: 1, pageSize: PAGE_SIZE, status: val })
-  }
+    setStatus(val);
+    setPage(1);
+    fetchReports({ page: 1, pageSize: PAGE_SIZE, status: val });
+  };
 
   const handleCreate = async (values: ReportWorkflowFormValues) => {
-    setSubmitting(true)
+    setSubmitting(true);
     try {
       await createReport({
         contractId: values.contractId,
@@ -60,57 +67,59 @@ export function ReportWorkflowList() {
         conclusion: values.conclusion,
         reportDate: values.reportDate,
         result: values.result,
-      })
-      setFormOpen(false)
-      await fetchReports({ page, pageSize: PAGE_SIZE, status })
+      });
+      setFormOpen(false);
+      await fetchReports({ page, pageSize: PAGE_SIZE, status });
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   const handleWorkflowAction = async () => {
-    if (!actionTarget) return
-    setActionLoading(true)
+    if (!actionTarget) return;
+    setActionLoading(true);
     try {
-      await apiClient.post(`/reports/${actionTarget.report.id}/review`, { action: actionTarget.action })
-      setActionTarget(null)
-      await fetchReports({ page, pageSize: PAGE_SIZE, status })
+      await apiClient.post(`/reports/${actionTarget.report.id}/review`, {
+        action: actionTarget.action,
+      });
+      setActionTarget(null);
+      await fetchReports({ page, pageSize: PAGE_SIZE, status });
     } catch {
       // error is not critical for workflow actions
     } finally {
-      setActionLoading(false)
+      setActionLoading(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    if (!deleteTarget) return
-    setDeleting(true)
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      await deleteReport(deleteTarget.id)
-      setDeleteTarget(null)
-      await fetchReports({ page, pageSize: PAGE_SIZE, status })
+      await deleteReport(deleteTarget.id);
+      setDeleteTarget(null);
+      await fetchReports({ page, pageSize: PAGE_SIZE, status });
     } finally {
-      setDeleting(false)
+      setDeleting(false);
     }
-  }
+  };
 
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const actionLabels: Record<WorkflowAction, string> = {
-    submit: '提交审核',
-    approve: '批准',
-    reject: '退回',
-    issue: '发放',
-    archive: '归档',
-  }
+    submit: "提交审核",
+    approve: "批准",
+    reject: "退回",
+    issue: "发放",
+    archive: "归档",
+  };
 
   const confirmMessages: Record<WorkflowAction, string> = {
-    submit: '提交后报告将进入审核流程，是否继续？',
-    approve: '批准后报告将签发，是否继续？',
-    reject: '退回后报告将回到草稿状态，是否继续？',
-    issue: '确认发放报告？',
-    archive: '归档后报告将永久存档，是否继续？',
-  }
+    submit: "提交后报告将进入审核流程，是否继续？",
+    approve: "批准后报告将签发，是否继续？",
+    reject: "退回后报告将回到草稿状态，是否继续？",
+    issue: "确认发放报告？",
+    archive: "归档后报告将永久存档，是否继续？",
+  };
 
   return (
     <div className="space-y-4">
@@ -180,16 +189,22 @@ export function ReportWorkflowList() {
               <tr key={r.id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-2">{r.reportCode}</td>
                 <td className="px-4 py-2">{r.contractId}</td>
-                <td className="px-4 py-2">{MATERIAL_LABELS[r.materialType] ?? r.materialType}</td>
+                <td className="px-4 py-2">
+                  {MATERIAL_LABELS[r.materialType] ?? r.materialType}
+                </td>
                 <td className="px-4 py-2">{r.sampleIds?.length ?? 0}</td>
-                <td className="px-4 py-2">{r.reportDate ? new Date(r.reportDate).toLocaleDateString('zh-CN') : '-'}</td>
+                <td className="px-4 py-2">
+                  {r.reportDate
+                    ? new Date(r.reportDate).toLocaleDateString("zh-CN")
+                    : "-"}
+                </td>
                 <td className="px-4 py-2">{STATUS_LABELS[r.status] ?? r.status}</td>
-                <td className="px-4 py-2">{r.conclusion || '-'}</td>
+                <td className="px-4 py-2">{r.conclusion || "-"}</td>
                 <td className="px-4 py-2 text-right space-x-2">
-                  {r.status === 'draft' && (
+                  {r.status === "draft" && (
                     <>
                       <button
-                        onClick={() => setActionTarget({ report: r, action: 'submit' })}
+                        onClick={() => setActionTarget({ report: r, action: "submit" })}
                         className="px-2 py-1 text-purple-600 hover:underline"
                       >
                         提交审核
@@ -208,54 +223,52 @@ export function ReportWorkflowList() {
                       </button>
                     </>
                   )}
-                  {r.status === 'reviewing' && (
+                  {r.status === "reviewing" && (
                     <>
                       <button
-                        onClick={() => setActionTarget({ report: r, action: 'approve' })}
+                        onClick={() => setActionTarget({ report: r, action: "approve" })}
                         className="px-2 py-1 text-green-600 hover:underline"
                       >
                         批准
                       </button>
                       <button
-                        onClick={() => setActionTarget({ report: r, action: 'reject' })}
+                        onClick={() => setActionTarget({ report: r, action: "reject" })}
                         className="px-2 py-1 text-orange-600 hover:underline"
                       >
                         退回
                       </button>
                     </>
                   )}
-                  {r.status === 'issued' && (
+                  {r.status === "issued" && (
                     <>
                       <button
-                        onClick={() => setActionTarget({ report: r, action: 'issue' })}
+                        onClick={() => setActionTarget({ report: r, action: "issue" })}
                         className="px-2 py-1 text-green-600 hover:underline"
                       >
                         发放
                       </button>
-                      <button
-                        className="px-2 py-1 text-gray-400 cursor-default"
-                      >
-                        查看
+                      <button className="px-2 py-1 text-gray-400 cursor-default">
+                        查看详情
                       </button>
                     </>
                   )}
-                  {r.status === 'printed' && (
+                  {r.status === "printed" && (
                     <>
                       <button
-                        onClick={() => setActionTarget({ report: r, action: 'archive' })}
+                        onClick={() => setActionTarget({ report: r, action: "archive" })}
                         className="px-2 py-1 text-green-600 hover:underline"
                       >
                         归档
                       </button>
-                      <button
-                        className="px-2 py-1 text-gray-400 cursor-default"
-                      >
-                        查看
+                      <button className="px-2 py-1 text-gray-400 cursor-default">
+                        查看详情
                       </button>
                     </>
                   )}
-                  {r.status === 'archived' && (
-                    <button className="px-2 py-1 text-gray-400 cursor-default">查看</button>
+                  {r.status === "archived" && (
+                    <button className="px-2 py-1 text-gray-400 cursor-default">
+                      查看报告
+                    </button>
                   )}
                 </td>
               </tr>
@@ -310,7 +323,7 @@ export function ReportWorkflowList() {
       <ConfirmModal
         open={deleteTarget !== null}
         title="删除确认"
-        message={`确定删除报告「${deleteTarget?.reportCode ?? ''}」？此操作不可撤销。`}
+        message={`确定删除报告「${deleteTarget?.reportCode ?? ""}」？此操作不可撤销。`}
         confirmText="确认删除"
         loading={deleting}
         danger={true}
@@ -318,9 +331,9 @@ export function ReportWorkflowList() {
         onCancel={() => setDeleteTarget(null)}
       />
     </div>
-  )
+  );
 }
 
-type WorkflowAction = 'submit' | 'approve' | 'reject' | 'issue' | 'archive'
+type WorkflowAction = "submit" | "approve" | "reject" | "issue" | "archive";
 
-export default ReportWorkflowList
+export default ReportWorkflowList;

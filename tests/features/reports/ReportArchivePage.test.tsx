@@ -34,7 +34,7 @@ describe("ReportArchivePage", () => {
     renderWithRouter(<ReportArchivePage />);
     await waitFor(() => expect(screen.getByText("报告归档")).toBeInTheDocument());
     await waitFor(() =>
-      expect(screen.getByText(/当前环节.*已归档/)).toBeInTheDocument(),
+      expect(screen.getByText(/当前环节.*归档中/)).toBeInTheDocument(),
     );
   });
 
@@ -88,11 +88,11 @@ describe("ReportArchivePage", () => {
     await waitFor(() => expect(screen.getByText("结论")).toBeInTheDocument());
   });
 
-  fnTest(["M03.F08.I01"], "不显示我提交的（可撤回）区块（归档为终点无下一阶段）", async () => {
+  fnTest(["M03.F08.I01"], "显示我提交的（可撤回）区块（归档后进入流程完成）", async () => {
     renderWithRouter(<ReportArchivePage />);
     await waitFor(() => {
-      // 归档是终点，没有下一阶段，所以不应显示"我提交的（可撤回）"
-      expect(screen.queryByText(/我提交的.*可撤回/)).not.toBeInTheDocument();
+      // 归档后进入流程完成，有下一阶段，所以应显示"我提交的（可撤回）"
+      expect(screen.getByText(/我提交的.*可撤回/)).toBeInTheDocument();
     });
   });
 

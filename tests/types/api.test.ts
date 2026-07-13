@@ -134,11 +134,12 @@ describe("types/api 业务实体（v3）", () => {
     expect(item.autoPassed).toBe(true);
   });
 
-  fnTest(["M03.F01.I01"], "FLOW_STAGE_ORDER 覆盖七个阶段且有中文名", () => {
-    expect(FLOW_STAGE_ORDER).toHaveLength(7);
+  fnTest(["M03.F01.I01"], "FLOW_STAGE_ORDER 覆盖八个阶段且有中文名", () => {
+    expect(FLOW_STAGE_ORDER).toHaveLength(8);
     expect(FLOW_STAGE_ORDER[0]).toBe("receiving");
-    expect(FLOW_STAGE_ORDER[6]).toBe("archived");
-    expect(FLOW_STAGE_LABELS.task_assignment).toBe("任务安排");
+    expect(FLOW_STAGE_ORDER[7]).toBe("completed");
+    expect(FLOW_STAGE_LABELS.task_assignment).toBe("分配中");
+    expect(FLOW_STAGE_LABELS.completed).toBe("已归档");
   });
 
   fnTest(["M04.F02.I01"], "ReportTemplate 每类别一份，SummaryData 列+行结构", () => {

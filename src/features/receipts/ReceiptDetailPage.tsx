@@ -43,7 +43,10 @@ export function ReceiptDetailPage() {
     <div className="space-y-4" data-fn="M03.F09.I02">
       {/* 接样信息 —— 顺序与表单一致 */}
       <div className="bg-white rounded shadow p-4">
-        <h3 className="text-base font-semibold text-gray-700 mb-3">接样信息</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-base font-semibold text-gray-700">详情信息</h3>
+          <button onClick={() => window.history.back()} className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 border rounded">关闭</button>
+        </div>
         <div className="grid grid-cols-4 gap-x-4 gap-y-1 text-sm">
           {/* 委托书信息 */}
           <div><span className="text-gray-500">委托书编号：</span>{receipt.commissionCode}</div>
@@ -87,7 +90,6 @@ export function ReceiptDetailPage() {
       <ReceiptDetail
         receiptId={receipt.id}
         categoryCode={receipt.categoryCode}
-        onClose={() => window.history.back()}
       />
     </div>
   )

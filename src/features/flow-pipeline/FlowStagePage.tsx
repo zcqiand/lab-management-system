@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router'
-import { useCallback, useEffect, useState, type ReactNode } from 'react'
-import { apiClient } from '../../api/client'
-import { useAuthStore } from '../auth/authStore'
+import { useNavigate } from "react-router";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { apiClient } from "../../api/client";
+import { useAuthStore } from "../auth/authStore";
 import {
   FLOW_STAGE_LABELS,
   FLOW_STAGE_ORDER,
@@ -9,48 +9,50 @@ import {
   type FlowActionResult,
   type FlowStage,
   type SampleReceipt,
-} from '../../types/api'
+} from "../../types/api";
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 10;
 
 function ResultLabel({ result }: { result?: string }) {
-  if (result === 'pass') return <span className="text-green-600">合格</span>
-  if (result === 'fail') return <span className="text-red-600">不合格</span>
-  return <span className="text-gray-400">—</span>
+  if (result === "pass") return <span className="text-green-600">合格</span>;
+  if (result === "fail") return <span className="text-red-600">不合格</span>;
+  return <span className="text-gray-400">—</span>;
 }
 
 interface PageResp {
-  items: SampleReceipt[]
-  total: number
+  items: SampleReceipt[];
+  total: number;
 }
 
-export type StageFilter = 'all' | 'not_yet' | 'submitted'
+export type StageFilter = "all" | "not_yet" | "submitted";
 
 export interface FlowStagePageProps {
   /** 页面标题（如「报告审核」） */
-  title: string
+  title: string;
   /** 本页面对应的流程阶段（不填则显示全部，不按阶段过滤） */
-  stage?: FlowStage
+  stage?: FlowStage;
   /** 三态过滤器：有 stage 时默认 not_yet，无 stage 时默认 all */
-  defaultFilter?: StageFilter
+  defaultFilter?: StageFilter;
   /** 标题右侧说明文字 */
-  subtitle?: string
+  subtitle?: string;
   /** 标题栏右侧的自定义按钮（如「新建接样」） */
-  toolbar?: (refresh: () => Promise<void>) => ReactNode
+  toolbar?: (refresh: () => Promise<void>) => ReactNode;
   /** 每行「操作」列的自定义按钮（如「编辑」「录入结果」） */
-  rowActions?: (r: SampleReceipt, refresh: () => Promise<void>) => ReactNode
+  rowActions?: (r: SampleReceipt, refresh: () => Promise<void>) => ReactNode;
   /** 额外的数据列 */
-  extraColumns?: { header: string; render: (r: SampleReceipt) => ReactNode }[]
+  extraColumns?: { header: string; render: (r: SampleReceipt) => ReactNode }[];
   /** 提交按钮文案（默认「提交」） */
-  submitLabel?: string
+  submitLabel?: string;
   /** 是否允许提交（归档页默认关闭） */
-  canSubmit?: boolean
+  canSubmit?: boolean;
   /** 是否允许退回（接样页为首环节默认关闭） */
-  canReturn?: boolean
+  canReturn?: boolean;
   /** 功能 ID（用于 data-fn 入口标记），格式 Mxx.Fyy.Izz */
-  dataFn?: string
+  dataFn?: string;
   /** 三态过滤器的 data-fn ID，如 M03.F01.I06 */
-  filterDataFn?: string
+  filterDataFn?: string;
+  /** 下一阶段的自定义标签（用于「提交后进入」文案覆盖，如 issuance→已归档） */
+  nextStageLabel?: string;
 }
 
 /** v2.0：流程阶段通用页面——
@@ -71,135 +73,148 @@ export function FlowStagePage({
   canReturn,
   dataFn,
   filterDataFn,
+  nextStageLabel,
 }: FlowStagePageProps) {
-  const user = useAuthStore((s) => s.user)
-  const operator = user?.id ?? user?.username ?? 'anonymous'
-  const navigate = useNavigate()
+  const user = useAuthStore((s) => s.user);
+  const operator = user?.id ?? user?.username ?? "anonymous";
+  const navigate = useNavigate();
 
-  const stageIdx = stage ? FLOW_STAGE_ORDER.indexOf(stage) : -1
-  const nextStage = stage ? (FLOW_STAGE_ORDER[stageIdx + 1] as FlowStage | undefined) : undefined
-  const prevStage = stage ? (FLOW_STAGE_ORDER[stageIdx - 1] as FlowStage | undefined) : undefined
-  const allowSubmit = canSubmit ?? Boolean(nextStage)
-  const allowReturn = canReturn ?? Boolean(prevStage)
+  const stageIdx = stage ? FLOW_STAGE_ORDER.indexOf(stage) : -1;
+  const nextStage = stage
+    ? (FLOW_STAGE_ORDER[stageIdx + 1] as FlowStage | undefined)
+    : undefined;
+  const prevStage = stage
+    ? (FLOW_STAGE_ORDER[stageIdx - 1] as FlowStage | undefined)
+    : undefined;
+  const allowSubmit = canSubmit ?? Boolean(nextStage);
+  const allowReturn = canReturn ?? Boolean(prevStage);
 
-  const [list, setList] = useState<SampleReceipt[]>([])
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
-  const [keyword, setKeyword] = useState('')
-  const [selected, setSelected] = useState<Set<string>>(new Set())
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [notice, setNotice] = useState<string | null>(null)
-  const [processing, setProcessing] = useState(false)
+  const [list, setList] = useState<SampleReceipt[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [keyword, setKeyword] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
   // 三态过滤器：全部/未提交/已提交；接样页（无 stage）默认全部，其他页面默认未提交
   const [filter, setFilter] = useState<StageFilter>(() => {
-    if (defaultFilter !== undefined) return defaultFilter
-    return stage ? 'not_yet' : 'all'
-  })
+    if (defaultFilter !== undefined) return defaultFilter;
+    return stage ? "not_yet" : "all";
+  });
 
   // 「我提交的（可撤回）」——已提交至下一环节且最近提交人为本人
-  const [submittedList, setSubmittedList] = useState<SampleReceipt[]>([])
-  const [submittedSelected, setSubmittedSelected] = useState<Set<string>>(new Set())
+  const [submittedList, setSubmittedList] = useState<SampleReceipt[]>([]);
+  const [submittedSelected, setSubmittedSelected] = useState<Set<string>>(new Set());
 
   const fetchStage = useCallback(
     async (p: number, kw: string) => {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
       try {
         const params: Record<string, string> = {
           page: String(p),
           pageSize: String(PAGE_SIZE),
-        }
-        if (stage) params.flowStatus = stage
-        if (kw) params.keyword = kw
-        if (filter !== 'all') params.filter = filter
-        const res = await apiClient.get<PageResp>('/receipts', { params })
-        setList(res.data.items)
-        setTotal(res.data.total)
+        };
+        if (stage) params.flowStatus = stage;
+        if (kw) params.keyword = kw;
+        if (filter !== "all") params.filter = filter;
+        const res = await apiClient.get<PageResp>("/receipts", { params });
+        setList(res.data.items);
+        setTotal(res.data.total);
       } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : '加载失败')
+        setError(e instanceof Error ? e.message : "加载失败");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     },
     [stage, filter],
-  )
+  );
 
   const fetchSubmitted = useCallback(async () => {
     if (!nextStage) {
-      setSubmittedList([])
-      return
+      setSubmittedList([]);
+      return;
     }
     try {
-      const res = await apiClient.get<PageResp>('/receipts', {
-        params: { page: '1', pageSize: '100', flowStatus: nextStage, lastSubmittedBy: operator },
-      })
-      setSubmittedList(res.data.items)
+      const res = await apiClient.get<PageResp>("/receipts", {
+        params: {
+          page: "1",
+          pageSize: "100",
+          flowStatus: nextStage,
+          lastSubmittedBy: operator,
+        },
+      });
+      setSubmittedList(res.data.items);
     } catch {
-      setSubmittedList([])
+      setSubmittedList([]);
     }
-  }, [nextStage, operator])
+  }, [nextStage, operator]);
 
   const refresh = useCallback(async () => {
-    setSelected(new Set())
-    setSubmittedSelected(new Set())
-    await Promise.all([fetchStage(page, keyword), fetchSubmitted()])
-  }, [fetchStage, fetchSubmitted, page, keyword])
+    setSelected(new Set());
+    setSubmittedSelected(new Set());
+    await Promise.all([fetchStage(page, keyword), fetchSubmitted()]);
+  }, [fetchStage, fetchSubmitted, page, keyword]);
 
   useEffect(() => {
-    fetchStage(page, keyword)
-    fetchSubmitted()
-    setSelected(new Set())
-    setSubmittedSelected(new Set())
+    fetchStage(page, keyword);
+    fetchSubmitted();
+    setSelected(new Set());
+    setSubmittedSelected(new Set());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, stage, filter])
+  }, [page, stage, filter]);
 
   const handleSearch = () => {
-    setPage(1)
-    fetchStage(1, keyword)
-  }
+    setPage(1);
+    fetchStage(1, keyword);
+  };
 
   const runFlow = async (action: FlowAction, ids: string[]) => {
-    if (ids.length === 0) return
-    setProcessing(true)
-    setError(null)
-    setNotice(null)
+    if (ids.length === 0) return;
+    setProcessing(true);
+    setError(null);
+    setNotice(null);
     try {
-      const res = await apiClient.post<{ results: FlowActionResult[] }>('/receipts/flow', {
-        action,
-        ids,
-        operator,
-      })
-      const results = res.data.results
-      const failed = results.filter((r) => !r.ok)
-      const okCount = results.length - failed.length
-      const actionLabel = action === 'submit' ? '提交' : action === 'return' ? '退回' : '撤回'
-      if (okCount > 0) setNotice(`已${actionLabel} ${okCount} 条`)
-      if (failed.length > 0) setError(failed.map((f) => f.message).join('；'))
-      await refresh()
+      const res = await apiClient.post<{ results: FlowActionResult[] }>(
+        "/receipts/flow",
+        {
+          action,
+          ids,
+          operator,
+        },
+      );
+      const results = res.data.results;
+      const failed = results.filter((r) => !r.ok);
+      const okCount = results.length - failed.length;
+      const actionLabel =
+        action === "submit" ? "提交" : action === "return" ? "退回" : "撤回";
+      if (okCount > 0) setNotice(`已${actionLabel} ${okCount} 条`);
+      if (failed.length > 0) setError(failed.map((f) => f.message).join("；"));
+      await refresh();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : '操作失败')
+      setError(e instanceof Error ? e.message : "操作失败");
     } finally {
-      setProcessing(false)
+      setProcessing(false);
     }
-  }
+  };
 
   const toggle = (set_: Set<string>, id: string, apply: (s: Set<string>) => void) => {
-    const next = new Set(set_)
-    if (next.has(id)) next.delete(id)
-    else next.add(id)
-    apply(next)
-  }
+    const next = new Set(set_);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    apply(next);
+  };
 
-  const allChecked = list.length > 0 && list.every((r) => selected.has(r.id))
+  const allChecked = list.length > 0 && list.every((r) => selected.has(r.id));
   const toggleAll = () => {
-    setSelected(allChecked ? new Set() : new Set(list.map((r) => r.id)))
-  }
+    setSelected(allChecked ? new Set() : new Set(list.map((r) => r.id)));
+  };
 
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
-  const finalSubmitLabel = submitLabel ?? '提交'
-  const colSpan = 7 + extraColumns.length
-
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const finalSubmitLabel = submitLabel ?? "提交";
+  const colSpan = 7 + extraColumns.length;
 
   return (
     <div className="space-y-4" data-fn={dataFn}>
@@ -207,10 +222,12 @@ export function FlowStagePage({
         <div>
           <h2 className="text-2xl font-bold">{title}</h2>
           <p className="text-xs text-gray-500 mt-1">
-            当前环节：{stage ? FLOW_STAGE_LABELS[stage] : '全部'}
-            {nextStage && allowSubmit && ` ｜ 提交后进入：${FLOW_STAGE_LABELS[nextStage]}`}
+            当前环节：{stage ? FLOW_STAGE_LABELS[stage] : "全部"}
+            {nextStage &&
+              allowSubmit &&
+              ` ｜ 提交后进入：${nextStageLabel ?? FLOW_STAGE_LABELS[nextStage]}`}
             {prevStage && allowReturn && ` ｜ 退回至：${FLOW_STAGE_LABELS[prevStage]}`}
-            {subtitle ? ` ｜ ${subtitle}` : ''}
+            {subtitle ? ` ｜ ${subtitle}` : ""}
           </p>
         </div>
         <div className="flex items-center gap-2">{toolbar?.(refresh)}</div>
@@ -219,7 +236,10 @@ export function FlowStagePage({
       <div className="flex items-center gap-2 bg-white p-3 rounded shadow-sm">
         <select
           value={filter}
-          onChange={(e) => { setFilter(e.target.value as StageFilter); setPage(1) }}
+          onChange={(e) => {
+            setFilter(e.target.value as StageFilter);
+            setPage(1);
+          }}
           data-fn={filterDataFn}
           className="border rounded px-2 py-1.5 text-sm"
         >
@@ -231,10 +251,13 @@ export function FlowStagePage({
           placeholder="搜索接样编号/报告编号/收样人"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           className="border rounded px-3 py-1.5 text-sm flex-1 min-w-[200px]"
         />
-        <button onClick={handleSearch} className="px-4 py-1.5 bg-gray-700 text-white rounded text-sm hover:bg-gray-800">
+        <button
+          onClick={handleSearch}
+          className="px-4 py-1.5 bg-gray-700 text-white rounded text-sm hover:bg-gray-800"
+        >
           搜索
         </button>
       </div>
@@ -256,7 +279,7 @@ export function FlowStagePage({
           {allowSubmit && (
             <button
               disabled={selected.size === 0 || processing}
-              onClick={() => runFlow('submit', [...selected])}
+              onClick={() => runFlow("submit", [...selected])}
               className="px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
               批量{finalSubmitLabel}
@@ -265,7 +288,7 @@ export function FlowStagePage({
           {allowReturn && (
             <button
               disabled={selected.size === 0 || processing}
-              onClick={() => runFlow('return', [...selected])}
+              onClick={() => runFlow("return", [...selected])}
               className="px-3 py-1.5 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-50"
             >
               批量退回
@@ -279,7 +302,12 @@ export function FlowStagePage({
           <thead className="bg-gray-50 text-gray-600">
             <tr>
               <th className="px-3 py-2 text-left w-8">
-                <input type="checkbox" aria-label="全选" checked={allChecked} onChange={toggleAll} />
+                <input
+                  type="checkbox"
+                  aria-label="全选"
+                  checked={allChecked}
+                  onChange={toggleAll}
+                />
               </th>
               <th className="px-4 py-2 text-left">接样编号</th>
               <th className="px-4 py-2 text-left">报告编号</th>
@@ -306,7 +334,7 @@ export function FlowStagePage({
             {!loading && list.length === 0 && (
               <tr>
                 <td colSpan={colSpan} className="px-4 py-8 text-center text-gray-400">
-                  暂无「{stage ? FLOW_STAGE_LABELS[stage] : '全部'}」环节的单据
+                  暂无「{stage ? FLOW_STAGE_LABELS[stage] : "全部"}」环节的单据
                 </td>
               </tr>
             )}
@@ -321,7 +349,7 @@ export function FlowStagePage({
                   />
                 </td>
                 <td className="px-4 py-2">{r.commissionCode}</td>
-                <td className="px-4 py-2">{r.reportCode ?? '—'}</td>
+                <td className="px-4 py-2">{r.reportCode ?? "—"}</td>
                 <td className="px-4 py-2">{r.commissionDate}</td>
                 <td className="px-4 py-2">{r.receivedBy}</td>
                 {extraColumns.map((c) => (
@@ -329,20 +357,22 @@ export function FlowStagePage({
                     {c.render(r)}
                   </td>
                 ))}
-                <td className="px-4 py-2"><ResultLabel result={r.result} /></td>
+                <td className="px-4 py-2">
+                  <ResultLabel result={r.result} />
+                </td>
                 <td className="px-4 py-2">{FLOW_STAGE_LABELS[r.flowStatus]}</td>
                 <td className="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                   <button
                     onClick={() => navigate(`/receipt/${r.id}`)}
                     className="px-2 py-1 text-gray-600 hover:underline"
                   >
-                    查看
+                    查看详情
                   </button>
                   {rowActions?.(r, refresh)}
                   {allowSubmit && (
                     <button
                       disabled={processing}
-                      onClick={() => runFlow('submit', [r.id])}
+                      onClick={() => runFlow("submit", [r.id])}
                       className="px-2 py-1 text-blue-600 hover:underline"
                     >
                       {finalSubmitLabel}
@@ -351,7 +381,7 @@ export function FlowStagePage({
                   {allowReturn && (
                     <button
                       disabled={processing}
-                      onClick={() => runFlow('return', [r.id])}
+                      onClick={() => runFlow("return", [r.id])}
                       className="px-2 py-1 text-orange-600 hover:underline"
                     >
                       退回
@@ -391,14 +421,17 @@ export function FlowStagePage({
         <div className="bg-white rounded shadow overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
             <div>
-              <span className="text-sm font-semibold text-gray-700">我提交的（可撤回）</span>
+              <span className="text-sm font-semibold text-gray-700">
+                我提交的（可撤回）
+              </span>
               <span className="text-xs text-gray-500 ml-2">
-                已提交至「{FLOW_STAGE_LABELS[nextStage]}」且未被处理的单据，可由提交人主动撤回
+                已提交至「{FLOW_STAGE_LABELS[nextStage]}
+                」且未被处理的单据，可由提交人主动撤回
               </span>
             </div>
             <button
               disabled={submittedSelected.size === 0 || processing}
-              onClick={() => runFlow('withdraw', [...submittedSelected])}
+              onClick={() => runFlow("withdraw", [...submittedSelected])}
               className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm hover:bg-gray-700 disabled:opacity-50"
             >
               批量撤回（{submittedSelected.size}）
@@ -408,7 +441,9 @@ export function FlowStagePage({
             <tbody>
               {submittedList.length === 0 && (
                 <tr>
-                  <td className="px-4 py-4 text-center text-gray-400">暂无可撤回的单据</td>
+                  <td className="px-4 py-4 text-center text-gray-400">
+                    暂无可撤回的单据
+                  </td>
                 </tr>
               )}
               {submittedList.map((r) => (
@@ -418,16 +453,20 @@ export function FlowStagePage({
                       type="checkbox"
                       aria-label={`选择可撤回 ${r.commissionCode}`}
                       checked={submittedSelected.has(r.id)}
-                      onChange={() => toggle(submittedSelected, r.id, setSubmittedSelected)}
+                      onChange={() =>
+                        toggle(submittedSelected, r.id, setSubmittedSelected)
+                      }
                     />
                   </td>
                   <td className="px-4 py-2">{r.commissionCode}</td>
-                  <td className="px-4 py-2">{r.reportCode ?? '—'}</td>
-                  <td className="px-4 py-2 text-gray-500">当前：{FLOW_STAGE_LABELS[r.flowStatus]}</td>
+                  <td className="px-4 py-2">{r.reportCode ?? "—"}</td>
+                  <td className="px-4 py-2 text-gray-500">
+                    当前：{FLOW_STAGE_LABELS[r.flowStatus]}
+                  </td>
                   <td className="px-4 py-2 text-right">
                     <button
                       disabled={processing}
-                      onClick={() => runFlow('withdraw', [r.id])}
+                      onClick={() => runFlow("withdraw", [r.id])}
                       className="px-2 py-1 text-gray-600 hover:underline"
                     >
                       撤回
@@ -440,7 +479,7 @@ export function FlowStagePage({
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default FlowStagePage
+export default FlowStagePage;

@@ -50,10 +50,9 @@ interface Sample {
 interface ReceiptDetailProps {
   receiptId: string
   categoryCode: string
-  onClose: () => void
 }
 
-export function ReceiptDetail({ receiptId, categoryCode, onClose }: ReceiptDetailProps) {
+export function ReceiptDetail({ receiptId, categoryCode }: ReceiptDetailProps) {
   const [samples, setSamples] = useState<Sample[]>([])
   const [testItems, setTestItems] = useState<TestItem[]>([])
   const [parameters, setParameters] = useState<TestParameter[]>([])
@@ -98,11 +97,6 @@ export function ReceiptDetail({ receiptId, categoryCode, onClose }: ReceiptDetai
 
   return (
     <div className="bg-white rounded shadow p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold text-gray-700">详情信息</h3>
-        <button onClick={onClose} className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 border rounded">关闭</button>
-      </div>
-
       {samples.length > 0 && (
         <div className="flex border-b text-sm overflow-x-auto">
           {samples.map((s) => (

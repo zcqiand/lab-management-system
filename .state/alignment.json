@@ -624,7 +624,7 @@
         "receiptStore 状态流转 fetchReceipts 空列表场景",
         "receiptStore 状态流转 fetchReceipts 网络错误",
         "receiptStore 状态流转 初始状态",
-        "types/api 业务实体（v3） FLOW_STAGE_ORDER 覆盖七个阶段且有中文名",
+        "types/api 业务实体（v3） FLOW_STAGE_ORDER 覆盖八个阶段且有中文名",
         "types/api 业务实体（v3） Page 分页结构与 PageQuery 查询参数",
         "types/api 业务实体（v3） SampleReceipt 携带报告类别与合并的报告字段"
       ],
@@ -1203,7 +1203,7 @@
         "docs\\design\\design-function-map.md"
       ],
       "tests": [
-        "\"查看报告\"按钮 \"查看报告\"按钮可点击"
+        "\"报告预览\"按钮 \"查看报告\"按钮可点击"
       ],
       "entry": [
         "src\\features\\reports\\ReportIssuePage.tsx"
@@ -1255,9 +1255,9 @@
         "docs\\design\\design-function-map.md"
       ],
       "tests": [
-        "ReportArchivePage 不显示我提交的（可撤回）区块（归档为终点无下一阶段）",
         "ReportArchivePage 分页控件正常显示",
         "ReportArchivePage 报告类别列正确渲染",
+        "ReportArchivePage 显示我提交的（可撤回）区块（归档后进入流程完成）",
         "ReportArchivePage 显示搜索框",
         "ReportArchivePage 渲染页面标题和流程信息",
         "ReportArchivePage 签发时间列正确渲染",

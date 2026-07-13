@@ -34,7 +34,7 @@ describe("ReportApprovePage", () => {
     renderWithRouter(<ReportApprovePage />);
     await waitFor(() => expect(screen.getByText("报告批准")).toBeInTheDocument());
     await waitFor(() =>
-      expect(screen.getByText(/当前环节.*报告批准/)).toBeInTheDocument(),
+      expect(screen.getByText(/当前环节.*批准中/)).toBeInTheDocument(),
     );
   });
 
@@ -55,7 +55,7 @@ describe("ReportApprovePage", () => {
   fnTest(["M03.F06.I03"], "显示退回至报告审核的提示", async () => {
     renderWithRouter(<ReportApprovePage />);
     await waitFor(() =>
-      expect(screen.getByText(/退回至.*报告审核/)).toBeInTheDocument(),
+      expect(screen.getByText(/退回至.*审核中/)).toBeInTheDocument(),
     );
   });
 

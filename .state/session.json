@@ -1,21 +1,14 @@
 {
   "schema": 1,
   "project": "lab-management-system",
-  "current_task": "L5 UI 入口 + 子代理并行补全",
+  "current_task": "L5 UI 入口补全 + gate 全绿",
   "done": [
-    "79 个已上线面向用户子项全部加 data-fn",
-    "FlowStagePage: 新增 dataFn/filterDataFn props，stage-aware data-fn",
-    "CategoryDictList: 新增 createDataFn/editDataFn/deleteDataFn props",
-    "HasPermission: 新增 dataFn prop",
-    "ReceiptRowActions: 新建/编辑/删除按钮 data-fn",
-    "TaskAssignmentPage: 安排按钮 data-fn",
-    "DataEntryPage: 录入/编辑/删除/改判/三态过滤器 data-fn",
-    "所有报告页面（Review/Approve/Issue/Archive）: 查看+操作按钮 data-fn",
-    "AppSidebar router: ProtectedRoute 包裹加 data-fn",
-    "OrgInfo: M01.F01.I01 data-fn",
-    "SummaryPage: M05.F01.I01 data-fn",
-    "M01.F03.I04 密码修改状态改为开发中（无此 UI）",
-    "M03.F04.I01/I02/I03/I05 报告编制相关状态改为开发中（未接入路由）"
+    "流程阶段语义统一：接样中→分配中→录入中→审核中→批准中→发放中→归档中→已归档",
+    "新增 FlowStage 'completed'（已归档）加到 FLOW_STAGE_ORDER（8阶段）",
+    "FlowStagePage 新增 nextStageLabel prop，issuance 页传 nextStageLabel='已归档'",
+    "api.ts: FLOW_STAGE_LABELS 全部对齐用户语义",
+    "修正 api.test.ts / FlowStagePage.test.ts / ReportIssuePage.test.ts / ReportReviewPage.test.ts / ReportApprovePage.test.ts / ReportArchivePage.test.ts 共数十处断言以匹配新 label",
+    "lab-management-system-vue 同步：api.ts 加 completed，测试断言同步修正"
   ],
   "next": "待人类分配新任务",
   "open_questions": [],

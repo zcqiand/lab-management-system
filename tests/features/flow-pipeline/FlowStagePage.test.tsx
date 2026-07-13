@@ -101,13 +101,13 @@ describe("基础渲染", () => {
     renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() => expect(screen.getByText("接样管理")).toBeInTheDocument());
     expect(screen.getByText(/当前环节：接样/)).toBeInTheDocument();
-    expect(screen.getByText(/提交后进入：任务安排/)).toBeInTheDocument();
+    expect(screen.getByText(/提交后进入：分配中/)).toBeInTheDocument();
   });
 
   it("receiving 环节不显示退回（首环节不允许退回）", async () => {
     server.use(mockReceiptsHandler([]));
     renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
-    await waitFor(() => expect(screen.getByText(/暂无「接样」环节/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/暂无「接样中」环节/)).toBeInTheDocument());
     expect(screen.queryByRole("button", { name: /退回/ })).not.toBeInTheDocument();
   });
 
@@ -129,7 +129,7 @@ describe("空列表", () => {
     server.use(mockReceiptsHandler([]));
     renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() =>
-      expect(screen.getByText(/暂无「接样」环节的单据/)).toBeInTheDocument(),
+      expect(screen.getByText(/暂无「接样中」环节的单据/)).toBeInTheDocument(),
     );
   });
 });
@@ -398,7 +398,7 @@ describe("撤回", () => {
       expect(screen.getByText("我提交的（可撤回）")).toBeInTheDocument(),
     );
     expect(screen.getByText("RC-WITHDRAW-1")).toBeInTheDocument();
-    expect(screen.getByText(/当前：任务安排/)).toBeInTheDocument();
+    expect(screen.getByText(/当前：分配中/)).toBeInTheDocument();
   });
 
   it("撤回操作调用 POST /receipts/flow action=withdraw", async () => {

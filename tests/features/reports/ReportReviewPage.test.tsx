@@ -34,7 +34,7 @@ describe("ReportReviewPage", () => {
     renderWithRouter(<ReportReviewPage />);
     await waitFor(() => expect(screen.getByText("报告审核")).toBeInTheDocument());
     await waitFor(() =>
-      expect(screen.getByText(/当前环节.*报告审核/)).toBeInTheDocument(),
+      expect(screen.getByText(/当前环节.*审核中/)).toBeInTheDocument(),
     );
   });
 
@@ -48,7 +48,7 @@ describe("ReportReviewPage", () => {
   fnTest(["M03.F05.I03"], "显示退回至数据录入的提示", async () => {
     renderWithRouter(<ReportReviewPage />);
     await waitFor(() =>
-      expect(screen.getByText(/退回至.*数据录入/)).toBeInTheDocument(),
+      expect(screen.getByText(/退回至.*录入中/)).toBeInTheDocument(),
     );
   });
 
@@ -83,7 +83,7 @@ describe("ReportReviewPage", () => {
 
   fnTest(["M03.F05.I01"], "FlowStagePage 提供 rowActions 渲染点", async () => {
     renderWithRouter(<ReportReviewPage />);
-    // rowActions 由 FlowStagePage 传递，组件层已定义查看报告按钮
+    // rowActions 由 FlowStagePage 传递，组件层已定义报告预览按钮
     // 由于没有审核阶段的接味单，按钮可能不显示在列表行中
     await waitFor(() => {
       expect(screen.getByText("报告审核")).toBeInTheDocument();

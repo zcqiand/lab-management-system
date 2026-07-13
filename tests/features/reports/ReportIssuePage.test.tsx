@@ -158,9 +158,9 @@ describe("extraColumns 渲染", () => {
 });
 
 // ----------------------------------------------------------------
-// rowActions："查看报告"按钮
+// rowActions："报告预览"按钮
 // ----------------------------------------------------------------
-describe('"查看报告"按钮', () => {
+describe('"报告预览"按钮', () => {
   fnTest(["M03.F07.I02"], '"查看报告"按钮可点击', async () => {
     const user = userEvent.setup();
     server.use(
@@ -245,7 +245,7 @@ describe("发放并归档流程", () => {
     );
     renderWithRouter(<ReportIssuePage />);
     await waitFor(() =>
-      expect(screen.getByText(/退回至：报告批准/)).toBeInTheDocument(),
+      expect(screen.getByText(/退回至：批准中/)).toBeInTheDocument(),
     );
     await user.click(screen.getByRole("button", { name: "退回" }));
     await waitFor(() => expect(flowCall?.action).toBe("return"));
