@@ -13,9 +13,12 @@ interface TestItem {
   result: string
   unit?: string
   testValues?: number[]
+  loads?: number[]
+  disqualified?: boolean[]
   representativeValue?: number
   autoPassed: boolean | null
-  passed: boolean
+  passed: boolean | null
+  verdict?: string
   remark?: string
 }
 

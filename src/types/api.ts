@@ -384,10 +384,14 @@ export interface TestItem {
   representativeValue?: number
   /** 系统按技术要求自动评定的结果（null = 无法自动评定，需人工判定） */
   autoPassed: boolean | null
-  /** 最终评定结果（默认取 autoPassed，可手工修正） */
-  passed: boolean
+  /** 最终评定结果（默认取 autoPassed，可手工修正；null=未评定） */
+  passed: boolean | null
   /** 单项评定文本（改判用）：''=未评定、合格、不合格、符合、不符合 */
   verdict?: string
+  /** 各试件荷载值（N），用于抗折强度 */
+  loads?: number[]
+  /** 各试件是否作废标记，用于抗折强度 */
+  disqualified?: boolean[]
   remark?: string
   createdAt: string
   updatedAt: string

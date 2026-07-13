@@ -363,6 +363,10 @@ export const testItemTable = new MockTable<{
   result: string
   unit?: string
   testValues?: number[]
+  /** 各试件荷载值（N），抗折强度用 */
+  loads?: number[]
+  /** 各试件是否判定为无效（按位置，true=作废）；用于 CON006 抗折强度 */
+  disqualified?: boolean[]
   representativeValue?: number
   autoPassed: boolean | null
   passed: boolean | null
@@ -584,14 +588,14 @@ export interface EvaluationResult {
 }
 
 /** 从样品规格自动派生 specimenArea 和 correctionFactor */
-function deriveSpecimenParams(parameterCode: string, specimenArea?: number, correctionFactor?: number, spec?: string): { specimenArea: number; correctionFactor: number } {
+function deriveSpecimenParams(parameterCode: string, specimenArea?: number, correctionFactor?: number, spec?: string): { specimenArea: number; correctionFactor: number; span?: number; width?: number; height?: number } {
   // 如果外部已传入（兼容旧逻辑），直接用
   if (specimenArea !== undefined && correctionFactor !== undefined) {
     return { specimenArea, correctionFactor }
   }
   if (!spec) return { specimenArea: 22500, correctionFactor: 1.0 }
 
-  // 混凝土：从 "150×150×150mm" 或 "100×100×100mm" 解析
+  // 混凝土抗压（CON002）：从 "150×150×150mm" 解析
   if (parameterCode === 'CON002') {
     const match = spec.match(/(\d+)×(\d+)×(\d+)mm/)
     if (match) {
@@ -600,6 +604,23 @@ function deriveSpecimenParams(parameterCode: string, specimenArea?: number, corr
       const cf = side >= 150 ? 1.0 : 0.95
       return { specimenArea: area, correctionFactor: cf }
     }
+  }
+
+  // 混凝土抗折强度（CON006）："150×150×550mm"（标准）或 "100×100×400mm"（小试件）
+  if (parameterCode === 'CON006') {
+    const match = spec.match(/(\d+)×(\d+)×(\d+)mm/)
+    if (match) {
+      const b = Number(match[1])   // 宽度 mm
+      const h = Number(match[2])   // 高度 mm
+      const l = Number(match[3])   // 长度（跨度）mm
+      // 换算系数：标准试件 150×150×550 → 1.00；小试件 100×100×400 → 0.85
+      const cf = (b === 150 && h === 150 && l === 550) ? 1.0
+        : (b === 100 && h === 100 && l === 400) ? 0.85
+        : 1.0
+      return { specimenArea: 22500, correctionFactor: cf, span: l, width: b, height: h }
+    }
+    // 默认标准试件
+    return { specimenArea: 22500, correctionFactor: 1.0, span: 450, width: 150, height: 150 }
   }
 
   // 钢材：从 "Φ22" 等解析公称面积（GB/T 228）
@@ -677,6 +698,7 @@ export function evaluateTestResult(input: {
 
   // 算法 compressive_strength: 荷载(kN) → 强度(MPa) → ±15%规则 → 代表值
   // 算法 steel_tensile: F(kN)/A(mm²) → MPa → 修约 → 代表值
+  // 算法 flexural_strength: F(N) × span / (b × h²) × 换算系数 → ±15%规则 → 代表值
   let representativeValue: number | undefined
   let invalid = false
   let num: number
@@ -711,6 +733,32 @@ export function evaluateTestResult(input: {
     const rounded = avg > 200 ? Math.round(avg / 5) * 5 : Math.round(avg)
     representativeValue = rounded
     num = rounded
+  } else if (input.algorithmType === 'flexural_strength' && input.loads && input.loads.length > 0 && derived.span !== undefined && derived.width !== undefined && derived.height !== undefined) {
+    // 抗折强度：f_f = F × span / (b × h²) × 换算系数（MPa）
+    // UI 传入 loads 单位为 kN，需乘以 1000 转换为 N
+    const strengths = input.loads.map(F_kN =>
+      Math.round((F_kN * 1000 * derived.span! / (derived.width! * derived.height! ** 2)) * derived.correctionFactor! * 100) / 100,
+    )
+    const sorted = [...strengths].sort((a, b) => a - b)
+    const mid = sorted[1]!
+    const low = sorted[0]!
+    const high = sorted[sorted.length - 1]!
+    const range15 = mid * 0.15
+    if (high - mid > range15 && mid - low > range15) {
+      // 全部超限 → 整组无效
+      invalid = true
+      representativeValue = Math.round(mid * 100) / 100
+      num = representativeValue
+    } else if (high - mid > range15 || mid - low > range15) {
+      // 有一个超限 → 取中间值
+      representativeValue = Math.round(mid * 100) / 100
+      num = representativeValue
+    } else {
+      // 全部合规 → 算术平均值
+      const avg = strengths.reduce((a, b) => a + b, 0) / strengths.length
+      representativeValue = Math.round(avg * 100) / 100
+      num = representativeValue
+    }
   } else if (input.loads && input.loads.length > 1) {
     // 普通多样本均值
     const avg = input.loads.reduce((a, b) => a + b, 0) / input.loads.length
@@ -1199,6 +1247,7 @@ const SAMPLE_DEFAULTS: Record<string, { model?: string; specification?: string; 
   steel: { model: '热轧带肋钢筋', specification: 'Φ22', brand: 'HRB400E', name: '热轧带肋钢筋', manufacturer: '陕钢集团', structuralPart: '主体结构', representQuantity: '60t', ext: { furnaceNo: 'LH-2024-0501', qualityCertNo: 'ZB-2024-118' } },
   cement: { model: 'P·O 42.5', name: '通用硅酸盐水泥', manufacturer: '尧柏水泥', structuralPart: '基础底板', representQuantity: '200t', ext: { factoryNo: 'CF-2024-0332', factoryDate: '2024-04-20' } },
   concrete: { model: 'C30', specification: '150×150×150mm', name: '混凝土试块', structuralPart: '3F 柱 1-8/A-D 轴', representQuantity: '120m³', ext: { castingDate: '2024-05-01', volume: '120', moldingDate: '2024-05-01', age: '28', curing: '标准养护' } },
+  concrete_ff: { model: 'C20', specification: '150×150×550mm', name: '混凝土抗折试块', structuralPart: '4F 路面 1-4/A-C 轴', representQuantity: '3 组', ext: { castingDate: '2024-07-01', volume: '0.36', moldingDate: '2024-07-01', age: '28', curing: '标准养护' } },
   sand: { model: '中砂', grade: 'Ⅱ类', name: '建设用砂', manufacturer: '汉江砂场', structuralPart: '砌筑工程', representQuantity: '400t', ext: {} },
   gravel: { model: '碎石', specification: '5-25mm', grade: 'Ⅱ类', name: '建设用碎石', manufacturer: '秦岭石料厂', structuralPart: '主体结构', representQuantity: '600t', ext: {} },
   rebar_mech: { model: '直螺纹套筒连接', specification: 'Φ22', grade: 'Ⅰ级', brand: 'HRB400', name: '钢筋机械连接接头', structuralPart: '5F 梁柱节点', representQuantity: '500个', ext: { jointType: '直螺纹套筒', concreteCastingDate: '2024-05-10' } },
@@ -1221,6 +1270,8 @@ function seedReceipt(input: {
   judgmentBasis?: string[]
   testingBasis?: string[]
   testParameters?: string[]
+  /** 直接指定样品规格（覆盖 SAMPLE_DEFAULTS），用于抗折等特殊试样 */
+  sampleSpecOverride?: string
 }) {
   const flowStatus = input.flowStatus ?? 'receiving'
   const idx = FLOW_STAGE_ORDER.indexOf(flowStatus)
@@ -1267,20 +1318,22 @@ function seedReceipt(input: {
   const count = input.sampleCount ?? 2
   for (let i = 1; i <= count; i++) {
     const sid = `s-${input.id}-${i}`
+    const spec = input.sampleSpecOverride ?? def?.specification
+    const extDef = spec === '150×150×550mm' ? (SAMPLE_DEFAULTS['concrete_ff'] ?? def) : def
     sampleTable.insert({
       id: sid,
       receiptId: input.id,
       sampleCode: `${input.commissionCode}-S${i}`,
-      sampleName: def?.name ?? '样品',
-      model: def?.model,
-      specification: def?.specification,
-      grade: def?.grade,
-      brand: def?.brand,
-      manufacturer: def?.manufacturer,
-      structuralPart: def?.structuralPart,
-      representQuantity: def?.representQuantity,
+      sampleName: extDef?.name ?? '样品',
+      model: extDef?.model,
+      specification: spec,
+      grade: extDef?.grade,
+      brand: extDef?.brand,
+      manufacturer: extDef?.manufacturer,
+      structuralPart: extDef?.structuralPart,
+      representQuantity: extDef?.representQuantity,
       sampleQuantity: '1 组',
-      ext: { ...(def?.ext ?? {}) },
+      ext: { ...(extDef?.ext ?? {}) },
       remark: '',
     })
     if (idx >= FLOW_STAGE_ORDER.indexOf('review')) {
@@ -1354,7 +1407,7 @@ export function seedData() {
   seedCalculationRule('STE006', 'simple_avg', 1, '')
   seedCalculationRule('CON001', 'simple_avg', 1, 'MPa')
   seedCalculationRule('CON002', 'compressive_strength', 3, 'MPa')
-  seedCalculationRule('CON006', 'simple_avg', 1, 'MPa')
+  seedCalculationRule('CON006', 'flexural_strength', 3, 'MPa')
   seedTestParameter('CON006', '抗折强度', 'concrete', 'mechanical', 'MPa')
   seedTestParameter('SND001', '颗粒级配（细度模数）', 'sand', 'gradation', '')
   seedTestParameter('SND002', '含泥量', 'sand', 'physical', '%')
@@ -1453,6 +1506,8 @@ export function seedData() {
   seedTechnicalRequirement({ code: 'REQ-con-C35-150', standardCode: 'GB/T 50081-2019', parameterCode: 'CON002', categoryCode: 'concrete', model: 'C35', specification: '150×150×150mm', comparison: '≥', value: '33.5', unit: 'MPa' })
   seedTechnicalRequirement({ code: 'REQ-con-C40-150', standardCode: 'GB/T 50081-2019', parameterCode: 'CON002', categoryCode: 'concrete', model: 'C40', specification: '150×150×150mm', comparison: '≥', value: '38.5', unit: 'MPa' })
   seedTechnicalRequirement({ code: 'REQ-con-C30-cube', standardCode: 'GB/T 50081-2019', parameterCode: 'CON001', categoryCode: 'concrete', model: 'C30', comparison: '≥', value: '30.0', unit: 'MPa' })
+  // 混凝土抗折强度（CON006）：标准试件 150×150×550mm
+  seedTechnicalRequirement({ code: 'REQ-con-C20-FF', standardCode: 'GB/T 50081-2019', parameterCode: 'CON006', categoryCode: 'concrete', model: 'C20', specification: '150×150×550mm', comparison: '≥', value: '3.0', unit: 'MPa' })
   // 砂 / 碎石（等级）
   seedTechnicalRequirement({ code: 'REQ-sand-mud-Ⅰ类', standardCode: 'GB/T 14684-2022', parameterCode: 'SND002', categoryCode: 'sand', grade: 'Ⅰ类', comparison: '≤', value: '1.0', unit: '%' })
   seedTechnicalRequirement({ code: 'REQ-sand-mud-Ⅱ类', standardCode: 'GB/T 14684-2022', parameterCode: 'SND002', categoryCode: 'sand', grade: 'Ⅱ类', comparison: '≤', value: '3.0', unit: '%' })
@@ -1500,6 +1555,8 @@ export function seedData() {
   seedReceipt({ id: 'rc-006-02', contractId: 'c-006', commissionCode: 'RC-2024-0701-01', categoryCode: 'steel', flowStatus: 'receiving', commissionDate: '2024-07-01', receivedBy: '陈工' })
   seedReceipt({ id: 'rc-007-01', contractId: 'c-007', commissionCode: 'RC-2024-0705-01', categoryCode: 'concrete', flowStatus: 'data_entry', commissionDate: '2024-07-05', receivedBy: '周工', sampleCount: 3, judgmentBasis: ['GB/T 50081-2019'], testingBasis: ['GB/T 50081-2019'], testParameters: ['CON002'] })
   seedReceipt({ id: 'rc-007-02', contractId: 'c-007', commissionCode: 'RC-2024-0710-01', categoryCode: 'sand', flowStatus: 'task_assignment', commissionDate: '2024-07-10', receivedBy: '周工' })
+  // 混凝土抗折强度（CON006）：标准试件 150×150×550mm，sampleSpecOverride 直接指定规格
+  seedReceipt({ id: 'rc-007-03', contractId: 'c-007', commissionCode: 'RC-2024-0712-02', categoryCode: 'concrete', flowStatus: 'data_entry', commissionDate: '2024-07-12', receivedBy: '周工', sampleCount: 3, sampleSpecOverride: '150×150×550mm', judgmentBasis: ['GB/T 50081-2019'], testingBasis: ['GB/T 50081-2019'], testParameters: ['CON006'] })
   seedReceipt({ id: 'rc-008-01', contractId: 'c-008', commissionCode: 'RC-2024-0712-01', categoryCode: 'steel', flowStatus: 'receiving', commissionDate: '2024-07-12', receivedBy: '吴工' })
   seedReceipt({ id: 'rc-008-02', contractId: 'c-008', commissionCode: 'RC-2024-0715-01', categoryCode: 'cement', flowStatus: 'task_assignment', commissionDate: '2024-07-15', receivedBy: '吴工' })
   seedReceipt({ id: 'rc-009-01', contractId: 'c-009', commissionCode: 'RC-2024-0718-01', categoryCode: 'rebar_weld', flowStatus: 'issuance', commissionDate: '2024-07-18', receivedBy: '郑工', sampleCount: 3 })

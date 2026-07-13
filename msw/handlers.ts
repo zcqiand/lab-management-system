@@ -768,8 +768,8 @@ export const handlers = [
     const displayResult = (repVal !== undefined)
       ? String(repVal)
       : ((rawLoads && rawLoads.length > 0) ? rawLoads.join(', ') : (body.result ?? ''))
-    // CON002 抗压强度：由人工确认，不做自动评定
-    const isManualParam = body.parameterCode === 'CON002'
+    // CON002 抗压强度、CON006 抗折强度：由人工确认，不做自动评定
+    const isManualParam = body.parameterCode === 'CON002' || body.parameterCode === 'CON006'
     const created = testItemTable.insert({
       sampleId: body.sampleId,
       parameterCode: body.parameterCode,
@@ -799,8 +799,8 @@ export const handlers = [
     const body = (await request.json()) as Record<string, unknown>
     const existing = testItemTable.findById(id)
     if (!existing) return HttpResponse.json({ message: '检测记录不存在' }, { status: 404 })
-    // CON002 抗压强度：由人工确认，不做自动评定（passed 需显式传入）
-    const isManual = existing.parameterCode === 'CON002'
+    // CON002 抗压强度、CON006 抗折强度：由人工确认，不做自动评定（passed 需显式传入）
+    const isManual = existing.parameterCode === 'CON002' || existing.parameterCode === 'CON006'
     if (!isManual && typeof body.result === 'string' && body.passed === undefined) {
       const sample = sampleTable.findById(existing.sampleId)
       const receipt = sample ? receiptTable.findById(sample.receiptId) : undefined

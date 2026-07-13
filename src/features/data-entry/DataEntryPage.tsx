@@ -55,11 +55,26 @@ export function DataEntryPage() {
 }
 
 /** 根据样品规格自动派生 specimenArea 和 correctionFactor */
-function deriveSpecimenParams(spec?: string): { area: number; correctionFactor: number } {
+function deriveSpecimenParams(
+  spec?: string,
+): { area: number; correctionFactor: number; span?: number; width?: number; height?: number } {
   if (!spec) return { area: 22500, correctionFactor: 1.0 }
   const concrete = spec.match(/(\d+)×(\d+)×(\d+)mm/)
   if (concrete) {
-    const side = Number(concrete[1])
+    const b = Number(concrete[1])
+    const h = Number(concrete[2])
+    const l = Number(concrete[3])
+    // 混凝土抗折试件：span=支座间距，非试件总长
+    // 150×150×550mm → 跨度450mm；100×100×400mm → 跨度300mm
+    if (l > 200) {
+      const cf = (b === 150 && h === 150 && l === 550) ? 1.0
+        : (b === 100 && h === 100 && l === 400) ? 0.85
+        : 1.0
+      const span = (b === 150 && h === 150) ? 450 : (b === 100 && h === 100) ? 300 : 400
+      return { area: 22500, correctionFactor: cf, span, width: b, height: h }
+    }
+    // 混凝土抗压试件
+    const side = b
     return { area: side * side, correctionFactor: side >= 150 ? 1.0 : 0.95 }
   }
   const diam = spec.match(/Φ(\d+)/)
@@ -99,6 +114,15 @@ function verdictColorClass(v: string): string {
   return 'text-gray-400'
 }
 
+/** 判定拉断面是否作废：输入"集中荷载之外"或超出加荷点 >7.5mm 则作废 */
+function isDisqualifiedByPosition(pos?: string): boolean {
+  if (!pos) return false
+  if (pos === '集中荷载之外') return true
+  const num = Number.parseFloat(pos)
+  if (!Number.isNaN(num) && num > 7.5) return true
+  return false
+}
+
 /** 录入弹窗：一个样品一个保存按钮 */
 function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; onClose: () => void; onPreview: () => void }) {
   const [category, setCategory] = useState<ReportCategory | null>(null)
@@ -114,6 +138,8 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
 
   // 每样品每参数的荷载输入：Record<sampleId, Record<paramCode, string[]>>
   const [loads, setLoads] = useState<Record<string, Record<string, string[]>>>({})
+  // CON006 抗折强度：每样品每参数每试件的拉断面位置（mm）
+  const [fracturePositions, setFracturePositions] = useState<Record<string, Record<string, string[]>>>({})
   const [saving, setSaving] = useState(false)
 
   const selectedSample = samples.find((s) => s.id === sampleId)
@@ -178,7 +204,7 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSample, samples, parameters, items])
 
-  // 同步已有录入（items 变化后用最新 samples 重算 loads）
+  // 同步已有录入（items 变化后用最新 samples 重算 loads 和 disqualified）
   // items 从空变为有数据时必须强制从 testValues 初始化，否则已定义的空字符串不会更新
   const prevItemsRef = useRef(items)
   useEffect(() => {
@@ -203,6 +229,24 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
           // items 从空变有时，无记录的参数也补齐空值
           if (itemsEmptyToPopulated && !ex && next[s.id]![p.code] === undefined) {
             next[s.id]![p.code] = Array(p.valueCount ?? 1).fill('')
+          }
+        })
+      })
+      return next
+    })
+    // 同时初始化 fracturePositions（CON006 每试件的拉断面位置）
+    setFracturePositions((prev) => {
+      const next: Record<string, Record<string, string[]>> = { ...prev }
+      samples.forEach((s) => {
+        if (!next[s.id]) next[s.id] = {}
+        parameters.forEach((p) => {
+          const ex = items.find((i) => i.parameterCode === p.code && i.sampleId === s.id)
+          if (p.code === 'CON006' && next[s.id]![p.code] === undefined) {
+            next[s.id]![p.code] = Array(p.valueCount ?? 3).fill('')
+          }
+          if (ex?.loads && ex.loads.length > 0 && next[s.id]![p.code] === undefined) {
+            // 已保存过的数据，从 loads 反推（赋空值，由用户重新填写位置）
+            next[s.id]![p.code] = Array(ex.loads.length).fill('')
           }
         })
       })
@@ -238,6 +282,15 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
     return loadsArr
   }
 
+  /** 抗折强度（CON006）：f_f = F(N) × span / (b × h²) × 换算系数（MPa） */
+  const calcFlexuralStrengths = (loadsArr: number[], sample: Sample): number[] => {
+    const { span = 450, width = 150, height = 150, correctionFactor = 1.0 } = deriveSpecimenParams(sample.specification)
+    // UI 输入极限荷载单位为 kN，需乘以 1000 转换为 N 再代入公式 f_f = F × span / (b × h²) × cf
+    return loadsArr.map((F_kN) =>
+      Math.round((F_kN * 1000 * span / (width * height * height)) * correctionFactor * 100) / 100,
+    )
+  }
+
   /** 混凝土代表值（±15%规则） */
   const calcConcreteRep = (strengths: number[]): number => {
     const s = [...strengths].sort((a, b) => a - b)
@@ -260,13 +313,22 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
         if (vals.length === 0) continue
         const existing = items.find((i) => i.parameterCode === param.code && i.sampleId === sid)
         if (param.code === 'CON002' || param.code === 'CON001') {
-          // 混凝土：testValues=荷载(3个kN)，result=强度代表值(MPa)
-          // 先由荷载(kN)换算成强度(MPa)，再按±15%规则求代表值——不能直接对荷载求代表值
+          // 混凝土抗压：testValues=荷载(kN)，result=强度代表值(MPa)
+          // 先由荷载(kN)换算成强度(MPa)，再按±15%规则求代表值
           const strengths = calcStrengths(vals, sample, param.code)
           const rep = calcConcreteRep(strengths)
           await (existing
             ? apiClient.put(`/test-items/${existing.id}`, { testValues: vals, result: String(rep) })
             : apiClient.post('/test-items', { sampleId: sid, parameterCode: param.code, testValues: vals, result: String(rep) }))
+        } else if (param.code === 'CON006') {
+          // 抗折强度：loads=荷载(N)，disqualified 由拉断面位置自动判定
+          const positions = fracturePositions[sid]?.[param.code] ?? []
+          const isDisq = positions.map((p) => isDisqualifiedByPosition(p))
+          const strengths = calcFlexuralStrengths(vals, sample)
+          const rep = calcConcreteRep(strengths)
+          await (existing
+            ? apiClient.put(`/test-items/${existing.id}`, { loads: vals, disqualified: isDisq, result: String(rep) })
+            : apiClient.post('/test-items', { sampleId: sid, parameterCode: param.code, loads: vals, disqualified: isDisq, result: String(rep) }))
         } else {
           await (existing
             ? apiClient.put(`/test-items/${existing.id}`, { result: String(vals[0]) })
@@ -394,13 +456,19 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                       const reqLabel = req ? `${req.comparison} ${req.value}${req.unit ? ` ${req.unit}` : ''}` : '—'
                       const entered = isEntered(selectedSample.id, param.code)
                       const numLoads = sampleLoads.map((v) => Number.parseFloat(v)).filter((v) => !Number.isNaN(v))
-                      const isConcrete = param.code === 'CON002' || param.code === 'CON001'
-                      const strengths = isConcrete && numLoads.length > 0
+                      const isConcreteStrength = param.code === 'CON002' || param.code === 'CON001'
+                      const isFlexural = param.code === 'CON006'
+                      const strengths = isConcreteStrength && numLoads.length > 0
                         ? calcStrengths(numLoads, selectedSample, param.code)
                         : ([] as number[])
-                      const rep = isConcrete && strengths.length >= (param.valueCount ?? 3)
+                      const flexuralStrengths = isFlexural && numLoads.length > 0
+                        ? calcFlexuralStrengths(numLoads, selectedSample)
+                        : ([] as number[])
+                      const rep = isConcreteStrength && strengths.length >= (param.valueCount ?? 3)
                         ? calcConcreteRep(strengths)
-                        : (numLoads.length > 0 ? numLoads[0]! : 0)
+                        : isFlexural && flexuralStrengths.length >= (param.valueCount ?? 3)
+                          ? calcConcreteRep(flexuralStrengths)
+                          : (numLoads.length > 0 ? numLoads[0]! : 0)
                       const existingItem = items.find((i) => i.parameterCode === param.code && i.sampleId === selectedSample.id)
 
                       return (
@@ -416,8 +484,72 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
 
                           {/* 录入行 */}
                           <div className="flex items-end gap-4">
-                            {isConcrete ? (
-                              /* 混凝土：3个荷载(kN) + 3个强度(MPa显示) + 代表值 */
+                            {isFlexural ? (
+                              <>
+                                <table className="w-full text-xs">
+                                  <thead>
+                                    <tr>
+                                      <th className="w-5 text-center text-gray-500 font-medium pb-1">序号</th>
+                                      <th className="w-14 text-center text-gray-500 font-medium pb-1">极限荷载(kN)</th>
+                                      <th className="w-12 text-center text-gray-500 font-medium pb-1">抗折强度(MPa)</th>
+                                      <th className="text-center text-gray-500 font-medium pb-1">拉断面位置</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {Array.from({ length: param.valueCount ?? 3 }).map((_, i) => {
+                                      const pos = fracturePositions[selectedSample.id]?.[param.code]?.[i] ?? ''
+                                      const disq = isDisqualifiedByPosition(pos)
+                                      const fStrength = flexuralStrengths[i]
+                                      return (
+                                        <tr key={i}>
+                                          <td className={`w-5 text-center font-medium pr-2 ${disq ? 'text-red-500' : 'text-gray-600'}`}>#{i + 1}</td>
+                                          <td className="w-14 pr-2">
+                                            <input
+                                              type="number"
+                                              value={sampleLoads[i] ?? ''}
+                                              onChange={(e) => {
+                                                const next = [...sampleLoads]
+                                                next[i] = e.target.value
+                                                setLoads((prev) => ({
+                                                  ...prev,
+                                                  [selectedSample.id]: { ...prev[selectedSample.id], [param.code]: next },
+                                                }))
+                                              }}
+                                              className="w-full border rounded px-2 py-1.5 text-center text-sm"
+                                            />
+                                          </td>
+                                          <td className={`w-12 text-center border rounded px-2 py-1.5 text-sm font-medium pr-2 ${disq ? 'bg-red-50 text-red-400 line-through' : 'bg-gray-50 text-blue-700'}`}>
+                                            {fStrength ?? '—'}
+                                          </td>
+                                          <td className="w-16">
+                                            <select
+                                              value={pos}
+                                              onChange={(e) => {
+                                                setFracturePositions((prev) => {
+                                                  const cur = prev[selectedSample.id]?.[param.code] ?? Array(param.valueCount ?? 3).fill('')
+                                                  const next = [...cur]
+                                                  next[i] = e.target.value
+                                                  return { ...prev, [selectedSample.id]: { ...prev[selectedSample.id], [param.code]: next } }
+                                                })
+                                              }}
+                                              className="w-full border rounded px-2 py-1.5 text-sm"
+                                            >
+                                              <option value="">请选择</option>
+                                              <option value="集中荷载之内">集中荷载之内</option>
+                                              <option value="集中荷载之外">集中荷载之外</option>
+                                            </select>
+                                          </td>
+                                        </tr>
+                                      )
+                                    })}
+                                  </tbody>
+                                </table>
+                                <div className="mt-2 pt-2 border-t shrink-0">
+                                  <span className="text-xs text-gray-500">代表值：</span>
+                                  <span className="font-bold text-blue-700 ml-1">{rep > 0 ? rep : '—'} MPa</span>
+                                </div>
+                              </>
+                            ) : isConcreteStrength ? (
                               <>
                                 {/* 荷载 kN */}
                                 <div>
@@ -463,9 +595,9 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                                 </div>
                                 {/* → */}
                                 <div className="text-gray-400 text-lg self-center mb-1">→</div>
-                                {/* 抗压强度代表值 */}
+                                {/* 代表值 */}
                                 <div>
-                                  <p className="text-xs text-gray-500 mb-1.5">抗压强度代表值 MPa</p>
+                                  <p className="text-xs text-gray-500 mb-1.5">代表值 MPa</p>
                                   <div className="w-24 text-center border-2 border-blue-300 rounded px-3 py-1.5 text-base font-bold text-blue-700 bg-blue-50">
                                     {rep > 0 ? rep : '—'}
                                   </div>
@@ -499,31 +631,27 @@ function EntryModal({ receipt, onClose, onPreview }: { receipt: SampleReceipt; o
                             )}
 
                             {/* 已录入标识 */}
-                            {entered && (
+                            {entered && existingItem && (
                               <div className="ml-auto flex items-center gap-2">
-                                {existingItem && (
-                                  <>
-                                    <span className={`text-xs font-medium ${verdictColorClass(effectiveVerdict(existingItem))}`}>
-                                      单项评定：{effectiveVerdict(existingItem) || '——'}
-                                    </span>
-                                    {existingItem.autoPassed !== null && existingItem.passed !== existingItem.autoPassed && (
-                                      <span className="text-xs text-amber-500">（已修正）</span>
-                                    )}
-                                    <label className="text-xs text-amber-600 flex items-center gap-1">
-                                      改判
-                                      <select
-                                        value={effectiveVerdict(existingItem)}
-                                        onChange={(e) => handleSetVerdict(existingItem, e.target.value)}
-                                        className="border rounded px-1 py-0.5 text-xs text-gray-700"
-                                      >
-                                        {VERDICT_OPTIONS.map((opt) => (
-                                          <option key={opt || 'none'} value={opt}>{opt || '——'}</option>
-                                        ))}
-                                      </select>
-                                    </label>
-                                    <button onClick={() => handleDelete(existingItem)} className="text-xs text-red-600 hover:underline">删除</button>
-                                  </>
+                                <span className={`text-xs font-medium ${verdictColorClass(effectiveVerdict(existingItem))}`}>
+                                  单项评定：{effectiveVerdict(existingItem) || '——'}
+                                </span>
+                                {existingItem.autoPassed !== null && existingItem.passed !== existingItem.autoPassed && (
+                                  <span className="text-xs text-amber-500">（已修正）</span>
                                 )}
+                                <label className="text-xs text-amber-600 flex items-center gap-1">
+                                  改判
+                                  <select
+                                    value={effectiveVerdict(existingItem)}
+                                    onChange={(e) => handleSetVerdict(existingItem, e.target.value)}
+                                    className="border rounded px-1 py-0.5 text-xs text-gray-700"
+                                  >
+                                    {VERDICT_OPTIONS.map((opt) => (
+                                      <option key={opt || 'none'} value={opt}>{opt || '——'}</option>
+                                    ))}
+                                  </select>
+                                </label>
+                                <button onClick={() => handleDelete(existingItem)} className="text-xs text-red-600 hover:underline">删除</button>
                               </div>
                             )}
                           </div>
