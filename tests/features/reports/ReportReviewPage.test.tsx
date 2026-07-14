@@ -33,9 +33,7 @@ describe("ReportReviewPage", () => {
   fnTest(["M03.F05.I01"], "渲染页面标题和流程信息", async () => {
     renderWithRouter(<ReportReviewPage />);
     await waitFor(() => expect(screen.getByText("报告审核")).toBeInTheDocument());
-    await waitFor(() =>
-      expect(screen.getByText(/当前环节.*审核中/)).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText(/当前环节.*审核中/)).toBeInTheDocument());
   });
 
   fnTest(["M03.F05.I03"], "显示提交后进入报告批准的提示", async () => {
@@ -47,9 +45,7 @@ describe("ReportReviewPage", () => {
 
   fnTest(["M03.F05.I03"], "显示退回至数据录入的提示", async () => {
     renderWithRouter(<ReportReviewPage />);
-    await waitFor(() =>
-      expect(screen.getByText(/退回至.*录入中/)).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText(/退回至.*录入中/)).toBeInTheDocument());
   });
 
   fnTest(["M03.F05.I03"], "显示批量操作按钮", async () => {
@@ -65,7 +61,7 @@ describe("ReportReviewPage", () => {
   fnTest(["M03.F05.I01"], "显示搜索框", async () => {
     renderWithRouter(<ReportReviewPage />);
     await waitFor(() =>
-      expect(screen.getByPlaceholderText(/搜索接样编号/)).toBeInTheDocument(),
+      expect(screen.getByPlaceholderText(/搜索委托书编号/)).toBeInTheDocument(),
     );
   });
 
@@ -92,9 +88,7 @@ describe("ReportReviewPage", () => {
 
   fnTest(["M03.F05.I01"], "显示我提交的（可撤回）区块", async () => {
     renderWithRouter(<ReportReviewPage />);
-    await waitFor(() =>
-      expect(screen.getByText(/我提交的.*可撤回/)).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText(/我提交的.*可撤回/)).toBeInTheDocument());
   });
 
   fnTest(["M03.F05.I01"], "分页控件正常显示", async () => {

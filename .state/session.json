@@ -1,13 +1,13 @@
 {
   "schema": 1,
   "project": "lab-management-system",
-  "current_task": "L5 UI 入口补全 + gate 全绿",
+  "current_task": "L5 UI 入口 + 流程阶段语义统一 + gate 全绿",
   "done": [
     "流程阶段语义统一：接样中→分配中→录入中→审核中→批准中→发放中→归档中→已归档",
-    "新增 FlowStage 'completed'（已归档）加到 FLOW_STAGE_ORDER（8阶段）",
-    "FlowStagePage 新增 nextStageLabel prop，issuance 页传 nextStageLabel='已归档'",
+    "新增 FlowStage completed（已归档）到 FLOW_STAGE_ORDER（8阶段）",
+    "FlowStagePage 新增 nextStageLabel prop，issuance 页传 nextStageLabel=已归档",
     "api.ts: FLOW_STAGE_LABELS 全部对齐用户语义",
-    "修正 api.test.ts / FlowStagePage.test.ts / ReportIssuePage.test.ts / ReportReviewPage.test.ts / ReportApprovePage.test.ts / ReportArchivePage.test.ts 共数十处断言以匹配新 label",
+    "修正 api.test.ts / FlowStagePage.test.ts / ReportIssuePage.test.ts / ReportReviewPage.test.ts / ReportApprovePage.test.ts / ReportArchivePage.test.ts 共数十处断言",
     "lab-management-system-vue 同步：api.ts 加 completed，测试断言同步修正"
   ],
   "next": "待人类分配新任务",

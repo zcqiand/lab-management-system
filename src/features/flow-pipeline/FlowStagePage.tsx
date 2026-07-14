@@ -248,7 +248,7 @@ export function FlowStagePage({
           <option value="submitted">已提交</option>
         </select>
         <input
-          placeholder="搜索接样编号/报告编号/收样人"
+          placeholder="搜索委托书编号/报告编号/接样人"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -309,10 +309,10 @@ export function FlowStagePage({
                   onChange={toggleAll}
                 />
               </th>
-              <th className="px-4 py-2 text-left">接样编号</th>
+              <th className="px-4 py-2 text-left">委托书编号</th>
               <th className="px-4 py-2 text-left">报告编号</th>
-              <th className="px-4 py-2 text-left">收样日期</th>
-              <th className="px-4 py-2 text-left">收样人</th>
+              <th className="px-4 py-2 text-left">委托日期</th>
+              <th className="px-4 py-2 text-left">接样人</th>
               {extraColumns.map((c) => (
                 <th key={c.header} className="px-4 py-2 text-left">
                   {c.header}

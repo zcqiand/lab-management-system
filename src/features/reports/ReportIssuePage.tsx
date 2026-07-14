@@ -5,7 +5,8 @@ import { useCategories, categoryName } from "../categories/useCategories";
 import type { SampleReceipt } from "../../types/api";
 
 /** v2.0：报告发放——流程线第六环节（flowStatus='issuance'）。
- * 提交=发放并归档（支持批量），进入「报告归档」；退回「报告批准」；已提交的可撤回。
+ * 提交=发放（支持批量），进入「报告归档」环节；归档是 archived 阶段的独立动作。
+ * 退回「报告批准」；已提交的可撤回。
  */
 function PreviewReportButton({
   receipt,
@@ -40,8 +41,7 @@ export function ReportIssuePage() {
       <FlowStagePage
         title="报告发放"
         stage="issuance"
-        submitLabel="发放并归档"
-        nextStageLabel="已归档"
+        submitLabel="发放"
         dataFn="M03.F07.I01"
         filterDataFn="M03.F07.I04"
         rowActions={rowAction}

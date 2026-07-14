@@ -1221,11 +1221,11 @@
         "docs\\design\\design-function-map.md"
       ],
       "tests": [
-        "ReportIssuePage 基础信息 stage 为 issuance，提交后进入已归档",
-        "ReportIssuePage 基础信息 submitLabel 为\"发放并归档\"",
-        "发放并归档流程 单个发放并归档调用 POST /receipts/flow action=submit",
-        "发放并归档流程 批量发放并归档",
-        "发放并归档流程 退回至 approval（报告批准）"
+        "ReportIssuePage 基础信息 stage 为 issuance，提交后进入归档中（默认 nextStageLabel，不再覆盖为「已归档」）",
+        "ReportIssuePage 基础信息 submitLabel 为\"发放\"（2026-07-14 拆分：发放不再跳到 completed）",
+        "发放流程 单个发放调用 POST /receipts/flow action=submit",
+        "发放流程 批量发放",
+        "发放流程 退回至 approval（报告批准）"
       ],
       "entry": [
         "src\\features\\reports\\ReportIssuePage.tsx"
@@ -1297,8 +1297,8 @@
         "docs\\design\\design-function-map.md"
       ],
       "tests": [
-        "ReportArchivePage 不显示批量提交按钮（canSubmit=false）",
-        "ReportArchivePage 显示归档页特有的提示信息",
+        "ReportArchivePage 显示归档页特有的提示信息（2026-07-14：归档作为独立动作）",
+        "ReportArchivePage 显示批量归档按钮（2026-07-14：移除 canSubmit=false，归档是 archived 阶段的 submit）",
         "ReportArchivePage 显示批量退回按钮（canReturn默认为true，有上一阶段）"
       ],
       "entry": [

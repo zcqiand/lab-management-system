@@ -33,43 +33,41 @@ describe("ReportArchivePage", () => {
   fnTest(["M03.F08.I01"], "渲染页面标题和流程信息", async () => {
     renderWithRouter(<ReportArchivePage />);
     await waitFor(() => expect(screen.getByText("报告归档")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/当前环节.*归档中/)).toBeInTheDocument());
+  });
+
+  fnTest(["M03.F08.I03"], "显示归档页特有的提示信息（2026-07-14：归档作为独立动作）", async () => {
+    renderWithRouter(<ReportArchivePage />);
     await waitFor(() =>
-      expect(screen.getByText(/当前环节.*归档中/)).toBeInTheDocument(),
+      expect(screen.getByText(/归档后流程结束.*如需回溯可退回报告发放/)).toBeInTheDocument(),
     );
   });
 
-  fnTest(["M03.F08.I03"], "显示归档页特有的提示信息", async () => {
-    renderWithRouter(<ReportArchivePage />);
-    await waitFor(() =>
-      expect(screen.getByText(/流程终点.*如需回溯可退回报告发放/)).toBeInTheDocument(),
-    );
-  });
-
-  fnTest(["M03.F08.I03"], "不显示批量提交按钮（canSubmit=false）", async () => {
+  fnTest(["M03.F08.I03"], "显示批量归档按钮（2026-07-14：移除 canSubmit=false，归档是 archived 阶段的 submit）", async () => {
     renderWithRouter(<ReportArchivePage />);
     await waitFor(() => {
-      // 归档页不应显示批量审核通过/批量批准等提交类按钮
-      expect(
-        screen.queryByRole("button", { name: /批量审核通过/ }),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: /批量批准/ }),
-      ).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "批量归档" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /批量审核通过/ })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /批量批准/ })).not.toBeInTheDocument();
     });
   });
 
-  fnTest(["M03.F08.I03"], "显示批量退回按钮（canReturn默认为true，有上一阶段）", async () => {
-    renderWithRouter(<ReportArchivePage />);
-    await waitFor(() => {
-      // 归档页有上一阶段 issuance，可以退回
-      expect(screen.getByRole("button", { name: /批量退回/ })).toBeInTheDocument();
-    });
-  });
+  fnTest(
+    ["M03.F08.I03"],
+    "显示批量退回按钮（canReturn默认为true，有上一阶段）",
+    async () => {
+      renderWithRouter(<ReportArchivePage />);
+      await waitFor(() => {
+        // 归档页有上一阶段 issuance，可以退回
+        expect(screen.getByRole("button", { name: /批量退回/ })).toBeInTheDocument();
+      });
+    },
+  );
 
   fnTest(["M03.F08.I01"], "显示搜索框", async () => {
     renderWithRouter(<ReportArchivePage />);
     await waitFor(() =>
-      expect(screen.getByPlaceholderText(/搜索接样编号/)).toBeInTheDocument(),
+      expect(screen.getByPlaceholderText(/搜索委托书编号/)).toBeInTheDocument(),
     );
   });
 
@@ -88,13 +86,17 @@ describe("ReportArchivePage", () => {
     await waitFor(() => expect(screen.getByText("结论")).toBeInTheDocument());
   });
 
-  fnTest(["M03.F08.I01"], "显示我提交的（可撤回）区块（归档后进入流程完成）", async () => {
-    renderWithRouter(<ReportArchivePage />);
-    await waitFor(() => {
-      // 归档后进入流程完成，有下一阶段，所以应显示"我提交的（可撤回）"
-      expect(screen.getByText(/我提交的.*可撤回/)).toBeInTheDocument();
-    });
-  });
+  fnTest(
+    ["M03.F08.I01"],
+    "显示我提交的（可撤回）区块（归档后进入流程完成）",
+    async () => {
+      renderWithRouter(<ReportArchivePage />);
+      await waitFor(() => {
+        // 归档后进入流程完成，有下一阶段，所以应显示"我提交的（可撤回）"
+        expect(screen.getByText(/我提交的.*可撤回/)).toBeInTheDocument();
+      });
+    },
+  );
 
   fnTest(["M03.F08.I01"], "分页控件正常显示", async () => {
     renderWithRouter(<ReportArchivePage />);

@@ -4,8 +4,8 @@ import { ReportPreviewModal } from "../report-doc/ReportPreviewModal";
 import { useCategories, categoryName } from "../categories/useCategories";
 import type { SampleReceipt } from "../../types/api";
 
-/** v2.0：报告归档——流程线终点（flowStatus='archived'）。
- * 归档件不可再提交；如需回溯可退回「报告发放」。
+/** v2.0：报告归档——流程线第七环节（flowStatus='archived'）。
+ * 提交=归档（支持批量），进入「已归档」状态；退回「报告发放」。
  */
 function ReportPreviewButton({
   receipt,
@@ -40,8 +40,9 @@ export function ReportArchivePage() {
       <FlowStagePage
         title="报告归档"
         stage="archived"
-        canSubmit={false}
-        subtitle="流程终点；如需回溯可退回报告发放"
+        submitLabel="归档"
+        nextStageLabel="已归档"
+        subtitle="归档后流程结束；如需回溯可退回报告发放"
         dataFn="M03.F08.I01"
         filterDataFn="M03.F08.I04"
         rowActions={rowAction}

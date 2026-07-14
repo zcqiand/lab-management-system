@@ -33,9 +33,7 @@ describe("ReportApprovePage", () => {
   fnTest(["M03.F06.I01"], "渲染页面标题和流程信息", async () => {
     renderWithRouter(<ReportApprovePage />);
     await waitFor(() => expect(screen.getByText("报告批准")).toBeInTheDocument());
-    await waitFor(() =>
-      expect(screen.getByText(/当前环节.*批准中/)).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText(/当前环节.*批准中/)).toBeInTheDocument());
   });
 
   fnTest(["M03.F06.I03"], "显示批准后进入报告发放的提示", async () => {
@@ -54,9 +52,7 @@ describe("ReportApprovePage", () => {
 
   fnTest(["M03.F06.I03"], "显示退回至报告审核的提示", async () => {
     renderWithRouter(<ReportApprovePage />);
-    await waitFor(() =>
-      expect(screen.getByText(/退回至.*审核中/)).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText(/退回至.*审核中/)).toBeInTheDocument());
   });
 
   fnTest(["M03.F06.I03"], "显示批量批准按钮", async () => {
@@ -76,7 +72,7 @@ describe("ReportApprovePage", () => {
   fnTest(["M03.F06.I01"], "显示搜索框", async () => {
     renderWithRouter(<ReportApprovePage />);
     await waitFor(() =>
-      expect(screen.getByPlaceholderText(/搜索接样编号/)).toBeInTheDocument(),
+      expect(screen.getByPlaceholderText(/搜索委托书编号/)).toBeInTheDocument(),
     );
   });
 
@@ -94,9 +90,7 @@ describe("ReportApprovePage", () => {
 
   fnTest(["M03.F06.I01"], "显示我提交的（可撤回）区块", async () => {
     renderWithRouter(<ReportApprovePage />);
-    await waitFor(() =>
-      expect(screen.getByText(/我提交的.*可撤回/)).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText(/我提交的.*可撤回/)).toBeInTheDocument());
   });
 
   fnTest(["M03.F06.I01"], "分页控件正常显示", async () => {

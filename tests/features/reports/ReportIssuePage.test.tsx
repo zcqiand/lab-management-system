@@ -96,7 +96,7 @@ describe("ReportIssuePage 基础信息", () => {
     await waitFor(() => expect(screen.getByText("报告发放")).toBeInTheDocument());
   });
 
-  fnTest(["M03.F07.I03"], 'submitLabel 为"发放并归档"', async () => {
+  fnTest(["M03.F07.I03"], 'submitLabel 为"发放"（2026-07-14 拆分：发放不再跳到 completed）', async () => {
     server.use(
       mockReceiptsHandler([
         makeReceipt({ id: "rc-submit-label", commissionCode: "RC-SUBLABEL" }),
@@ -104,16 +104,18 @@ describe("ReportIssuePage 基础信息", () => {
     );
     renderWithRouter(<ReportIssuePage />);
     await waitFor(() => expect(screen.getByText("RC-SUBLABEL")).toBeInTheDocument());
-    expect(screen.getByRole("button", { name: "批量发放并归档" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "发放并归档" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "批量发放" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "发放" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "发放并归档" })).not.toBeInTheDocument();
   });
 
-  fnTest(["M03.F07.I03"], "stage 为 issuance，提交后进入已归档", async () => {
+  fnTest(["M03.F07.I03"], "stage 为 issuance，提交后进入归档中（默认 nextStageLabel，不再覆盖为「已归档」）", async () => {
     server.use(mockReceiptsHandler([]));
     renderWithRouter(<ReportIssuePage />);
     await waitFor(() =>
-      expect(screen.getByText(/提交后进入：已归档/)).toBeInTheDocument(),
+      expect(screen.getByText(/提交后进入：归档中/)).toBeInTheDocument(),
     );
+    expect(screen.queryByText(/提交后进入：已归档/)).not.toBeInTheDocument();
   });
 });
 
@@ -180,10 +182,10 @@ describe('"报告预览"按钮', () => {
 });
 
 // ----------------------------------------------------------------
-// 发放并归档流程
+// 发放流程（2026-07-14 拆分：单步「发放」→ archived，归档独立）
 // ----------------------------------------------------------------
-describe("发放并归档流程", () => {
-  fnTest(["M03.F07.I03"], "单个发放并归档调用 POST /receipts/flow action=submit", async () => {
+describe("发放流程", () => {
+  fnTest(["M03.F07.I03"], "单个发放调用 POST /receipts/flow action=submit", async () => {
     const user = userEvent.setup();
     let flowCall: { action: string; ids: string[]; operator: string } | null = null;
     server.use(
@@ -199,13 +201,13 @@ describe("发放并归档流程", () => {
     );
     renderWithRouter(<ReportIssuePage />);
     await waitFor(() => expect(screen.getByText("RC-ISSUE-1")).toBeInTheDocument());
-    await user.click(screen.getByRole("button", { name: "发放并归档" }));
+    await user.click(screen.getByRole("button", { name: "发放" }));
     await waitFor(() => expect(flowCall?.action).toBe("submit"));
     expect(flowCall!.ids).toEqual(["rc-issue-1"]);
     expect(flowCall!.operator).toBe("u-001");
   });
 
-  fnTest(["M03.F07.I03"], "批量发放并归档", async () => {
+  fnTest(["M03.F07.I03"], "批量发放", async () => {
     const user = userEvent.setup();
     let flowCall: { action: string; ids: string[] } | null = null;
     server.use(
@@ -229,7 +231,7 @@ describe("发放并归档流程", () => {
     await user.click(within(rows[1]!).getByRole("checkbox"));
     await user.click(within(rows[2]!).getByRole("checkbox"));
     expect(screen.getByText("已选 2 条")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "批量发放并归档" }));
+    await user.click(screen.getByRole("button", { name: "批量发放" }));
     await waitFor(() => expect(flowCall?.ids).toHaveLength(2));
   });
 

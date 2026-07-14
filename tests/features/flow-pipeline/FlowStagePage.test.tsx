@@ -10,7 +10,7 @@ import { resetApiClient, setToken } from "../../../src/api/client";
 import type { User, SampleReceipt } from "../../../src/types/api";
 
 function renderWithRouter(ui: React.ReactElement) {
-  return render(<MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>);
+  return render(<MemoryRouter initialEntries={["/"]}>{ui}</MemoryRouter>);
 }
 
 function makeUser(overrides?: Partial<User>): User {
@@ -107,7 +107,9 @@ describe("基础渲染", () => {
   it("receiving 环节不显示退回（首环节不允许退回）", async () => {
     server.use(mockReceiptsHandler([]));
     renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
-    await waitFor(() => expect(screen.getByText(/暂无「接样中」环节/)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/暂无「接样中」环节/)).toBeInTheDocument(),
+    );
     expect(screen.queryByRole("button", { name: /退回/ })).not.toBeInTheDocument();
   });
 
@@ -158,7 +160,7 @@ describe("加载中", () => {
 // 4. 列表渲染
 // ----------------------------------------------------------------
 describe("列表渲染", () => {
-  it("正确渲染接味单行，含 checkbox、编号、报告编号、日期、收样人、检测结果", async () => {
+  it("正确渲染接味单行，含 checkbox、编号、报告编号、日期、接样人、检测结果", async () => {
     const receipt = makeReceipt({
       id: "rc-list-1",
       commissionCode: "RC-LIST-001",
@@ -210,9 +212,9 @@ describe("搜索", () => {
     );
     renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
     await waitFor(() =>
-      expect(screen.getByPlaceholderText(/搜索接样编号/)).toBeInTheDocument(),
+      expect(screen.getByPlaceholderText(/搜索委托书编号/)).toBeInTheDocument(),
     );
-    await user.type(screen.getByPlaceholderText(/搜索接样编号/), "张三");
+    await user.type(screen.getByPlaceholderText(/搜索委托书编号/), "张三");
     await user.keyboard("{Enter}");
     await waitFor(() => expect(capturedKeyword).toBe("张三"));
   });
@@ -245,7 +247,9 @@ describe("分页", () => {
         }
         capturedPage = url.searchParams.get("page");
         return HttpResponse.json({
-          items: [makeReceipt({ id: `rc-p2`, commissionCode: `RC-PAGE-2-${capturedPage}` })],
+          items: [
+            makeReceipt({ id: `rc-p2`, commissionCode: `RC-PAGE-2-${capturedPage}` }),
+          ],
           total: 25,
         });
       }),
@@ -535,7 +539,9 @@ describe("操作失败", () => {
   it.skip("API 返回失败时显示错误提示", async () => {
     const user = userEvent.setup();
     server.use(
-      mockReceiptsHandler([makeReceipt({ id: "rc-fail-1", commissionCode: "RC-FAIL-1" })]),
+      mockReceiptsHandler([
+        makeReceipt({ id: "rc-fail-1", commissionCode: "RC-FAIL-1" }),
+      ]),
       http.post("*/receipts/flow", () =>
         HttpResponse.json({
           results: [{ id: "rc-fail-1", ok: false, message: "该单据已被其他人处理" }],
@@ -557,7 +563,9 @@ describe("操作失败", () => {
   it.skip('网络错误时显示"操作失败"', async () => {
     const user = userEvent.setup();
     server.use(
-      mockReceiptsHandler([makeReceipt({ id: "rc-net-err", commissionCode: "RC-NET-ERR" })]),
+      mockReceiptsHandler([
+        makeReceipt({ id: "rc-net-err", commissionCode: "RC-NET-ERR" }),
+      ]),
       http.post("*/receipts/flow", () => HttpResponse.error()),
     );
     renderWithRouter(<FlowStagePage title="接样管理" stage="receiving" />);
