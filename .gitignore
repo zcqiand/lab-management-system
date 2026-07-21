@@ -1,7 +1,7 @@
 node_modules/
 dist/
+.claude/
+.harness/
+.state/
 coverage/
-.state/trace.json
-.state/gate.json
-.claude/*
-raw/*
+raw/
