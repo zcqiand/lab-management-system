@@ -1,8 +1,12 @@
 name: ci
 
+# tag 即放行：push v<MAJOR>.<MINOR>-<NNN> → test + Docker Hub 推送 + VPS 部署。
+# 分支 push / PR → 测试、覆盖率、构建和本地 Docker 镜像验证。
 on:
   push:
     branches: [main, master]
+    tags:
+      - "v*"
   pull_request:
     branches: [main, master]
 
@@ -17,6 +21,7 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+          registry-url: https://registry.npmmirror.com/
       - name: Install dependencies
         run: npm ci
       - name: Run tests
@@ -26,16 +31,17 @@ jobs:
       - name: Build
         run: npm run build
 
-  # ch38：追加 docker 构建验证 job（只增不改 test job）
+  # 分支和 PR 的 Dockerfile 构建验证，不推送镜像。
   docker-build:
     runs-on: ubuntu-latest
     needs: test
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
@@ -43,3 +49,50 @@ jobs:
           tags: lab-management-system:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # 版本 tag 触发 Docker Hub 推送，然后 SSH 到 VPS 更新容器。
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test, docker-build]
+    if: startsWith(github.ref, 'refs/tags/')
+    concurrency:
+      group: deploy-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate release tag
+        run: |
+          if ! printf '%s' "$GITHUB_REF_NAME" | grep -Eq '^v[0-9]+\.[0-9]+-[0-9]{3}$'; then
+            echo "Invalid release tag: $GITHUB_REF_NAME (expected v<MAJOR>.<MINOR>-<NNN>)" >&2
+            exit 1
+          fi
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/lab-management-system:latest
+            ${{ secrets.DOCKER_USERNAME }}/lab-management-system:${{ github.ref_name }}
+
+      - name: Pull image and restart container on VPS
+        uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DEPLOY_VERSION: ${{ github.ref_name }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: DOCKER_USERNAME,DOCKER_PASSWORD,DEPLOY_VERSION
+          script: cd /home/deploy/lab-management-system && sh lab-management-system.sh

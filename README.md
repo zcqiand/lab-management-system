@@ -11,6 +11,22 @@ npm run dev     # 本地开发
 npm run build   # 生产构建
 ```
 
+## 发布与部署
+
+推送版本 tag（推荐格式：`v<MAJOR>.<MINOR>-<NNN>`）会触发 GitHub Actions：
+
+1. 执行测试、覆盖率和生产构建；
+2. 将 Docker 镜像推送到 Docker Hub 的 `lab-management-system` 仓库（`latest` 与版本 tag）；
+3. 通过 SSH 连接 VPS，拉取指定版本并重启容器。
+
+首次配置 VPS：
+
+```bash
+sudo sh deploy/setup-vps.sh lab.example.com
+```
+
+部署链需要在 GitHub 仓库的 Actions secrets 中配置 `DOCKER_USERNAME`、`DOCKER_PASSWORD`、`VPS_HOST`、`VPS_USER` 和 `VPS_SSH_KEY`。证书与 SSH 私钥只保留在 VPS 或 GitHub Secrets，不提交到仓库。容器只监听 VPS 本机的 `127.0.0.1:8062`，由 nginx vhost 负责 HTTPS 终结与反向代理。由于 Docker 组成员拥有宿主机级权限，VPS 应使用专用的受限部署账号，不要与其他敏感服务共用。
+
 ### Mock 用户
 
 | 用户名 | 密码 | 角色 | 权限 |

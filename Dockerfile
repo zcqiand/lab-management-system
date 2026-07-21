@@ -7,7 +7,7 @@ WORKDIR /app
 
 # 利用 docker 层缓存：先拷 lock 文件安装依赖
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --registry=https://registry.npmmirror.com/
 
 # 拷源码构建
 COPY . .
