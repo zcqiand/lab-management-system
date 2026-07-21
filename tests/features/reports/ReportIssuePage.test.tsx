@@ -249,6 +249,7 @@ describe("发放流程", () => {
     await waitFor(() =>
       expect(screen.getByText(/退回至：批准中/)).toBeInTheDocument(),
     );
+    await waitFor(() => expect(screen.getByText("RC-2024-001")).toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: "退回" }));
     await waitFor(() => expect(flowCall?.action).toBe("return"));
   });

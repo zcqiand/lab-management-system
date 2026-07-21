@@ -1,7 +1,7 @@
 import { describe, expect, beforeEach } from 'vitest'
 import { render, screen, cleanup } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Routes, Route } from 'react-router-dom'
+import { MemoryRouter, Routes, Route } from 'react-router'
 import { Login } from '../../../src/features/auth/Login'
 import { useAuthStore } from '../../../src/features/auth/authStore'
 import { fnTest } from '../../fn'

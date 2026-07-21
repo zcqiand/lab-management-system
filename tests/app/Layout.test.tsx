@@ -1,6 +1,6 @@
 import { describe, expect, beforeEach, it } from "vitest";
 import { render, screen, act, waitFor } from "@testing-library/react";
-import { createMemoryRouter, RouterProvider } from "react-router-dom";
+import { createMemoryRouter, RouterProvider } from "react-router";
 import Layout from "../../src/app/layouts/Layout";
 import { useAuthStore } from "../../src/features/auth/authStore";
 import type { User } from "../../src/types/api";

@@ -401,7 +401,7 @@ describe("撤回", () => {
     await waitFor(() =>
       expect(screen.getByText("我提交的（可撤回）")).toBeInTheDocument(),
     );
-    expect(screen.getByText("RC-WITHDRAW-1")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText("RC-WITHDRAW-1")).toBeInTheDocument());
     expect(screen.getByText(/当前：分配中/)).toBeInTheDocument();
   });
 
@@ -428,6 +428,7 @@ describe("撤回", () => {
     await waitFor(() =>
       expect(screen.getByText("我提交的（可撤回）")).toBeInTheDocument(),
     );
+    await waitFor(() => expect(screen.getByText("R-2024-001")).toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: "撤回" }));
     await waitFor(() => expect(flowCall?.action).toBe("withdraw"));
   });

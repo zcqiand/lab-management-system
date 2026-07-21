@@ -1,7 +1,7 @@
 import { describe, expect, beforeEach, it } from "vitest";
 import { render, screen, cleanup, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { createMemoryRouter, RouterProvider } from "react-router-dom";
+import { createMemoryRouter, RouterProvider } from "react-router";
 import { routes } from "../../src/app/router";
 import { useAuthStore } from "../../src/features/auth/authStore";
 import { resetApiClient, setToken } from "../../src/api/client";
