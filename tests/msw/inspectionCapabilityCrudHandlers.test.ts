@@ -433,6 +433,23 @@ describe("MSW 检测能力 M06 CRUD handler", () => {
     expect(res.status).toBe(204);
   });
 
+  fnTest(["M06.F04.I02"], "PUT /inspection-standards 接受 sourceDocumentId", async () => {
+    const created = await fetch(`${API_BASE}/inspection-standards`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "GB/T FORM-2026", name: "表单测试标准", status: "active" }),
+    });
+    const row = (await created.json()) as { id: string };
+    const res = await fetch(`${API_BASE}/inspection-standards/${encodeURIComponent(row.id)}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sourceDocumentId: "raw/standards/pdf/x.pdf" }),
+    });
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as { sourceDocumentId?: string };
+    expect(data.sourceDocumentId).toBe("raw/standards/pdf/x.pdf");
+  });
+
   fnTest(["M06.F04.I01"], "GET /inspection-standards 按检测项目过滤", async () => {
     // 种子里 OBJ-SP01-P1（水泥）关联了 GB 175-2023 等标准
     const res = await fetch(`${API_BASE}/inspection-standards?inspectionObjectCode=${encodeURIComponent("OBJ-SP01-P1")}&pageSize=100`);

@@ -24,11 +24,23 @@ const PATHS: Record<Resource, string> = {
   standards: "/inspection-standards",
 }
 
-const FIELDS: Record<Resource, Array<{ name: string; label: string; placeholder?: string; required?: boolean }>> = {
+type FieldType = "text" | "select" | "checkbox" | "aliases"
+interface Field {
+  name: string
+  label: string
+  type?: FieldType // 缺省 text
+  options?: string[] // select 用
+  required?: boolean
+  placeholder?: string
+}
+
+const FIELDS: Record<Resource, Field[]> = {
   specialties: [
     { name: "code", label: "编码", required: true, placeholder: "SP10" },
     { name: "officialNo", label: "官方序号", placeholder: "十" },
     { name: "name", label: "名称", required: true },
+    { name: "isOfficial", label: "官方", type: "checkbox" },
+    { name: "enabled", label: "启用", type: "checkbox" },
   ],
   objects: [
     { name: "code", label: "编码", required: true, placeholder: "OBJ-SP01-P24" },
@@ -36,17 +48,26 @@ const FIELDS: Record<Resource, Array<{ name: string; label: string; placeholder?
     { name: "sourceProjectNo", label: "来源行号", placeholder: "24" },
     { name: "sourceProjectName", label: "来源行名称", placeholder: "自定义项目" },
     { name: "name", label: "名称", required: true },
+    { name: "isOptionalForQualification", label: "资质可选", type: "checkbox" },
+    { name: "isOfficial", label: "官方", type: "checkbox" },
+    { name: "enabled", label: "启用", type: "checkbox" },
   ],
   parameters: [
     { name: "code", label: "编码", required: true, placeholder: "IP-CUSTOM-1" },
     { name: "name", label: "名称", required: true },
+    { name: "rawName", label: "原始名" },
     { name: "canonicalName", label: "规范名" },
+    { name: "methodText", label: "试验方法" },
+    { name: "aliases", label: "别名（逗号分隔）", type: "aliases" },
     { name: "unit", label: "单位", placeholder: "MPa" },
+    { name: "sourceType", label: "来源类型", type: "select", options: ["official", "custom"] },
   ],
   standards: [
     { name: "code", label: "编码", required: true, placeholder: "GB/T CUSTOM-2026" },
     { name: "name", label: "名称", required: true },
     { name: "version", label: "版本", placeholder: "2026" },
+    { name: "status", label: "状态", type: "select", options: ["active", "superseded", "draft"] },
+    { name: "sourceDocumentId", label: "来源文件" },
   ],
 }
 
@@ -61,7 +82,11 @@ interface Props {
 export function InspectionCapabilityFormModal({ resource, open, onClose, onSaved, editing = null }: Props) {
   const fields = FIELDS[resource]
   const initialValues: Record<string, string> = {}
-  for (const f of fields) initialValues[f.name] = ""
+  for (const f of fields) {
+    const ftype = f.type ?? "text"
+    if (ftype === "checkbox") initialValues[f.name] = "false"
+    else initialValues[f.name] = ""
+  }
   const [values, setValues] = useState<Record<string, string>>(initialValues)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -71,7 +96,10 @@ export function InspectionCapabilityFormModal({ resource, open, onClose, onSaved
     if (open) {
       const init: Record<string, string> = {}
       for (const f of fields) {
-        init[f.name] = editing ? String((editing as Record<string, unknown>)[f.name] ?? "") : ""
+        const v = editing ? (editing as Record<string, unknown>)[f.name] : ""
+        if (f.type === "checkbox") init[f.name] = v === true || v === "true" ? "true" : "false"
+        else if (f.type === "aliases") init[f.name] = Array.isArray(v) ? (v as string[]).join(", ") : ""
+        else init[f.name] = v == null ? "" : String(v)
       }
       setValues(init)
       setError(null)
@@ -88,20 +116,26 @@ export function InspectionCapabilityFormModal({ resource, open, onClose, onSaved
     e.preventDefault()
     setSubmitting(true)
     setError(null)
-    const payload: Record<string, unknown> = { ...values }
+    const payload: Record<string, unknown> = {}
+    for (const f of fields) {
+      const v = values[f.name]
+      if (f.type === "checkbox") payload[f.name] = v === "true"
+      else if (f.type === "aliases") payload[f.name] = v.split(",").map((s) => s.trim()).filter(Boolean)
+      else payload[f.name] = v
+    }
+    // 保留原有 resource 专属默认值逻辑（objects/specialties/parameters/standards 的 isOfficial/enabled/sourceType/status 等）
     if (resource === "objects") {
-      payload.isOfficial = false
-      payload.isOptionalForQualification = false
-      payload.enabled = true
+      payload.isOfficial = payload.isOfficial ?? false
+      payload.isOptionalForQualification = payload.isOptionalForQualification ?? false
+      payload.enabled = payload.enabled ?? true
     } else if (resource === "specialties") {
-      payload.isOfficial = false
-      payload.enabled = true
+      payload.isOfficial = payload.isOfficial ?? false
+      payload.enabled = payload.enabled ?? true
     } else if (resource === "parameters") {
-      payload.rawName = values.name || values.canonicalName
-      payload.aliases = []
-      payload.sourceType = "custom"
+      payload.rawName = (payload.rawName as string) || (payload.name as string) || (payload.canonicalName as string)
+      payload.sourceType = payload.sourceType ?? "custom"
     } else if (resource === "standards") {
-      payload.status = "active"
+      payload.status = payload.status ?? "active"
     }
     try {
       const res = editing
@@ -140,23 +174,53 @@ export function InspectionCapabilityFormModal({ resource, open, onClose, onSaved
             {error}
           </div>
         )}
-        {fields.map((f) => (
-          <label key={f.name} className="block text-sm">
-            <span className="text-xs font-medium text-gray-600">
-              {f.label}
-              {f.required ? " *" : ""}
-            </span>
-            <input
-              aria-label={f.label}
-              value={values[f.name] ?? ""}
-              onChange={(e) => setValues({ ...values, [f.name]: e.target.value })}
-              placeholder={f.placeholder}
-              className="mt-1 w-full border rounded px-2 py-1.5"
-              required={f.required}
-              disabled={!!editing && f.name === "code"}
-            />
-          </label>
-        ))}
+        {fields.map((f) => {
+          const ftype = f.type ?? "text"
+          if (ftype === "checkbox") {
+            return (
+              <label key={f.name} className="text-sm flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  aria-label={f.label}
+                  checked={values[f.name] === "true"}
+                  onChange={(e) => setValues({ ...values, [f.name]: e.target.checked ? "true" : "false" })}
+                  disabled={!!editing && f.name === "code"}
+                />
+                <span className="text-xs font-medium text-gray-600">{f.label}</span>
+              </label>
+            )
+          }
+          if (ftype === "select") {
+            return (
+              <label key={f.name} className="block text-sm">
+                <span className="text-xs font-medium text-gray-600">{f.label}</span>
+                <select
+                  aria-label={f.label}
+                  value={values[f.name] ?? ""}
+                  onChange={(e) => setValues({ ...values, [f.name]: e.target.value })}
+                  className="mt-1 w-full border rounded px-2 py-1.5"
+                >
+                  {(f.options ?? []).map((o) => (<option key={o} value={o}>{o}</option>))}
+                </select>
+              </label>
+            )
+          }
+          // text / aliases 共用 input
+          return (
+            <label key={f.name} className="block text-sm">
+              <span className="text-xs font-medium text-gray-600">{f.label}{f.required ? " *" : ""}</span>
+              <input
+                aria-label={f.label}
+                value={values[f.name] ?? ""}
+                onChange={(e) => setValues({ ...values, [f.name]: e.target.value })}
+                placeholder={f.placeholder}
+                className="mt-1 w-full border rounded px-2 py-1.5"
+                required={f.required}
+                disabled={!!editing && f.name === "code"}
+              />
+            </label>
+          )
+        })}
         <div className="flex justify-end gap-2 pt-2">
           <button
             type="button"

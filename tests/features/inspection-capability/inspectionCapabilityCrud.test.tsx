@@ -127,6 +127,20 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     });
   });
 
+  fnTest(["M06.F03.I02"], "检测参数编辑弹窗渲染补足字段（sourceType/aliases）", async () => {
+    await fetch("http://localhost/api/inspection-parameters", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "IP-FORM-1", name: "表单参数", sourceType: "custom" }),
+    });
+    renderPage("parameters");
+    await flush();
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole("button", { name: "编辑 IP-FORM-1" }));
+    expect(await screen.findByLabelText("来源类型")).toBeTruthy();
+    expect(screen.getByLabelText("别名（逗号分隔）")).toBeTruthy();
+  });
+
   fnTest(["M06.F03.I03"], "检测参数删除被引用时展示错误", async () => {
     renderPage("parameters");
     await flush();

@@ -1676,10 +1676,10 @@ export const handlers = [
     const body = (await request.json()) as Record<string, unknown>
     // 仅允许白名单字段进入 patch；code/id 不可变
     const patch: Record<string, unknown> = {}
-    for (const key of ['name', 'version', 'status'] as const) {
+    for (const key of ['name', 'version', 'status', 'sourceDocumentId'] as const) {
       if (body[key] !== undefined) patch[key] = body[key]
     }
-    const updated = inspectionStandardTable.update(id, patch as Partial<{ name: string; version: string; status: 'active' | 'superseded' | 'draft' }>)
+    const updated = inspectionStandardTable.update(id, patch as Partial<{ name: string; version: string; status: 'active' | 'superseded' | 'draft'; sourceDocumentId: string }>)
     if (!updated) return HttpResponse.json({ message: '检测标准不存在' }, { status: 404 })
     return HttpResponse.json(updated)
   }),
