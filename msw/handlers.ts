@@ -69,6 +69,20 @@ function countBy<T extends { id: string; createdAt: string; updatedAt: string }>
   return table.all().filter((r) => r[field] === value).length
 }
 
+/**
+ * 检测标准 id 形如 `insp-std-<code>`，而 code 可含 `/`（如 GB/T 228.1-2021）与空格（如 GB 175-2023）。
+ * 前端按字面 id 拼 URL（不 encodeURIComponent）：对 http(s) URL，编码后的 %2F 会在发送前被规范成字面 `/`，
+ * 故 id 中的 `/` 会把 URL 裂成多段。MSW 的 path-to-regexp 中 `:id` 仅匹配 `[^/]+`，无法接住含 `/` 的 id。
+ * 因此仅检测标准（其他 3 类专项/项目/参数的 code 不含 `/`，沿用 `:id`）改用正则路由，
+ * 并从 URL pathname 中切出 `/inspection-standards/` 之后的全部内容作为 id。
+ */
+const INSPECTION_STANDARD_ID_RE = /\/inspection-standards\/.+$/
+function extractInspectionStandardId(request: Request): string {
+  const pathname = new URL(request.url).pathname
+  const tail = pathname.slice(pathname.indexOf('/inspection-standards/') + '/inspection-standards/'.length)
+  return decodeURIComponent(tail)
+}
+
 /** 通用码表 CRUD handler 工厂（归属报告类别的字典：型号/规格/等级/牌号） */
 function dictHandlers(
   path: string,
@@ -1587,9 +1601,15 @@ export const handlers = [
     return HttpResponse.json(inspectionStandardTable.findById(id), { status: 201 })
   }),
 
+  // 检测标准 id 形如 `insp-std-<code>`，而 code 可含 `/`（如 GB/T 228.1-2021）和空格（如 GB 175-2023）。
+  // 前端按字面 id 拼 URL（不 encodeURIComponent）：对 http(s) URL，编码后的 %2F 会在发送前被规范成字面 `/`，
+  // 故 id 中的 `/` 会把 URL 裂成多段。MSW 的 path-to-regexp 中 `:id` 仅匹配 `[^/]+`，无法接住含 `/` 的 id。
+  // 因此仅检测标准（其他 3 类专项/项目/参数的 code 不含 `/`，沿用 `:id`）改用正则路由 INSPECTION_STANDARD_ID_RE，
+  // 并用 extractInspectionStandardId 从 URL pathname 中切出 `/inspection-standards/` 之后的全部内容作为 id。
+
   // M06.F04.I02 检测标准编辑（code 不可变）
-  http.put('*/inspection-standards/:id', async ({ params, request }) => {
-    const id = String(params.id)
+  http.put(INSPECTION_STANDARD_ID_RE, async ({ request }) => {
+    const id = extractInspectionStandardId(request)
     const row = inspectionStandardTable.findById(id)
     if (!row) return HttpResponse.json({ message: '检测标准不存在' }, { status: 404 })
     const body = (await request.json()) as Record<string, unknown>
@@ -1603,8 +1623,9 @@ export const handlers = [
   }),
 
   // M06.F04.I03 检测标准删除保护：官方（带 sourceDocumentId）/被引用不可删
-  http.delete('*/inspection-standards/:id', ({ params }) => {
-    const row = inspectionStandardTable.findById(String(params.id))
+  http.delete(INSPECTION_STANDARD_ID_RE, ({ request }) => {
+    const id = extractInspectionStandardId(request)
+    const row = inspectionStandardTable.findById(id)
     if (!row) return HttpResponse.json({ message: '检测标准不存在' }, { status: 404 })
     if (row.sourceDocumentId != null) {
       return HttpResponse.json({ message: '官方检测标准不可删除' }, { status: 400 })
@@ -1615,7 +1636,7 @@ export const handlers = [
     if (refs > 0) {
       return HttpResponse.json({ message: `被 ${refs} 处引用，不可删除`, references: refs }, { status: 400 })
     }
-    inspectionStandardTable.remove(String(params.id))
+    inspectionStandardTable.remove(id)
     return new HttpResponse(null, { status: 204 })
   }),
 

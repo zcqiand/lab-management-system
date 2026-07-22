@@ -378,4 +378,33 @@ describe("MSW 检测能力 M06 CRUD handler", () => {
     const data = (await res.json()) as { message: string };
     expect(data.message).toContain("官方");
   });
+
+  fnTest(["M06.F04.I02"], "PUT /inspection-standards/:id 兼容含 / 与空格的标准编码", async () => {
+    // 业务编码可含 `/`（如 GB/T 228.1-2021）和空格；前端按字面 id 拼 URL，不做编码。
+    // MSW path-to-regexp 的 :id 仅匹配 [^/]+，含 `/` 时会裂段导致 404，故路由需特殊处理。
+    await fetch(`${API_BASE}/inspection-standards`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "GB/T SLASH-2026", name: "斜杠标准", status: "active" }),
+    });
+    const res = await fetch(`${API_BASE}/inspection-standards/insp-std-GB/T SLASH-2026`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "改名" }),
+    });
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as { code: string; name: string };
+    expect(data.code).toBe("GB/T SLASH-2026");
+    expect(data.name).toBe("改名");
+  });
+
+  fnTest(["M06.F04.I03"], "DELETE /inspection-standards/:id 兼容含 / 与空格的标准编码", async () => {
+    await fetch(`${API_BASE}/inspection-standards`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "GB/T DEL-2026", name: "可删斜杠标准", status: "active" }),
+    });
+    const res = await fetch(`${API_BASE}/inspection-standards/insp-std-GB/T DEL-2026`, { method: "DELETE" });
+    expect(res.status).toBe(204);
+  });
 });
