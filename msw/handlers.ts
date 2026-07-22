@@ -1534,6 +1534,38 @@ export const handlers = [
     return HttpResponse.json(inspectionParameterTable.findById(id), { status: 201 })
   }),
 
+  // M06.F03.I02 检测参数编辑（code 不可变）
+  http.put('*/inspection-parameters/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const row = inspectionParameterTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '检测参数不存在' }, { status: 404 })
+    const body = (await request.json()) as Record<string, unknown>
+    // 仅允许白名单字段进入 patch；code/id 不可变
+    const patch: Record<string, unknown> = {}
+    for (const key of ['name', 'rawName', 'canonicalName', 'methodText', 'aliases', 'unit', 'sourceType'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    const updated = inspectionParameterTable.update(id, patch as Partial<{ name: string; rawName: string; canonicalName: string; methodText: string; aliases: string[]; unit: string; sourceType: 'official' | 'custom' }>)
+    return HttpResponse.json(updated)
+  }),
+
+  // M06.F03.I03 检测参数删除保护：官方/被引用不可删
+  http.delete('*/inspection-parameters/:id', ({ params }) => {
+    const row = inspectionParameterTable.findById(String(params.id))
+    if (!row) return HttpResponse.json({ message: '检测参数不存在' }, { status: 404 })
+    if (row.sourceType === 'official') {
+      return HttpResponse.json({ message: '官方检测参数不可删除' }, { status: 400 })
+    }
+    const refs =
+      countBy(inspectionObjectParameterTable, 'inspectionParameterCode', row.code) +
+      countBy(inspectionStandardParameterTable, 'inspectionParameterCode', row.code)
+    if (refs > 0) {
+      return HttpResponse.json({ message: `被 ${refs} 处引用，不可删除`, references: refs }, { status: 400 })
+    }
+    inspectionParameterTable.remove(String(params.id))
+    return new HttpResponse(null, { status: 204 })
+  }),
+
   // M06.F04.I02 检测标准新建
   http.post('*/inspection-standards', async ({ request }) => {
     const body = (await request.json()) as Partial<{ code: string; name: string; version?: string; status: 'active' | 'superseded' | 'draft' }>
