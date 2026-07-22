@@ -1249,9 +1249,44 @@ export const handlers = [
     )
   }),
 
-  // M06.F03 检测参数
+  // M06.F03 检测参数（级联过滤：专项/项目 → 标准维度，多条件取交集）
   http.get('*/inspection-parameters', ({ request }) => {
     const url = new URL(request.url)
+    const objectCode = url.searchParams.get('inspectionObjectCode')
+    const specialtyCode = url.searchParams.get('inspectionSpecialtyCode')
+    const standardCode = url.searchParams.get('inspectionStandardCode')
+    const sets: Array<Set<string>> = []
+    if (objectCode || specialtyCode) {
+      // 项目维度：先解出涉及的检测项目编码（传 objectCode 直用；传 specialtyCode 则并集该专项下全部项目），
+      // 再经 检测项目↔检测参数 关联表解出允许的参数编码集合。
+      const objCodes = new Set<string>()
+      if (objectCode) {
+        objCodes.add(objectCode)
+      } else if (specialtyCode) {
+        for (const o of inspectionObjectTable.all()) {
+          if (o.inspectionSpecialtyCode === specialtyCode) objCodes.add(o.code)
+        }
+      }
+      const s = new Set<string>()
+      for (const r of inspectionObjectParameterTable.all()) {
+        if (objCodes.has(r.inspectionObjectCode)) s.add(r.inspectionParameterCode)
+      }
+      sets.push(s)
+    }
+    if (standardCode) {
+      // 标准维度：经 检测标准↔检测参数 关联表解出允许的参数编码集合。
+      const s = new Set<string>()
+      for (const r of inspectionStandardParameterTable.all()) {
+        if (r.inspectionStandardCode === standardCode) s.add(r.inspectionParameterCode)
+      }
+      sets.push(s)
+    }
+    let match: ((r: { code: string }) => boolean) | undefined
+    if (sets.length > 0) {
+      // 多条件取交集；任一条件空集 → 最终空集（match 全 false）。
+      const inter = sets.reduce((acc, cur) => new Set([...acc].filter((c) => cur.has(c))))
+      match = (r) => inter.has(r.code)
+    }
     return HttpResponse.json(
       inspectionParameterTable.query({
         page: Number(url.searchParams.get('page') ?? '1'),
@@ -1259,6 +1294,7 @@ export const handlers = [
         keyword: url.searchParams.get('keyword') ?? undefined,
         keywordFields: ['code', 'name', 'canonicalName'],
         sortField: 'code',
+        match,
       }),
     )
   }),

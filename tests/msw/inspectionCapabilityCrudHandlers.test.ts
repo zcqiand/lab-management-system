@@ -456,4 +456,24 @@ describe("MSW 检测能力 M06 CRUD handler", () => {
     const got = new Set(data.items.map((s) => s.code));
     expect(got).toEqual(expected);
   });
+
+  fnTest(["M06.F03.I01"], "GET /inspection-parameters 按检测标准过滤", async () => {
+    const res = await fetch(`${API_BASE}/inspection-parameters?inspectionStandardCode=${encodeURIComponent("GB 175-2023")}&pageSize=100`);
+    const data = (await res.json()) as { items: Array<{ code: string }> };
+    expect(data.items.length).toBeGreaterThan(0);
+    const sp = await fetch(`${API_BASE}/inspection-standard-parameters?inspectionStandardCode=${encodeURIComponent("GB 175-2023")}&pageSize=200`).then((r) => r.json()) as { items: Array<{ inspectionParameterCode: string }> };
+    const expected = new Set(sp.items.map((x) => x.inspectionParameterCode));
+    for (const p of data.items) expect(expected.has(p.code)).toBe(true);
+  });
+
+  fnTest(["M06.F03.I01"], "GET /inspection-parameters 多条件取交集", async () => {
+    // 同时给 inspectionObjectCode 与 inspectionStandardCode：结果须既被该项目关联、又被该标准关联
+    const res = await fetch(`${API_BASE}/inspection-parameters?inspectionObjectCode=${encodeURIComponent("OBJ-SP01-P1")}&inspectionStandardCode=${encodeURIComponent("GB 175-2023")}&pageSize=100`);
+    const data = (await res.json()) as { items: Array<{ code: string }> };
+    const byObj = await fetch(`${API_BASE}/inspection-object-parameters?inspectionObjectCode=${encodeURIComponent("OBJ-SP01-P1")}&pageSize=200`).then((r) => r.json()) as { items: Array<{ inspectionParameterCode: string }> };
+    const byStd = await fetch(`${API_BASE}/inspection-standard-parameters?inspectionStandardCode=${encodeURIComponent("GB 175-2023")}&pageSize=200`).then((r) => r.json()) as { items: Array<{ inspectionParameterCode: string }> };
+    const inter = new Set([...byObj.items.map((x) => x.inspectionParameterCode)].filter((c) => byStd.items.some((y) => y.inspectionParameterCode === c)));
+    const got = new Set(data.items.map((p) => p.code));
+    expect(got).toEqual(inter);
+  });
 });
