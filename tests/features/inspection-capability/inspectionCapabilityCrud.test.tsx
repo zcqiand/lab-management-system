@@ -106,7 +106,12 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     await fetch("http://localhost/api/inspection-specialties", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: "SP90", name: "待编辑专项", isOfficial: false, enabled: true }),
+      body: JSON.stringify({
+        code: "SP90",
+        name: "待编辑专项",
+        isOfficial: false,
+        enabled: true,
+      }),
     });
     renderPage("specialties");
     await flush();
@@ -114,7 +119,10 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     // SP90 行的编辑按钮
     const editBtn = await screen.findByRole("button", { name: `编辑 SP90` });
     await user.click(editBtn);
-    const heading = await screen.findByRole("heading", { name: "编辑检测专项", level: 3 });
+    const heading = await screen.findByRole("heading", {
+      name: "编辑检测专项",
+      level: 3,
+    });
     expect(heading).toBeTruthy();
     // 名称字段已预填
     const nameInput = screen.getByLabelText("名称") as HTMLInputElement;
@@ -124,23 +132,33 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     await user.click(screen.getByRole("button", { name: "保存" }));
     // 保存后弹窗关闭
     await waitFor(() => {
-      expect(screen.queryByRole("heading", { name: "编辑检测专项", level: 3 })).toBeNull();
+      expect(
+        screen.queryByRole("heading", { name: "编辑检测专项", level: 3 }),
+      ).toBeNull();
     });
   });
 
-  fnTest(["M06.F03.I02"], "检测参数编辑弹窗渲染补足字段（sourceType/aliases）", async () => {
-    await fetch("http://localhost/api/inspection-parameters", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: "IP-FORM-1", name: "表单参数", sourceType: "custom" }),
-    });
-    renderPage("parameters");
-    await flush();
-    const user = userEvent.setup();
-    await user.click(await screen.findByRole("button", { name: "编辑 IP-FORM-1" }));
-    expect(await screen.findByLabelText("来源类型")).toBeTruthy();
-    expect(screen.getByLabelText("别名（逗号分隔）")).toBeTruthy();
-  });
+  fnTest(
+    ["M06.F03.I02"],
+    "检测参数编辑弹窗渲染补足字段（sourceType/aliases）",
+    async () => {
+      await fetch("http://localhost/api/inspection-parameters", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: "IP-FORM-1",
+          name: "表单参数",
+          sourceType: "custom",
+        }),
+      });
+      renderPage("parameters");
+      await flush();
+      const user = userEvent.setup();
+      await user.click(await screen.findByRole("button", { name: "编辑 IP-FORM-1" }));
+      expect(await screen.findByLabelText("来源类型")).toBeTruthy();
+      expect(screen.getByLabelText("别名（逗号分隔）")).toBeTruthy();
+    },
+  );
 
   fnTest(["M06.F03.I03"], "检测参数删除被引用时展示错误", async () => {
     renderPage("parameters");
@@ -155,7 +173,12 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     await fetch("http://localhost/api/inspection-specialties", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: "SP91", name: "可删专项", isOfficial: false, enabled: true }),
+      body: JSON.stringify({
+        code: "SP91",
+        name: "可删专项",
+        isOfficial: false,
+        enabled: true,
+      }),
     });
     renderPage("specialties");
     await flush();
@@ -169,42 +192,60 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     });
   });
 
-  fnTest(["M06.F04.I01"], "检测标准页级联下拉：选专项后请求带 inspectionSpecialtyCode", async () => {
-    const getSpy = vi.spyOn(apiClient, "get");
-    renderPage("standards");
-    await flush();
-    const user = userEvent.setup();
-    const spSelect = screen.getByLabelText("检测专项筛选");
-    await user.selectOptions(spSelect, "SP01");
-    await flush();
-    const hit = getSpy.mock.calls.find(
-      ([path, cfg]) =>
-        path === "/inspection-standards" &&
-        (cfg as unknown as { params?: { inspectionSpecialtyCode?: string } })?.params?.inspectionSpecialtyCode === "SP01",
-    );
-    expect(hit).toBeTruthy();
-  });
+  fnTest(
+    ["M06.F04.I01"],
+    "检测标准页级联下拉：选专项后请求带 inspectionSpecialtyCode",
+    async () => {
+      const getSpy = vi.spyOn(apiClient, "get");
+      renderPage("standards");
+      await flush();
+      const user = userEvent.setup();
+      const spSelect = screen.getByLabelText("检测专项筛选");
+      await user.selectOptions(spSelect, "SP01");
+      await flush();
+      const hit = getSpy.mock.calls.find(
+        ([path, cfg]) =>
+          path === "/inspection-standards" &&
+          (cfg as unknown as { params?: { inspectionSpecialtyCode?: string } })?.params
+            ?.inspectionSpecialtyCode === "SP01",
+      );
+      expect(hit).toBeTruthy();
+    },
+  );
 
-  fnTest(["M06.F03.I01"], "检测参数页三级级联：选专项→项目→标准后请求带全部参数", async () => {
-    const getSpy = vi.spyOn(apiClient, "get");
-    renderPage("parameters");
-    await flush();
-    const user = userEvent.setup();
-    await user.selectOptions(screen.getByLabelText("检测专项筛选"), "SP01");
-    await flush();
-    await user.selectOptions(await screen.findByLabelText("检测项目筛选"), "OBJ-SP01-P1");
-    await flush();
-    await user.selectOptions(await screen.findByLabelText("检测标准筛选"), "GB 175-2023");
-    await flush();
-    const hit = getSpy.mock.calls.find(
-      ([path, cfg]) =>
-        path === "/inspection-parameters" &&
-        (cfg as unknown as { params?: Record<string, string> })?.params?.inspectionSpecialtyCode === "SP01" &&
-        (cfg as unknown as { params?: Record<string, string> })?.params?.inspectionObjectCode === "OBJ-SP01-P1" &&
-        (cfg as unknown as { params?: Record<string, string> })?.params?.inspectionStandardCode === "GB 175-2023",
-    );
-    expect(hit).toBeTruthy();
-  });
+  fnTest(
+    ["M06.F03.I01"],
+    "检测参数页三级级联：选专项→项目→标准后请求带全部参数",
+    async () => {
+      const getSpy = vi.spyOn(apiClient, "get");
+      renderPage("parameters");
+      await flush();
+      const user = userEvent.setup();
+      await user.selectOptions(screen.getByLabelText("检测专项筛选"), "SP01");
+      await flush();
+      await user.selectOptions(
+        await screen.findByLabelText("检测项目筛选"),
+        "OBJ-SP01-P1",
+      );
+      await flush();
+      await user.selectOptions(
+        await screen.findByLabelText("检测标准筛选"),
+        "GB 175-2023",
+      );
+      await flush();
+      const hit = getSpy.mock.calls.find(
+        ([path, cfg]) =>
+          path === "/inspection-parameters" &&
+          (cfg as unknown as { params?: Record<string, string> })?.params
+            ?.inspectionSpecialtyCode === "SP01" &&
+          (cfg as unknown as { params?: Record<string, string> })?.params
+            ?.inspectionObjectCode === "OBJ-SP01-P1" &&
+          (cfg as unknown as { params?: Record<string, string> })?.params
+            ?.inspectionStandardCode === "GB 175-2023",
+      );
+      expect(hit).toBeTruthy();
+    },
+  );
 
   fnTest(["M06.F02.I06"], "AssociationManager 列出/添加/移除关联", async () => {
     // 给 OBJ-SP01-P1 建一条自定义参数关联用于移除
@@ -216,7 +257,10 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     await fetch("http://localhost/api/inspection-object-parameters", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ inspectionObjectCode: "OBJ-SP01-P1", inspectionParameterCode: "IP-AM-1" }),
+      body: JSON.stringify({
+        inspectionObjectCode: "OBJ-SP01-P1",
+        inspectionParameterCode: "IP-AM-1",
+      }),
     });
     render(
       <MemoryRouter>
@@ -245,6 +289,24 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     );
   });
 
+  fnTest(["M06.F02.I06"], "检测项目编辑弹窗出现 关联检测参数 页签", async () => {
+    renderPage("objects");
+    await flush();
+    const user = userEvent.setup();
+    const editBtns = await screen.findAllByRole("button", { name: /^编辑 / });
+    await user.click(editBtns[0]!);
+    expect(await screen.findByRole("button", { name: "关联检测参数" })).toBeTruthy();
+  });
+
+  fnTest(["M06.F04.I04"], "检测标准编辑弹窗出现 关联检测参数 页签", async () => {
+    renderPage("standards");
+    await flush();
+    const user = userEvent.setup();
+    const editBtns = await screen.findAllByRole("button", { name: /^编辑 / });
+    await user.click(editBtns[0]!);
+    expect(await screen.findByRole("button", { name: "关联检测参数" })).toBeTruthy();
+  });
+
   // 防御性用例：当 apiClient.get 返回畸形响应（无 items 字段，例如 MSW 未启动时
   // /api/* 被 bypass 到 Vite dev server 返回 index.html）时，页面不得抛错，
   // 而是落入 error/empty 分支。回归浏览器 MSW 起不来导致的运行时崩溃。
@@ -254,7 +316,9 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     });
 
     it("apiClient.get 返回空对象时不抛错，落入 error/empty 分支", async () => {
-      const malformed = { data: {} } as unknown as { data: { items: never[]; total: number } };
+      const malformed = { data: {} } as unknown as {
+        data: { items: never[]; total: number };
+      };
       vi.spyOn(apiClient, "get").mockResolvedValue(malformed);
 
       // 渲染本身不得抛错
