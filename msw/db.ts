@@ -84,13 +84,15 @@ export class MockTable<T extends { id: string } & Timestamped> {
     keyword?: string
     keywordFields?: (keyof T)[]
     filters?: Partial<T>
+    /** 任意行级谓词，在 filters 之后、dateField 之前应用（影响 total 与分页） */
+    match?: (row: T) => boolean
     dateField?: keyof T
     dateFrom?: string
     dateTo?: string
     /** 排序字段，默认 createdAt */
     sortField?: keyof T
   }): { items: T[]; total: number; page: number; pageSize: number } {
-    const { page, pageSize, keyword, keywordFields, filters, dateField, dateFrom, dateTo, sortField } = opts
+    const { page, pageSize, keyword, keywordFields, filters, match, dateField, dateFrom, dateTo, sortField } = opts
     let filtered = [...this.rows]
     if (keyword && keywordFields?.length) {
       const kw = keyword.toLowerCase()
@@ -105,6 +107,7 @@ export class MockTable<T extends { id: string } & Timestamped> {
         }
       }
     }
+    if (match) filtered = filtered.filter(match)
     if (dateField && (dateFrom || dateTo)) {
       filtered = filtered.filter((row) => {
         const v = row[dateField] as unknown as string

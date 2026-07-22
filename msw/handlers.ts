@@ -1266,6 +1266,27 @@ export const handlers = [
   // M06.F04 检测标准
   http.get('*/inspection-standards', ({ request }) => {
     const url = new URL(request.url)
+    const objectCode = url.searchParams.get('inspectionObjectCode')
+    const specialtyCode = url.searchParams.get('inspectionSpecialtyCode')
+    let match: ((r: { code: string }) => boolean) | undefined
+    if (objectCode || specialtyCode) {
+      // 通过 检测项目↔检测标准 关联表解出允许的标准编码集合：
+      //   - 传入 inspectionObjectCode：只取该对象关联的标准
+      //   - 传入 inspectionSpecialtyCode：先解出该专项下所有对象，再并集它们关联的标准
+      const objCodes = new Set<string>()
+      if (objectCode) {
+        objCodes.add(objectCode)
+      } else if (specialtyCode) {
+        for (const o of inspectionObjectTable.all()) {
+          if (o.inspectionSpecialtyCode === specialtyCode) objCodes.add(o.code)
+        }
+      }
+      const allowed = new Set<string>()
+      for (const r of inspectionObjectStandardTable.all()) {
+        if (objCodes.has(r.inspectionObjectCode)) allowed.add(r.inspectionStandardCode)
+      }
+      match = (r) => allowed.has(r.code)
+    }
     return HttpResponse.json(
       inspectionStandardTable.query({
         page: Number(url.searchParams.get('page') ?? '1'),
@@ -1273,6 +1294,7 @@ export const handlers = [
         keyword: url.searchParams.get('keyword') ?? undefined,
         keywordFields: ['code', 'name'],
         sortField: 'code',
+        match,
       }),
     )
   }),

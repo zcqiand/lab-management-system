@@ -432,4 +432,28 @@ describe("MSW 检测能力 M06 CRUD handler", () => {
     const res = await fetch(`${API_BASE}/inspection-standards/insp-std-GB/T DEL-2026`, { method: "DELETE" });
     expect(res.status).toBe(204);
   });
+
+  fnTest(["M06.F04.I01"], "GET /inspection-standards 按检测项目过滤", async () => {
+    // 种子里 OBJ-SP01-P1（水泥）关联了 GB 175-2023 等标准
+    const res = await fetch(`${API_BASE}/inspection-standards?inspectionObjectCode=${encodeURIComponent("OBJ-SP01-P1")}&pageSize=100`);
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as { items: Array<{ code: string }> };
+    expect(data.items.length).toBeGreaterThan(0);
+    // 每条都被该项目关联（间接校验 JOIN）
+    const links = await fetch(`${API_BASE}/inspection-object-standards?inspectionObjectCode=${encodeURIComponent("OBJ-SP01-P1")}&pageSize=200`).then((r) => r.json()) as { items: Array<{ inspectionStandardCode: string }> };
+    const linked = new Set(links.items.map((l) => l.inspectionStandardCode));
+    for (const s of data.items) expect(linked.has(s.code)).toBe(true);
+  });
+
+  fnTest(["M06.F04.I01"], "GET /inspection-standards 按检测专项过滤", async () => {
+    const res = await fetch(`${API_BASE}/inspection-standards?inspectionSpecialtyCode=SP01&pageSize=200`);
+    const data = (await res.json()) as { items: Array<{ code: string }> };
+    // SP01 项目集合
+    const objs = await fetch(`${API_BASE}/inspection-objects?inspectionSpecialtyCode=SP01&pageSize=200`).then((r) => r.json()) as { items: Array<{ code: string }> };
+    const objCodes = new Set(objs.items.map((o) => o.code));
+    const links = await fetch(`${API_BASE}/inspection-object-standards?pageSize=500`).then((r) => r.json()) as { items: Array<{ inspectionObjectCode: string; inspectionStandardCode: string }> };
+    const expected = new Set(links.items.filter((l) => objCodes.has(l.inspectionObjectCode)).map((l) => l.inspectionStandardCode));
+    const got = new Set(data.items.map((s) => s.code));
+    expect(got).toEqual(expected);
+  });
 });
