@@ -374,11 +374,6 @@ export const inspectionStandardParameterTable = new MockTable<{
   id: string
   inspectionStandardCode: string
   inspectionParameterCode: string
-  clause?: string
-  methodName?: string
-  unit?: string
-  sampleRule?: string
-  roundingRule?: string
   createdAt: string
   updatedAt: string
 }>('insp-std-param')
@@ -1160,7 +1155,7 @@ export function seedMasterDataIntoMockDb(): void {
     inspectionStandards: Array<{ code: string; name: string; version?: string; status: string; sourceDocumentId?: string }>
     inspectionObjectParameters: Array<{ inspectionObjectCode: string; inspectionParameterCode: string; qualificationLevel: 'QUALIFIED' | 'RESTRICTED'; sortOrder: number }>
     inspectionObjectStandards: Array<{ inspectionObjectCode: string; inspectionStandardCode: string; role: 'TESTING' | 'JUDGMENT' }>
-    inspectionStandardParameters: Array<{ inspectionStandardCode: string; inspectionParameterCode: string; clause?: string; methodName?: string; unit?: string }>
+    inspectionStandardParameters: Array<{ inspectionStandardCode: string; inspectionParameterCode: string }>
     inspectionSpecialtyObjects: Array<{ inspectionSpecialtyCode: string; inspectionObjectCode: string }>
   }
   const now = new Date('2026-07-22T00:00:00Z').toISOString()
@@ -1256,9 +1251,6 @@ export function seedMasterDataIntoMockDb(): void {
       id: `insp-std-param-${r.inspectionStandardCode}-${r.inspectionParameterCode}`,
       inspectionStandardCode: r.inspectionStandardCode,
       inspectionParameterCode: r.inspectionParameterCode,
-      clause: r.clause,
-      methodName: r.methodName,
-      unit: r.unit,
     } as never);
     inspectionStandardParameterTable.update(
       `insp-std-param-${r.inspectionStandardCode}-${r.inspectionParameterCode}`,

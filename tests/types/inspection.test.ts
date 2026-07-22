@@ -126,21 +126,16 @@ describe("types/inspection M06 检测能力领域", () => {
     expect(rel.role).toBe("JUDGMENT");
   });
 
-  fnTest(["M06.F04.I04"], "InspectionStandardParameter 含 clause/methodName/unit/sampleRule", () => {
+  fnTest(["M06.F04.I04"], "InspectionStandardParameter 仅承载标准↔参数多对多关联", () => {
     const rel: InspectionStandardParameter = {
       id: "isp-001",
       inspectionStandardCode: "GB/T 14684-2022",
       inspectionParameterCode: "IP-STE001",
-      clause: "7.3.1",
-      methodName: "筛分法",
-      unit: "%",
-      sampleRule: "取样量不少于 5kg",
-      roundingRule: "修约到 0.1",
       createdAt: "2026-07-22T00:00:00Z",
       updatedAt: "2026-07-22T00:00:00Z",
     };
-    expect(rel.clause).toBe("7.3.1");
-    expect(rel.roundingRule).toBe("修约到 0.1");
+    expect(rel.inspectionStandardCode).toBe("GB/T 14684-2022");
+    expect(rel.inspectionParameterCode).toBe("IP-STE001");
   });
 
   fnTest(["M06.F05.I01"], "InspectionCalculationRule 至少 object+parameter，可选 testingStandardCode", () => {

@@ -158,9 +158,6 @@ describe("MSW 检测能力 M06 CRUD handler", () => {
       body: JSON.stringify({
         inspectionStandardCode: "GB/T 50081-2019",
         inspectionParameterCode: "IP-STE001",
-        clause: "6.1",
-        methodName: "万能试验机",
-        unit: "MPa",
       }),
     });
     expect(res.status).toBe(201);

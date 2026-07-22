@@ -388,11 +388,6 @@ export function InspectionCapabilityFormModal({
             targetParam="inspectionParameterCode"
             targetValueKey="code"
             targetTextKey="name"
-            extraFields={[
-              { name: "clause", label: "条款", type: "text" },
-              { name: "methodName", label: "方法", type: "text" },
-              { name: "unit", label: "单位", type: "text" },
-            ]}
             fnId="M06.F04.I04"
           />
         )}

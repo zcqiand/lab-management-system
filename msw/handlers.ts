@@ -1742,7 +1742,7 @@ export const handlers = [
 
   // M06.F04.I04 检测标准-检测参数关联
   http.post('*/inspection-standard-parameters', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ inspectionStandardCode: string; inspectionParameterCode: string; clause?: string; methodName?: string; unit?: string }>
+    const body = (await request.json()) as Partial<{ inspectionStandardCode: string; inspectionParameterCode: string }>
     if (!body.inspectionStandardCode || !body.inspectionParameterCode) {
       return HttpResponse.json({ message: '标准/参数 必填' }, { status: 400 })
     }
@@ -1754,9 +1754,6 @@ export const handlers = [
       id,
       inspectionStandardCode: body.inspectionStandardCode,
       inspectionParameterCode: body.inspectionParameterCode,
-      clause: body.clause,
-      methodName: body.methodName,
-      unit: body.unit,
     } as never)
     inspectionStandardParameterTable.update(id, { createdAt: now, updatedAt: now })
     return HttpResponse.json(inspectionStandardParameterTable.findById(id), { status: 201 })

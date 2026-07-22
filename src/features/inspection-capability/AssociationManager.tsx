@@ -18,7 +18,7 @@ interface Props {
   targetParam: string; // 如 inspectionParameterCode
   targetValueKey: string; // 目标下拉 value 字段（通常 code）
   targetTextKey: string; // 目标下拉 显示字段（通常 name）
-  extraFields?: ExtraField[]; // role / qualificationLevel+sortOrder / clause+methodName+unit
+  extraFields?: ExtraField[]; // role / qualificationLevel+sortOrder
   fnId?: string; // data-fn 锚点
 }
 
