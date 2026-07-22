@@ -1,10 +1,11 @@
 import { describe, expect, beforeEach, vi, afterEach, it } from "vitest";
-import { render, screen, waitFor, cleanup } from "@testing-library/react";
+import { render, screen, waitFor, cleanup, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { fnTest } from "../../fn";
 import { resetMockDb, seedMasterDataIntoMockDb } from "../../../msw/db";
 import { InspectionCapabilityPage } from "../../../src/features/inspection-capability/InspectionCapabilityPage";
+import { AssociationManager } from "../../../src/features/inspection-capability/AssociationManager";
 import { apiClient } from "../../../src/api/client";
 import { useAuthStore } from "../../../src/features/auth/authStore";
 
@@ -203,6 +204,45 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
         (cfg as unknown as { params?: Record<string, string> })?.params?.inspectionStandardCode === "GB 175-2023",
     );
     expect(hit).toBeTruthy();
+  });
+
+  fnTest(["M06.F02.I06"], "AssociationManager 列出/添加/移除关联", async () => {
+    // 给 OBJ-SP01-P1 建一条自定义参数关联用于移除
+    await fetch("http://localhost/api/inspection-parameters", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "IP-AM-1", name: "AM 参数", sourceType: "custom" }),
+    });
+    await fetch("http://localhost/api/inspection-object-parameters", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ inspectionObjectCode: "OBJ-SP01-P1", inspectionParameterCode: "IP-AM-1" }),
+    });
+    render(
+      <MemoryRouter>
+        <AssociationManager
+          ariaLabel="OBJ-SP01-P1 关联检测参数"
+          endpoint="/inspection-object-parameters"
+          parentParam="inspectionObjectCode"
+          parentCode="OBJ-SP01-P1"
+          targetLabel="检测参数"
+          targetEndpoint="/inspection-parameters"
+          targetParam="inspectionParameterCode"
+          targetValueKey="code"
+          targetTextKey="name"
+        />
+      </MemoryRouter>,
+    );
+    const user = userEvent.setup();
+    // 关联行以“移除”按钮唯一标识（下拉选项也含目标名称，故不能用 findByText 断言）
+    expect(await screen.findByRole("button", { name: "移除 IP-AM-1" })).toBeTruthy();
+    // 行内显示目标可读名称（限定在列表区域内，避开下拉选项同名文本）
+    expect(within(screen.getByRole("list")).getByText("AM 参数")).toBeTruthy();
+    // 移除
+    await user.click(screen.getByRole("button", { name: "移除 IP-AM-1" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: "移除 IP-AM-1" })).toBeNull(),
+    );
   });
 
   // 防御性用例：当 apiClient.get 返回畸形响应（无 items 字段，例如 MSW 未启动时
