@@ -1,0 +1,16 @@
+code,name,rawName,canonicalName,methodText,unit,sourceType
+IP-CON002,抗压强度,抗压强度,抗压强度,见对应标准条款,MPa,official
+IP-CON006,抗折强度,抗折强度,抗折强度,见对应标准条款,MPa,official
+IP-STE001,下屈服强度 ReL,下屈服强度 ReL,下屈服强度,见对应标准条款,MPa,official
+IP-STE003,抗拉强度 Rm,抗拉强度 Rm,抗拉强度,见对应标准条款,MPa,official
+IP-STE004,断后伸长率 A,断后伸长率 A,断后伸长率,见对应标准条款,%,official
+IP-STE009,重量偏差,重量偏差,重量偏差,见对应标准条款,%,official
+IP-CEM012,3天抗压强度,3天抗压强度,3天抗压强度,见对应标准条款,MPa,official
+IP-CEM014,28天抗压强度,28天抗压强度,28天抗压强度,见对应标准条款,MPa,official
+IP-CEM003,初凝时间,初凝时间,初凝时间,见对应标准条款,min,official
+IP-CEM004,终凝时间,终凝时间,终凝时间,见对应标准条款,min,official
+IP-SND002,含泥量,含泥量,含泥量,见对应标准条款,%,official
+IP-SND003,泥块含量,泥块含量,泥块含量,见对应标准条款,%,official
+IP-GRV005,压碎指标,压碎指标,压碎指标,见对应标准条款,%,official
+IP-RMK001,接头极限抗拉强度,接头极限抗拉强度,接头极限抗拉强度,见对应标准条款,MPa,official
+IP-RWD001,抗拉强度（焊接）,抗拉强度（焊接）,抗拉强度,见对应标准条款,MPa,official
