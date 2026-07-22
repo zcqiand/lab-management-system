@@ -1227,7 +1227,7 @@ export const handlers = [
         pageSize: Number(url.searchParams.get('pageSize') ?? '20'),
         keyword: url.searchParams.get('keyword') ?? undefined,
         keywordFields: ['code', 'name', 'officialNo'],
-        sortField: 'code',
+        sortField: 'sortOrder',
       }),
     )
   }),
@@ -1244,7 +1244,7 @@ export const handlers = [
         filters: {
           inspectionSpecialtyCode: url.searchParams.get('inspectionSpecialtyCode') ?? undefined,
         },
-        sortField: 'code',
+        sortField: 'sortOrder',
       }),
     )
   }),
@@ -1293,7 +1293,7 @@ export const handlers = [
         pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
         keyword: url.searchParams.get('keyword') ?? undefined,
         keywordFields: ['code', 'name', 'canonicalName'],
-        sortField: 'code',
+        sortField: 'sortOrder',
         match,
       }),
     )
@@ -1329,7 +1329,7 @@ export const handlers = [
         pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
         keyword: url.searchParams.get('keyword') ?? undefined,
         keywordFields: ['code', 'name'],
-        sortField: 'code',
+        sortField: 'sortOrder',
         match,
       }),
     )
@@ -1400,7 +1400,7 @@ export const handlers = [
 
   // M06.F01.I02 检测专项新建
   http.post('*/inspection-specialties', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ code: string; officialNo: string; name: string; isOfficial: boolean; enabled: boolean }>
+    const body = (await request.json()) as Partial<{ code: string; officialNo: string; name: string; isOfficial: boolean; enabled: boolean; sortOrder: number }>
     if (!body.code || !body.name) {
       return HttpResponse.json({ message: 'code/name 必填' }, { status: 400 })
     }
@@ -1414,6 +1414,7 @@ export const handlers = [
       name: body.name,
       isOfficial: body.isOfficial ?? false,
       enabled: body.enabled ?? true,
+      sortOrder: body.sortOrder ?? 999999,
     } as never)
     inspectionSpecialtyTable.update(`insp-sp-${body.code}`, { createdAt: now, updatedAt: now })
     return HttpResponse.json(inspectionSpecialtyTable.findById(`insp-sp-${body.code}`), { status: 201 })
@@ -1424,10 +1425,10 @@ export const handlers = [
     const id = String(params.id)
     const row = inspectionSpecialtyTable.findById(id)
     if (!row) return HttpResponse.json({ message: '检测专项不存在' }, { status: 404 })
-    const body = (await request.json()) as Partial<{ officialNo: string; name: string; isOfficial: boolean; enabled: boolean }>
+    const body = (await request.json()) as Partial<{ officialNo: string; name: string; isOfficial: boolean; enabled: boolean; sortOrder: number }>
     // 仅允许白名单字段进入 patch；code/id 不可变
     const patch: Record<string, unknown> = {}
-    for (const key of ['officialNo', 'name', 'isOfficial', 'enabled'] as const) {
+    for (const key of ['officialNo', 'name', 'isOfficial', 'enabled', 'sortOrder'] as const) {
       if (body[key] !== undefined) patch[key] = body[key]
     }
     const updated = inspectionSpecialtyTable.update(id, patch as Partial<{ officialNo: string; name: string; isOfficial: boolean; enabled: boolean }>)
@@ -1454,7 +1455,7 @@ export const handlers = [
 
   // M06.F02.I02 检测项目新建
   http.post('*/inspection-objects', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ code: string; inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean }>
+    const body = (await request.json()) as Partial<{ code: string; inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean; sortOrder: number }>
     if (!body.code || !body.inspectionSpecialtyCode) {
       return HttpResponse.json({ message: 'code/inspectionSpecialtyCode 必填' }, { status: 400 })
     }
@@ -1474,6 +1475,7 @@ export const handlers = [
       isOptionalForQualification: body.isOptionalForQualification ?? false,
       isOfficial: body.isOfficial ?? false,
       enabled: body.enabled ?? true,
+      sortOrder: body.sortOrder ?? 999999,
     } as never)
     inspectionObjectTable.update(`insp-obj-${body.code}`, { createdAt: now, updatedAt: now })
     return HttpResponse.json(inspectionObjectTable.findById(`insp-obj-${body.code}`), { status: 201 })
@@ -1487,7 +1489,7 @@ export const handlers = [
     const body = (await request.json()) as Record<string, unknown>
     // 仅允许白名单字段进入 patch；code/id 不可变
     const patch: Record<string, unknown> = {}
-    for (const key of ['inspectionSpecialtyCode', 'sourceProjectNo', 'sourceProjectName', 'name', 'isOptionalForQualification', 'isOfficial', 'enabled'] as const) {
+    for (const key of ['inspectionSpecialtyCode', 'sourceProjectNo', 'sourceProjectName', 'name', 'isOptionalForQualification', 'isOfficial', 'enabled', 'sortOrder'] as const) {
       if (body[key] !== undefined) patch[key] = body[key]
     }
     if (typeof patch.inspectionSpecialtyCode === 'string' && patch.inspectionSpecialtyCode !== row.inspectionSpecialtyCode) {
@@ -1495,7 +1497,7 @@ export const handlers = [
         return HttpResponse.json({ message: '检测专项不存在' }, { status: 400 })
       }
     }
-    const updated = inspectionObjectTable.update(id, patch as Partial<{ inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean }>)
+    const updated = inspectionObjectTable.update(id, patch as Partial<{ inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean; sortOrder: number }>)
     if (!updated) return HttpResponse.json({ message: '检测项目不存在' }, { status: 404 })
     return HttpResponse.json(updated)
   }),
@@ -1622,7 +1624,7 @@ export const handlers = [
 
   // M06.F03.I02 检测参数新建
   http.post('*/inspection-parameters', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ code: string; name: string; rawName: string; canonicalName: string; aliases: string[]; unit?: string; sourceType: 'official' | 'custom' }>
+    const body = (await request.json()) as Partial<{ code: string; name: string; rawName: string; canonicalName: string; aliases: string[]; unit?: string; sourceType: 'official' | 'custom'; sortOrder: number }>
     if (!body.code || !body.name) {
       return HttpResponse.json({ message: 'code/name 必填' }, { status: 400 })
     }
@@ -1640,6 +1642,7 @@ export const handlers = [
       aliases: body.aliases ?? [],
       unit: body.unit,
       sourceType: body.sourceType ?? 'custom',
+      sortOrder: body.sortOrder ?? 999999,
     } as never)
     inspectionParameterTable.update(id, { createdAt: now, updatedAt: now })
     return HttpResponse.json(inspectionParameterTable.findById(id), { status: 201 })
@@ -1653,10 +1656,10 @@ export const handlers = [
     const body = (await request.json()) as Record<string, unknown>
     // 仅允许白名单字段进入 patch；code/id 不可变
     const patch: Record<string, unknown> = {}
-    for (const key of ['name', 'rawName', 'canonicalName', 'methodText', 'aliases', 'unit', 'sourceType'] as const) {
+    for (const key of ['name', 'rawName', 'canonicalName', 'methodText', 'aliases', 'unit', 'sourceType', 'sortOrder'] as const) {
       if (body[key] !== undefined) patch[key] = body[key]
     }
-    const updated = inspectionParameterTable.update(id, patch as Partial<{ name: string; rawName: string; canonicalName: string; methodText: string; aliases: string[]; unit: string; sourceType: 'official' | 'custom' }>)
+    const updated = inspectionParameterTable.update(id, patch as Partial<{ name: string; rawName: string; canonicalName: string; methodText: string; aliases: string[]; unit: string; sourceType: 'official' | 'custom'; sortOrder: number }>)
     if (!updated) return HttpResponse.json({ message: '检测参数不存在' }, { status: 404 })
     return HttpResponse.json(updated)
   }),
@@ -1680,7 +1683,7 @@ export const handlers = [
 
   // M06.F04.I02 检测标准新建
   http.post('*/inspection-standards', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ code: string; name: string; version?: string; status: 'active' | 'superseded' | 'draft' }>
+    const body = (await request.json()) as Partial<{ code: string; name: string; version?: string; status: 'active' | 'superseded' | 'draft'; sortOrder: number }>
     if (!body.code || !body.name) {
       return HttpResponse.json({ message: 'code/name 必填' }, { status: 400 })
     }
@@ -1694,6 +1697,7 @@ export const handlers = [
       name: body.name,
       version: body.version,
       status: body.status ?? 'active',
+      sortOrder: body.sortOrder ?? 999999,
     } as never)
     inspectionStandardTable.update(id, { createdAt: now, updatedAt: now })
     return HttpResponse.json(inspectionStandardTable.findById(id), { status: 201 })
@@ -1713,10 +1717,10 @@ export const handlers = [
     const body = (await request.json()) as Record<string, unknown>
     // 仅允许白名单字段进入 patch；code/id 不可变
     const patch: Record<string, unknown> = {}
-    for (const key of ['name', 'version', 'status', 'sourceDocumentId'] as const) {
+    for (const key of ['name', 'version', 'status', 'sourceDocumentId', 'sortOrder'] as const) {
       if (body[key] !== undefined) patch[key] = body[key]
     }
-    const updated = inspectionStandardTable.update(id, patch as Partial<{ name: string; version: string; status: 'active' | 'superseded' | 'draft'; sourceDocumentId: string }>)
+    const updated = inspectionStandardTable.update(id, patch as Partial<{ name: string; version: string; status: 'active' | 'superseded' | 'draft'; sourceDocumentId: string; sortOrder: number }>)
     if (!updated) return HttpResponse.json({ message: '检测标准不存在' }, { status: 404 })
     return HttpResponse.json(updated)
   }),

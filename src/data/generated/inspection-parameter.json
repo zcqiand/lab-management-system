@@ -6,7 +6,8 @@
     "canonicalName": "凝结时间",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 1
   },
   {
     "code": "IP-0002",
@@ -15,7 +16,8 @@
     "canonicalName": "安定性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 2
   },
   {
     "code": "IP-0003",
@@ -24,7 +26,8 @@
     "canonicalName": "胶砂强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 3
   },
   {
     "code": "IP-0004",
@@ -33,7 +36,8 @@
     "canonicalName": "氯离子含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 4
   },
   {
     "code": "IP-0005",
@@ -42,7 +46,8 @@
     "canonicalName": "保水率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 5
   },
   {
     "code": "IP-0006",
@@ -51,7 +56,8 @@
     "canonicalName": "氧化镁含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 6
   },
   {
     "code": "IP-0007",
@@ -60,7 +66,8 @@
     "canonicalName": "碱含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 7
   },
   {
     "code": "IP-0008",
@@ -69,7 +76,8 @@
     "canonicalName": "三氧化硫含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 8
   },
   {
     "code": "IP-0009",
@@ -78,7 +86,8 @@
     "canonicalName": "可溶物含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 9
   },
   {
     "code": "IP-0010",
@@ -87,7 +96,8 @@
     "canonicalName": "拉力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 10
   },
   {
     "code": "IP-0011",
@@ -96,7 +106,8 @@
     "canonicalName": "延伸率（或最大力时延伸率）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 11
   },
   {
     "code": "IP-0012",
@@ -105,7 +116,8 @@
     "canonicalName": "低温柔度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 12
   },
   {
     "code": "IP-0013",
@@ -114,7 +126,8 @@
     "canonicalName": "热老化后低温柔度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 13
   },
   {
     "code": "IP-0014",
@@ -123,7 +136,8 @@
     "canonicalName": "不透水性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 14
   },
   {
     "code": "IP-0015",
@@ -132,7 +146,8 @@
     "canonicalName": "耐热度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 15
   },
   {
     "code": "IP-0016",
@@ -141,7 +156,8 @@
     "canonicalName": "断裂拉伸强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 16
   },
   {
     "code": "IP-0017",
@@ -150,7 +166,8 @@
     "canonicalName": "断裂伸长率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 17
   },
   {
     "code": "IP-0018",
@@ -159,7 +176,8 @@
     "canonicalName": "撕裂强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 18
   },
   {
     "code": "IP-0019",
@@ -168,7 +186,8 @@
     "canonicalName": "接缝剥离强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 19
   },
   {
     "code": "IP-0020",
@@ -177,7 +196,8 @@
     "canonicalName": "搭接缝不透水性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 20
   },
   {
     "code": "IP-0021",
@@ -186,7 +206,8 @@
     "canonicalName": "耐热性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 21
   },
   {
     "code": "IP-0022",
@@ -195,7 +216,8 @@
     "canonicalName": "低温柔性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 22
   },
   {
     "code": "IP-0023",
@@ -204,7 +226,8 @@
     "canonicalName": "拉伸粘结性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 23
   },
   {
     "code": "IP-0024",
@@ -213,7 +236,8 @@
     "canonicalName": "施工度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 24
   },
   {
     "code": "IP-0025",
@@ -222,7 +246,8 @@
     "canonicalName": "表干时间",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 25
   },
   {
     "code": "IP-0026",
@@ -231,7 +256,8 @@
     "canonicalName": "挤出性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 26
   },
   {
     "code": "IP-0027",
@@ -240,7 +266,8 @@
     "canonicalName": "弹性恢复率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 27
   },
   {
     "code": "IP-0028",
@@ -249,7 +276,8 @@
     "canonicalName": "浸水后定伸粘结性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 28
   },
   {
     "code": "IP-0029",
@@ -258,7 +286,8 @@
     "canonicalName": "流动性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 29
   },
   {
     "code": "IP-0030",
@@ -267,7 +296,8 @@
     "canonicalName": "单位面积质量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 30
   },
   {
     "code": "IP-0031",
@@ -276,7 +306,8 @@
     "canonicalName": "膨润土膨胀指数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 31
   },
   {
     "code": "IP-0032",
@@ -285,7 +316,8 @@
     "canonicalName": "渗透系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 32
   },
   {
     "code": "IP-0033",
@@ -294,7 +326,8 @@
     "canonicalName": "滤失量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 33
   },
   {
     "code": "IP-0034",
@@ -303,7 +336,8 @@
     "canonicalName": "拉伸强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 34
   },
   {
     "code": "IP-0035",
@@ -312,7 +346,8 @@
     "canonicalName": "硬度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 35
   },
   {
     "code": "IP-0036",
@@ -321,7 +356,8 @@
     "canonicalName": "7d 膨胀率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 36
   },
   {
     "code": "IP-0037",
@@ -330,7 +366,8 @@
     "canonicalName": "最终膨胀率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 37
   },
   {
     "code": "IP-0038",
@@ -339,7 +376,8 @@
     "canonicalName": "耐水性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 38
   },
   {
     "code": "IP-0039",
@@ -348,7 +386,8 @@
     "canonicalName": "体积膨胀倍率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 39
   },
   {
     "code": "IP-0040",
@@ -357,7 +396,8 @@
     "canonicalName": "压缩永久变形",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 40
   },
   {
     "code": "IP-0041",
@@ -366,7 +406,8 @@
     "canonicalName": "低温弯折",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 41
   },
   {
     "code": "IP-0042",
@@ -375,7 +416,8 @@
     "canonicalName": "剥离强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 42
   },
   {
     "code": "IP-0043",
@@ -384,7 +426,8 @@
     "canonicalName": "浸水168h 后的剥离强度保持率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 43
   },
   {
     "code": "IP-0044",
@@ -393,7 +436,8 @@
     "canonicalName": "延伸率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 44
   },
   {
     "code": "IP-0045",
@@ -402,7 +446,8 @@
     "canonicalName": "固体含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 45
   },
   {
     "code": "IP-0046",
@@ -411,7 +456,8 @@
     "canonicalName": "7d 粘结强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 46
   },
   {
     "code": "IP-0047",
@@ -420,7 +466,8 @@
     "canonicalName": "7d 抗渗性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 47
   },
   {
     "code": "IP-0048",
@@ -429,7 +476,8 @@
     "canonicalName": "拉伸模量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 48
   },
   {
     "code": "IP-0049",
@@ -438,7 +486,8 @@
     "canonicalName": "定伸粘结性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 49
   },
   {
     "code": "IP-0050",
@@ -447,7 +496,8 @@
     "canonicalName": "剪切性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 50
   },
   {
     "code": "IP-0051",
@@ -456,7 +506,8 @@
     "canonicalName": "剥离性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 51
   },
   {
     "code": "IP-0052",
@@ -465,7 +516,8 @@
     "canonicalName": "涂膜抗渗性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 52
   },
   {
     "code": "IP-0053",
@@ -474,7 +526,8 @@
     "canonicalName": "浸水168h 后拉伸强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 53
   },
   {
     "code": "IP-0054",
@@ -483,7 +536,8 @@
     "canonicalName": "浸水168h 后断裂伸长率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 54
   },
   {
     "code": "IP-0055",
@@ -492,7 +546,8 @@
     "canonicalName": "抗压强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 55
   },
   {
     "code": "IP-0056",
@@ -501,7 +556,8 @@
     "canonicalName": "抗折强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 56
   },
   {
     "code": "IP-0057",
@@ -510,7 +566,8 @@
     "canonicalName": "粘结强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 57
   },
   {
     "code": "IP-0058",
@@ -519,7 +576,8 @@
     "canonicalName": "抗渗性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 58
   },
   {
     "code": "IP-0059",
@@ -528,7 +586,8 @@
     "canonicalName": "吸水率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 59
   },
   {
     "code": "IP-0060",
@@ -537,7 +596,8 @@
     "canonicalName": "弯曲强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 60
   },
   {
     "code": "IP-0061",
@@ -546,7 +606,8 @@
     "canonicalName": "抗冻性（耐冻融性）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 61
   },
   {
     "code": "IP-0062",
@@ -555,7 +616,8 @@
     "canonicalName": "放射性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 62
   },
   {
     "code": "IP-0063",
@@ -564,7 +626,8 @@
     "canonicalName": "静液压强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 63
   },
   {
     "code": "IP-0064",
@@ -573,7 +636,8 @@
     "canonicalName": "落锤冲击试验",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 64
   },
   {
     "code": "IP-0065",
@@ -582,7 +646,8 @@
     "canonicalName": "外观质量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 65
   },
   {
     "code": "IP-0066",
@@ -591,7 +656,8 @@
     "canonicalName": "截面尺寸",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 66
   },
   {
     "code": "IP-0067",
@@ -600,7 +666,8 @@
     "canonicalName": "纵向回缩率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 67
   },
   {
     "code": "IP-0068",
@@ -609,7 +676,8 @@
     "canonicalName": "交联度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 68
   },
   {
     "code": "IP-0069",
@@ -618,7 +686,8 @@
     "canonicalName": "熔融温度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 69
   },
   {
     "code": "IP-0070",
@@ -627,7 +696,8 @@
     "canonicalName": "简支梁冲击",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 70
   },
   {
     "code": "IP-0071",
@@ -636,7 +706,8 @@
     "canonicalName": "炭黑分散度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 71
   },
   {
     "code": "IP-0072",
@@ -645,7 +716,8 @@
     "canonicalName": "炭黑含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 72
   },
   {
     "code": "IP-0073",
@@ -654,7 +726,8 @@
     "canonicalName": "拉伸屈服应力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 73
   },
   {
     "code": "IP-0074",
@@ -663,7 +736,8 @@
     "canonicalName": "密度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 74
   },
   {
     "code": "IP-0075",
@@ -672,7 +746,8 @@
     "canonicalName": "爆破压力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 75
   },
   {
     "code": "IP-0076",
@@ -681,7 +756,8 @@
     "canonicalName": "管环剥离力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 76
   },
   {
     "code": "IP-0077",
@@ -690,7 +766,8 @@
     "canonicalName": "熔体质量流动速率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 77
   },
   {
     "code": "IP-0078",
@@ -699,7 +776,8 @@
     "canonicalName": "氧化诱导时间",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 78
   },
   {
     "code": "IP-0079",
@@ -708,7 +786,8 @@
     "canonicalName": "维卡软化温度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 79
   },
   {
     "code": "IP-0080",
@@ -717,7 +796,8 @@
     "canonicalName": "热变形温度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 80
   },
   {
     "code": "IP-0081",
@@ -726,7 +806,8 @@
     "canonicalName": "拉伸断裂伸长率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 81
   },
   {
     "code": "IP-0082",
@@ -735,7 +816,8 @@
     "canonicalName": "拉伸弹性模量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 82
   },
   {
     "code": "IP-0083",
@@ -744,7 +826,8 @@
     "canonicalName": "灰分",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 83
   },
   {
     "code": "IP-0084",
@@ -753,7 +836,8 @@
     "canonicalName": "烘箱试验",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 84
   },
   {
     "code": "IP-0085",
@@ -762,7 +846,8 @@
     "canonicalName": "坠落试验",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 85
   },
   {
     "code": "IP-0086",
@@ -771,7 +856,8 @@
     "canonicalName": "屈服强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 86
   },
   {
     "code": "IP-0087",
@@ -780,7 +866,8 @@
     "canonicalName": "抗拉强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 87
   },
   {
     "code": "IP-0088",
@@ -789,7 +876,8 @@
     "canonicalName": "伸长率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 88
   },
   {
     "code": "IP-0089",
@@ -798,7 +886,8 @@
     "canonicalName": "厚度偏差",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 89
   },
   {
     "code": "IP-0090",
@@ -807,7 +896,8 @@
     "canonicalName": "承载力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 90
   },
   {
     "code": "IP-0091",
@@ -816,7 +906,8 @@
     "canonicalName": "挠度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 91
   },
   {
     "code": "IP-0092",
@@ -825,7 +916,8 @@
     "canonicalName": "裂缝宽度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 92
   },
   {
     "code": "IP-0093",
@@ -834,7 +926,8 @@
     "canonicalName": "抗裂检验",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 93
   },
   {
     "code": "IP-0094",
@@ -843,7 +936,8 @@
     "canonicalName": "构件尺寸",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 94
   },
   {
     "code": "IP-0095",
@@ -852,7 +946,8 @@
     "canonicalName": "保护层厚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 95
   },
   {
     "code": "IP-0096",
@@ -861,7 +956,8 @@
     "canonicalName": "整根钢绞线最大力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 96
   },
   {
     "code": "IP-0097",
@@ -870,7 +966,8 @@
     "canonicalName": "最大力总伸长率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 97
   },
   {
     "code": "IP-0098",
@@ -879,7 +976,8 @@
     "canonicalName": "0.2%屈服力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 98
   },
   {
     "code": "IP-0099",
@@ -888,7 +986,8 @@
     "canonicalName": "弹性模量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 99
   },
   {
     "code": "IP-0100",
@@ -897,7 +996,8 @@
     "canonicalName": "松弛率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 100
   },
   {
     "code": "IP-0101",
@@ -906,7 +1006,8 @@
     "canonicalName": "尺寸",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 101
   },
   {
     "code": "IP-0102",
@@ -915,7 +1016,8 @@
     "canonicalName": "静载锚固性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 102
   },
   {
     "code": "IP-0103",
@@ -924,7 +1026,8 @@
     "canonicalName": "疲劳荷载性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 103
   },
   {
     "code": "IP-0104",
@@ -933,7 +1036,8 @@
     "canonicalName": "环刚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 104
   },
   {
     "code": "IP-0105",
@@ -942,7 +1046,8 @@
     "canonicalName": "局部横向载荷",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 105
   },
   {
     "code": "IP-0106",
@@ -951,7 +1056,8 @@
     "canonicalName": "纵向载荷",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 106
   },
   {
     "code": "IP-0107",
@@ -960,7 +1066,8 @@
     "canonicalName": "柔韧性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 107
   },
   {
     "code": "IP-0108",
@@ -969,7 +1076,8 @@
     "canonicalName": "抗冲击性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 108
   },
   {
     "code": "IP-0109",
@@ -978,7 +1086,8 @@
     "canonicalName": "拉伸性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 109
   },
   {
     "code": "IP-0110",
@@ -987,7 +1096,8 @@
     "canonicalName": "拉拔力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 110
   },
   {
     "code": "IP-0111",
@@ -996,7 +1106,8 @@
     "canonicalName": "密封性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 111
   },
   {
     "code": "IP-0112",
@@ -1005,7 +1116,8 @@
     "canonicalName": "局部横向荷载",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 112
   },
   {
     "code": "IP-0113",
@@ -1014,7 +1126,8 @@
     "canonicalName": "弯曲后抗渗漏性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 113
   },
   {
     "code": "IP-0114",
@@ -1023,7 +1136,8 @@
     "canonicalName": "游离甲醛",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 114
   },
   {
     "code": "IP-0115",
@@ -1032,7 +1146,8 @@
     "canonicalName": "VOC",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 115
   },
   {
     "code": "IP-0116",
@@ -1041,7 +1156,8 @@
     "canonicalName": "苯",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 116
   },
   {
     "code": "IP-0117",
@@ -1050,7 +1166,8 @@
     "canonicalName": "甲苯",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 117
   },
   {
     "code": "IP-0118",
@@ -1059,7 +1176,8 @@
     "canonicalName": "二甲苯",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 118
   },
   {
     "code": "IP-0119",
@@ -1068,7 +1186,8 @@
     "canonicalName": "乙苯",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 119
   },
   {
     "code": "IP-0120",
@@ -1077,7 +1196,8 @@
     "canonicalName": "游离甲苯二异氰酸酯（TDI）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 120
   },
   {
     "code": "IP-0121",
@@ -1086,7 +1206,8 @@
     "canonicalName": "氨",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 121
   },
   {
     "code": "IP-0122",
@@ -1095,7 +1216,8 @@
     "canonicalName": "屈服承载力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 122
   },
   {
     "code": "IP-0123",
@@ -1104,7 +1226,8 @@
     "canonicalName": "弹性刚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 123
   },
   {
     "code": "IP-0124",
@@ -1113,7 +1236,8 @@
     "canonicalName": "设计承载力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 124
   },
   {
     "code": "IP-0125",
@@ -1122,7 +1246,8 @@
     "canonicalName": "延性系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 125
   },
   {
     "code": "IP-0126",
@@ -1131,7 +1256,8 @@
     "canonicalName": "滞回曲线面积",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 126
   },
   {
     "code": "IP-0127",
@@ -1140,7 +1266,8 @@
     "canonicalName": "极限位移",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 127
   },
   {
     "code": "IP-0128",
@@ -1149,7 +1276,8 @@
     "canonicalName": "极限承载力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 128
   },
   {
     "code": "IP-0129",
@@ -1158,7 +1286,8 @@
     "canonicalName": "最大阻尼力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 129
   },
   {
     "code": "IP-0130",
@@ -1167,7 +1296,8 @@
     "canonicalName": "阻尼力与速度相关规律",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 130
   },
   {
     "code": "IP-0131",
@@ -1176,7 +1306,8 @@
     "canonicalName": "滞回曲线",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 131
   },
   {
     "code": "IP-0132",
@@ -1185,7 +1316,8 @@
     "canonicalName": "竖向压缩刚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 132
   },
   {
     "code": "IP-0133",
@@ -1194,7 +1326,8 @@
     "canonicalName": "竖向变形性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 133
   },
   {
     "code": "IP-0134",
@@ -1203,7 +1336,8 @@
     "canonicalName": "竖向极限压应力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 134
   },
   {
     "code": "IP-0135",
@@ -1212,7 +1346,8 @@
     "canonicalName": "当水平位移为支座内部橡胶直径0.55 倍状态时的极限压应力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 135
   },
   {
     "code": "IP-0136",
@@ -1221,7 +1356,8 @@
     "canonicalName": "竖向极限拉应力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 136
   },
   {
     "code": "IP-0137",
@@ -1230,7 +1366,8 @@
     "canonicalName": "竖向拉伸刚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 137
   },
   {
     "code": "IP-0138",
@@ -1239,7 +1376,8 @@
     "canonicalName": "侧向不均匀变形",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 138
   },
   {
     "code": "IP-0139",
@@ -1248,7 +1386,8 @@
     "canonicalName": "水平等效刚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 139
   },
   {
     "code": "IP-0140",
@@ -1257,7 +1396,8 @@
     "canonicalName": "屈服后水平刚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 140
   },
   {
     "code": "IP-0141",
@@ -1266,7 +1406,8 @@
     "canonicalName": "等效阻尼比",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 141
   },
   {
     "code": "IP-0142",
@@ -1275,7 +1416,8 @@
     "canonicalName": "屈服力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 142
   },
   {
     "code": "IP-0143",
@@ -1284,7 +1426,8 @@
     "canonicalName": "水平极限变形能力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 143
   },
   {
     "code": "IP-0144",
@@ -1293,7 +1436,8 @@
     "canonicalName": "竖向压缩变形",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 144
   },
   {
     "code": "IP-0145",
@@ -1302,7 +1446,8 @@
     "canonicalName": "竖向承载力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 145
   },
   {
     "code": "IP-0146",
@@ -1311,7 +1456,8 @@
     "canonicalName": "静摩擦系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 146
   },
   {
     "code": "IP-0147",
@@ -1320,7 +1466,8 @@
     "canonicalName": "动摩擦系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 147
   },
   {
     "code": "IP-0148",
@@ -1329,7 +1476,8 @@
     "canonicalName": "屈服后刚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 148
   },
   {
     "code": "IP-0149",
@@ -1338,7 +1486,8 @@
     "canonicalName": "极限剪切变形",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 149
   },
   {
     "code": "IP-0150",
@@ -1347,7 +1496,8 @@
     "canonicalName": "断后伸长率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 150
   },
   {
     "code": "IP-0151",
@@ -1356,7 +1506,8 @@
     "canonicalName": "最大力下总延伸率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 151
   },
   {
     "code": "IP-0152",
@@ -1365,7 +1516,8 @@
     "canonicalName": "反向弯曲",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 152
   },
   {
     "code": "IP-0153",
@@ -1374,7 +1526,8 @@
     "canonicalName": "重量偏差",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 153
   },
   {
     "code": "IP-0154",
@@ -1383,7 +1536,8 @@
     "canonicalName": "残余变形",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 154
   },
   {
     "code": "IP-0155",
@@ -1392,7 +1546,8 @@
     "canonicalName": "弯曲性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 155
   },
   {
     "code": "IP-0156",
@@ -1401,7 +1556,8 @@
     "canonicalName": "含水率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 156
   },
   {
     "code": "IP-0157",
@@ -1410,7 +1566,8 @@
     "canonicalName": "静曲强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 157
   },
   {
     "code": "IP-0158",
@@ -1419,7 +1576,8 @@
     "canonicalName": "钉抗弯强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 158
   },
   {
     "code": "IP-0159",
@@ -1428,7 +1586,8 @@
     "canonicalName": "抗剪强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 159
   },
   {
     "code": "IP-0160",
@@ -1437,7 +1596,8 @@
     "canonicalName": "正拉粘结强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 160
   },
   {
     "code": "IP-0161",
@@ -1446,7 +1606,8 @@
     "canonicalName": "抗拉强度标准值（纤维复合材）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 161
   },
   {
     "code": "IP-0162",
@@ -1455,7 +1616,8 @@
     "canonicalName": "弹性模量（纤维复合材）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 162
   },
   {
     "code": "IP-0163",
@@ -1464,7 +1626,8 @@
     "canonicalName": "极限伸长率（纤维复合材）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 163
   },
   {
     "code": "IP-0164",
@@ -1473,7 +1636,8 @@
     "canonicalName": "不挥发物含量(结构胶粘剂)",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 164
   },
   {
     "code": "IP-0165",
@@ -1482,7 +1646,8 @@
     "canonicalName": "耐湿热老化性能(结构胶粘剂)",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 165
   },
   {
     "code": "IP-0166",
@@ -1491,7 +1656,8 @@
     "canonicalName": "单位面积质量（纤维织物）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 166
   },
   {
     "code": "IP-0167",
@@ -1500,7 +1666,8 @@
     "canonicalName": "纤维体积含量（预成型板）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 167
   },
   {
     "code": "IP-0168",
@@ -1509,7 +1676,8 @@
     "canonicalName": "K 数（碳纤维织物）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 168
   },
   {
     "code": "IP-0169",
@@ -1518,7 +1686,8 @@
     "canonicalName": "化学成分",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 169
   },
   {
     "code": "IP-0170",
@@ -1527,7 +1696,8 @@
     "canonicalName": "颗粒级配",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 170
   },
   {
     "code": "IP-0171",
@@ -1536,7 +1706,8 @@
     "canonicalName": "含泥量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 171
   },
   {
     "code": "IP-0172",
@@ -1545,7 +1716,8 @@
     "canonicalName": "泥块含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 172
   },
   {
     "code": "IP-0173",
@@ -1554,7 +1726,8 @@
     "canonicalName": "压碎值指标",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 173
   },
   {
     "code": "IP-0174",
@@ -1563,7 +1736,8 @@
     "canonicalName": "针片状颗粒含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 174
   },
   {
     "code": "IP-0175",
@@ -1572,7 +1746,8 @@
     "canonicalName": "坚固性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 175
   },
   {
     "code": "IP-0176",
@@ -1581,7 +1756,8 @@
     "canonicalName": "碱活性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 176
   },
   {
     "code": "IP-0177",
@@ -1590,7 +1766,8 @@
     "canonicalName": "表观密度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 177
   },
   {
     "code": "IP-0178",
@@ -1599,7 +1776,8 @@
     "canonicalName": "堆积密度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 178
   },
   {
     "code": "IP-0179",
@@ -1608,7 +1786,8 @@
     "canonicalName": "空隙率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 179
   },
   {
     "code": "IP-0180",
@@ -1617,7 +1796,8 @@
     "canonicalName": "亚甲蓝值与石粉含量（人工砂）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 180
   },
   {
     "code": "IP-0181",
@@ -1626,7 +1806,8 @@
     "canonicalName": "压碎指标（人工砂）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 181
   },
   {
     "code": "IP-0182",
@@ -1635,7 +1816,8 @@
     "canonicalName": "硫化物和硫酸盐含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 182
   },
   {
     "code": "IP-0183",
@@ -1644,7 +1826,8 @@
     "canonicalName": "轻物质含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 183
   },
   {
     "code": "IP-0184",
@@ -1653,7 +1836,8 @@
     "canonicalName": "有机物含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 184
   },
   {
     "code": "IP-0185",
@@ -1662,7 +1846,8 @@
     "canonicalName": "贝壳含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 185
   },
   {
     "code": "IP-0186",
@@ -1671,7 +1856,8 @@
     "canonicalName": "筒压强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 186
   },
   {
     "code": "IP-0187",
@@ -1680,7 +1866,8 @@
     "canonicalName": "粒型系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 187
   },
   {
     "code": "IP-0188",
@@ -1689,7 +1876,8 @@
     "canonicalName": "筛分析",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 188
   },
   {
     "code": "IP-0189",
@@ -1698,7 +1886,8 @@
     "canonicalName": "干密度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 189
   },
   {
     "code": "IP-0190",
@@ -1707,7 +1896,8 @@
     "canonicalName": "抗渗性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 190
   },
   {
     "code": "IP-0191",
@@ -1716,7 +1906,8 @@
     "canonicalName": "抗弯曲性能（或承载力）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 191
   },
   {
     "code": "IP-0192",
@@ -1725,7 +1916,8 @@
     "canonicalName": "耐急冷急热性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 192
   },
   {
     "code": "IP-0193",
@@ -1734,7 +1926,8 @@
     "canonicalName": "抗弯破坏荷载",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 193
   },
   {
     "code": "IP-0194",
@@ -1743,7 +1936,8 @@
     "canonicalName": "吊挂力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 194
   },
   {
     "code": "IP-0195",
@@ -1752,7 +1946,8 @@
     "canonicalName": "抗冻性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 195
   },
   {
     "code": "IP-0196",
@@ -1761,7 +1956,8 @@
     "canonicalName": "抗渗等级",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 196
   },
   {
     "code": "IP-0197",
@@ -1770,7 +1966,8 @@
     "canonicalName": "坍落度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 197
   },
   {
     "code": "IP-0198",
@@ -1779,7 +1976,8 @@
     "canonicalName": "拌合用水（氯离子含量）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 198
   },
   {
     "code": "IP-0199",
@@ -1788,7 +1986,8 @@
     "canonicalName": "限制膨胀率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 199
   },
   {
     "code": "IP-0200",
@@ -1797,7 +1996,8 @@
     "canonicalName": "含气量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 200
   },
   {
     "code": "IP-0201",
@@ -1806,7 +2006,8 @@
     "canonicalName": "劈裂抗拉强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 201
   },
   {
     "code": "IP-0202",
@@ -1815,7 +2016,8 @@
     "canonicalName": "静力受压弹性模量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 202
   },
   {
     "code": "IP-0203",
@@ -1824,7 +2026,8 @@
     "canonicalName": "抑制碱-骨料反应有效性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 203
   },
   {
     "code": "IP-0204",
@@ -1833,7 +2036,8 @@
     "canonicalName": "配合比设计",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 204
   },
   {
     "code": "IP-0205",
@@ -1842,7 +2046,8 @@
     "canonicalName": "拌合用水（pH 值、硫酸根离子含量、不溶物含量、可溶物含量）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 205
   },
   {
     "code": "IP-0206",
@@ -1851,7 +2056,8 @@
     "canonicalName": "减水率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 206
   },
   {
     "code": "IP-0207",
@@ -1860,7 +2066,8 @@
     "canonicalName": "pH 值",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 207
   },
   {
     "code": "IP-0208",
@@ -1869,7 +2076,8 @@
     "canonicalName": "密度（或细度）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 208
   },
   {
     "code": "IP-0209",
@@ -1878,7 +2086,8 @@
     "canonicalName": "抗压强度比",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 209
   },
   {
     "code": "IP-0210",
@@ -1887,7 +2096,8 @@
     "canonicalName": "凝结时间（差）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 210
   },
   {
     "code": "IP-0211",
@@ -1896,7 +2106,8 @@
     "canonicalName": "固体含量（或含水率）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 211
   },
   {
     "code": "IP-0212",
@@ -1905,7 +2116,8 @@
     "canonicalName": "泌水率比",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 212
   },
   {
     "code": "IP-0213",
@@ -1914,7 +2126,8 @@
     "canonicalName": "相对耐久性指标",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 213
   },
   {
     "code": "IP-0214",
@@ -1923,7 +2136,8 @@
     "canonicalName": "含气量1h 经时变化量（坍落度、含气量）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 214
   },
   {
     "code": "IP-0215",
@@ -1932,7 +2146,8 @@
     "canonicalName": "硫酸钠含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 215
   },
   {
     "code": "IP-0216",
@@ -1941,7 +2156,8 @@
     "canonicalName": "收缩率比",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 216
   },
   {
     "code": "IP-0217",
@@ -1950,7 +2166,8 @@
     "canonicalName": "细度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 217
   },
   {
     "code": "IP-0218",
@@ -1959,7 +2176,8 @@
     "canonicalName": "烧失量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 218
   },
   {
     "code": "IP-0219",
@@ -1968,7 +2186,8 @@
     "canonicalName": "需水量比",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 219
   },
   {
     "code": "IP-0220",
@@ -1977,7 +2196,8 @@
     "canonicalName": "比表面积",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 220
   },
   {
     "code": "IP-0221",
@@ -1986,7 +2206,8 @@
     "canonicalName": "活性指数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 221
   },
   {
     "code": "IP-0222",
@@ -1995,7 +2216,8 @@
     "canonicalName": "流动度比",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 222
   },
   {
     "code": "IP-0223",
@@ -2004,7 +2226,8 @@
     "canonicalName": "稠度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 223
   },
   {
     "code": "IP-0224",
@@ -2013,7 +2236,8 @@
     "canonicalName": "拉伸粘结强度（抹灰、砌筑）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 224
   },
   {
     "code": "IP-0225",
@@ -2022,7 +2246,8 @@
     "canonicalName": "分层度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 225
   },
   {
     "code": "IP-0226",
@@ -2031,7 +2256,8 @@
     "canonicalName": "最大干密度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 226
   },
   {
     "code": "IP-0227",
@@ -2040,7 +2266,8 @@
     "canonicalName": "最优含水率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 227
   },
   {
     "code": "IP-0228",
@@ -2049,7 +2276,8 @@
     "canonicalName": "压实系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 228
   },
   {
     "code": "IP-0229",
@@ -2058,7 +2286,8 @@
     "canonicalName": "混凝土强度（回弹法/钻芯法/回弹-钻芯综合法/超声回弹综合法等）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 229
   },
   {
     "code": "IP-0230",
@@ -2067,7 +2296,8 @@
     "canonicalName": "砂浆强度（推出法/筒压法/砂浆片剪切法/回弹法/点荷法/贯入法等）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 230
   },
   {
     "code": "IP-0231",
@@ -2076,7 +2306,8 @@
     "canonicalName": "砖强度（回弹法）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 231
   },
   {
     "code": "IP-0232",
@@ -2085,7 +2316,8 @@
     "canonicalName": "砌体抗压强度（原位轴压法/扁顶法）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 232
   },
   {
     "code": "IP-0233",
@@ -2094,7 +2326,8 @@
     "canonicalName": "砌体抗剪强度（原位单剪法/原位单砖双剪法）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 233
   },
   {
     "code": "IP-0234",
@@ -2103,7 +2336,8 @@
     "canonicalName": "钢筋保护层厚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 234
   },
   {
     "code": "IP-0235",
@@ -2112,7 +2346,8 @@
     "canonicalName": "钢筋数量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 235
   },
   {
     "code": "IP-0236",
@@ -2121,7 +2356,8 @@
     "canonicalName": "间距",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 236
   },
   {
     "code": "IP-0237",
@@ -2130,7 +2366,8 @@
     "canonicalName": "直径",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 237
   },
   {
     "code": "IP-0238",
@@ -2139,7 +2376,8 @@
     "canonicalName": "锈蚀状况",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 238
   },
   {
     "code": "IP-0239",
@@ -2148,7 +2386,8 @@
     "canonicalName": "锚固承载力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 239
   },
   {
     "code": "IP-0240",
@@ -2157,7 +2396,8 @@
     "canonicalName": "轴线位置",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 240
   },
   {
     "code": "IP-0241",
@@ -2166,7 +2406,8 @@
     "canonicalName": "标高",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 241
   },
   {
     "code": "IP-0242",
@@ -2175,7 +2416,8 @@
     "canonicalName": "预埋件位置",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 242
   },
   {
     "code": "IP-0243",
@@ -2184,7 +2426,8 @@
     "canonicalName": "预留插筋位置及外露长度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 243
   },
   {
     "code": "IP-0244",
@@ -2193,7 +2436,8 @@
     "canonicalName": "垂直度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 244
   },
   {
     "code": "IP-0245",
@@ -2202,7 +2446,8 @@
     "canonicalName": "平整度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 245
   },
   {
     "code": "IP-0246",
@@ -2211,7 +2456,8 @@
     "canonicalName": "构件挠度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 246
   },
   {
     "code": "IP-0247",
@@ -2220,7 +2466,8 @@
     "canonicalName": "平面外变形",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 247
   },
   {
     "code": "IP-0248",
@@ -2229,7 +2476,8 @@
     "canonicalName": "内部缺陷",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 248
   },
   {
     "code": "IP-0249",
@@ -2238,7 +2486,8 @@
     "canonicalName": "钢筋套筒灌浆连接灌浆饱满性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 249
   },
   {
     "code": "IP-0250",
@@ -2247,7 +2496,8 @@
     "canonicalName": "钢筋浆锚搭接连接灌浆饱满性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 250
   },
   {
     "code": "IP-0251",
@@ -2256,7 +2506,8 @@
     "canonicalName": "外墙板接缝防水性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 251
   },
   {
     "code": "IP-0252",
@@ -2265,7 +2516,8 @@
     "canonicalName": "静载试验",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 252
   },
   {
     "code": "IP-0253",
@@ -2274,7 +2526,8 @@
     "canonicalName": "动力测试",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 253
   },
   {
     "code": "IP-0254",
@@ -2283,7 +2536,8 @@
     "canonicalName": "后置埋件现场拉拔力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 254
   },
   {
     "code": "IP-0255",
@@ -2292,7 +2546,8 @@
     "canonicalName": "饰面砖粘结强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 255
   },
   {
     "code": "IP-0256",
@@ -2301,7 +2556,8 @@
     "canonicalName": "抹灰砂浆拉伸粘接强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 256
   },
   {
     "code": "IP-0257",
@@ -2310,7 +2566,8 @@
     "canonicalName": "甲醛",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 257
   },
   {
     "code": "IP-0258",
@@ -2319,7 +2576,8 @@
     "canonicalName": "TVOC",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 258
   },
   {
     "code": "IP-0259",
@@ -2328,7 +2586,8 @@
     "canonicalName": "氡",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 259
   },
   {
     "code": "IP-0260",
@@ -2337,7 +2596,8 @@
     "canonicalName": "土壤中的氡",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 260
   },
   {
     "code": "IP-0261",
@@ -2346,7 +2606,8 @@
     "canonicalName": "断面收缩率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 261
   },
   {
     "code": "IP-0262",
@@ -2355,7 +2616,8 @@
     "canonicalName": "冲击韧性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 262
   },
   {
     "code": "IP-0263",
@@ -2364,7 +2626,8 @@
     "canonicalName": "冷弯性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 263
   },
   {
     "code": "IP-0264",
@@ -2373,7 +2636,8 @@
     "canonicalName": "钢材元素含量（钢材化学分析C、S、P）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 264
   },
   {
     "code": "IP-0265",
@@ -2382,7 +2646,8 @@
     "canonicalName": "内部缺陷探伤（超声法/射线法）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 265
   },
   {
     "code": "IP-0266",
@@ -2391,7 +2656,8 @@
     "canonicalName": "涂层厚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 266
   },
   {
     "code": "IP-0267",
@@ -2400,7 +2666,8 @@
     "canonicalName": "涂料粘结强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 267
   },
   {
     "code": "IP-0268",
@@ -2409,7 +2676,8 @@
     "canonicalName": "涂料抗压强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 268
   },
   {
     "code": "IP-0269",
@@ -2418,7 +2686,8 @@
     "canonicalName": "涂层附着力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 269
   },
   {
     "code": "IP-0270",
@@ -2427,7 +2696,8 @@
     "canonicalName": "抗滑移系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 270
   },
   {
     "code": "IP-0271",
@@ -2436,7 +2706,8 @@
     "canonicalName": "紧固轴力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 271
   },
   {
     "code": "IP-0272",
@@ -2445,7 +2716,8 @@
     "canonicalName": "扭矩系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 272
   },
   {
     "code": "IP-0273",
@@ -2454,7 +2726,8 @@
     "canonicalName": "最小拉力载荷（普通紧固件）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 273
   },
   {
     "code": "IP-0274",
@@ -2463,7 +2736,8 @@
     "canonicalName": "弯曲矢高",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 274
   },
   {
     "code": "IP-0275",
@@ -2472,7 +2746,8 @@
     "canonicalName": "侧向弯曲",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 275
   },
   {
     "code": "IP-0276",
@@ -2481,7 +2756,8 @@
     "canonicalName": "结构挠度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 276
   },
   {
     "code": "IP-0277",
@@ -2490,7 +2766,8 @@
     "canonicalName": "静态压力抗风掀",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 277
   },
   {
     "code": "IP-0278",
@@ -2499,7 +2776,8 @@
     "canonicalName": "动态压力抗风掀",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 278
   },
   {
     "code": "IP-0279",
@@ -2508,7 +2786,8 @@
     "canonicalName": "承载力（静载试验/动力触探试验等）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 279
   },
   {
     "code": "IP-0280",
@@ -2517,7 +2796,8 @@
     "canonicalName": "压实系数（环刀法/灌砂法等）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 280
   },
   {
     "code": "IP-0281",
@@ -2526,7 +2806,8 @@
     "canonicalName": "地基土强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 281
   },
   {
     "code": "IP-0282",
@@ -2535,7 +2816,8 @@
     "canonicalName": "密实度（动力触探试验/标准贯入试验）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 282
   },
   {
     "code": "IP-0283",
@@ -2544,7 +2826,8 @@
     "canonicalName": "变形模量（原位测试）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 283
   },
   {
     "code": "IP-0284",
@@ -2553,7 +2836,8 @@
     "canonicalName": "增强体强度（钻芯法）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 284
   },
   {
     "code": "IP-0285",
@@ -2562,7 +2846,8 @@
     "canonicalName": "水平承载力（静载试验）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 285
   },
   {
     "code": "IP-0286",
@@ -2571,7 +2856,8 @@
     "canonicalName": "竖向抗压承载力（静载试验/自平衡/高应变法等）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 286
   },
   {
     "code": "IP-0287",
@@ -2580,7 +2866,8 @@
     "canonicalName": "竖向抗拔承载力（抗拔静载试验）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 287
   },
   {
     "code": "IP-0288",
@@ -2589,7 +2876,8 @@
     "canonicalName": "桩身完整性（低应变法/声波透射法/钻芯法等）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 288
   },
   {
     "code": "IP-0289",
@@ -2598,7 +2886,8 @@
     "canonicalName": "拉拔试验",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 289
   },
   {
     "code": "IP-0290",
@@ -2607,7 +2896,8 @@
     "canonicalName": "墙身完整性（声波透射法/钻芯法等）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 290
   },
   {
     "code": "IP-0291",
@@ -2616,7 +2906,8 @@
     "canonicalName": "墙身混凝土强度（钻芯法）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 291
   },
   {
     "code": "IP-0292",
@@ -2625,7 +2916,8 @@
     "canonicalName": "导热系数或热阻",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 292
   },
   {
     "code": "IP-0293",
@@ -2634,7 +2926,8 @@
     "canonicalName": "压缩强度或抗压强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 293
   },
   {
     "code": "IP-0294",
@@ -2643,7 +2936,8 @@
     "canonicalName": "垂直于板面方向的抗拉强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 294
   },
   {
     "code": "IP-0295",
@@ -2652,7 +2946,8 @@
     "canonicalName": "传热系数及热阻",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 295
   },
   {
     "code": "IP-0296",
@@ -2661,7 +2956,8 @@
     "canonicalName": "拉伸粘结强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 296
   },
   {
     "code": "IP-0297",
@@ -2670,7 +2966,8 @@
     "canonicalName": "燃烧性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 297
   },
   {
     "code": "IP-0298",
@@ -2679,7 +2976,8 @@
     "canonicalName": "半球发射率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 298
   },
   {
     "code": "IP-0299",
@@ -2688,7 +2986,8 @@
     "canonicalName": "太阳光反射比",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 299
   },
   {
     "code": "IP-0300",
@@ -2697,7 +2996,8 @@
     "canonicalName": "单位散热量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 300
   },
   {
     "code": "IP-0301",
@@ -2706,7 +3006,8 @@
     "canonicalName": "金属热强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 301
   },
   {
     "code": "IP-0302",
@@ -2715,7 +3016,8 @@
     "canonicalName": "供冷量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 302
   },
   {
     "code": "IP-0303",
@@ -2724,7 +3026,8 @@
     "canonicalName": "供热量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 303
   },
   {
     "code": "IP-0304",
@@ -2733,7 +3036,8 @@
     "canonicalName": "风量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 304
   },
   {
     "code": "IP-0305",
@@ -2742,7 +3046,8 @@
     "canonicalName": "水阻力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 305
   },
   {
     "code": "IP-0306",
@@ -2751,7 +3056,8 @@
     "canonicalName": "噪声及输入功率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 306
   },
   {
     "code": "IP-0307",
@@ -2760,7 +3066,8 @@
     "canonicalName": "镇流器能效值",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 307
   },
   {
     "code": "IP-0308",
@@ -2769,7 +3076,8 @@
     "canonicalName": "效率或能效",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 308
   },
   {
     "code": "IP-0309",
@@ -2778,7 +3086,8 @@
     "canonicalName": "照明光源初始光效",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 309
   },
   {
     "code": "IP-0310",
@@ -2787,7 +3096,8 @@
     "canonicalName": "功率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 310
   },
   {
     "code": "IP-0311",
@@ -2796,7 +3106,8 @@
     "canonicalName": "功率因数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 311
   },
   {
     "code": "IP-0312",
@@ -2805,7 +3116,8 @@
     "canonicalName": "谐波含量值",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 312
   },
   {
     "code": "IP-0313",
@@ -2814,7 +3126,8 @@
     "canonicalName": "年发电量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 313
   },
   {
     "code": "IP-0314",
@@ -2823,7 +3136,8 @@
     "canonicalName": "组件背板最高工作温度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 314
   },
   {
     "code": "IP-0315",
@@ -2832,7 +3146,8 @@
     "canonicalName": "发电功率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 315
   },
   {
     "code": "IP-0316",
@@ -2841,7 +3156,8 @@
     "canonicalName": "发电效率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 316
   },
   {
     "code": "IP-0317",
@@ -2850,7 +3166,8 @@
     "canonicalName": "得热量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 317
   },
   {
     "code": "IP-0318",
@@ -2859,7 +3176,8 @@
     "canonicalName": "集热效率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 318
   },
   {
     "code": "IP-0319",
@@ -2868,7 +3186,8 @@
     "canonicalName": "太阳能保证率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 319
   },
   {
     "code": "IP-0320",
@@ -2877,7 +3196,8 @@
     "canonicalName": "安全性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 320
   },
   {
     "code": "IP-0321",
@@ -2886,7 +3206,8 @@
     "canonicalName": "热性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 321
   },
   {
     "code": "IP-0322",
@@ -2895,7 +3216,8 @@
     "canonicalName": "拉伸粘接强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 322
   },
   {
     "code": "IP-0323",
@@ -2904,7 +3226,8 @@
     "canonicalName": "力学性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 323
   },
   {
     "code": "IP-0324",
@@ -2913,7 +3236,8 @@
     "canonicalName": "抗腐蚀性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 324
   },
   {
     "code": "IP-0325",
@@ -2922,7 +3246,8 @@
     "canonicalName": "网孔中心距偏差",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 325
   },
   {
     "code": "IP-0326",
@@ -2931,7 +3256,8 @@
     "canonicalName": "钢丝网丝径",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 326
   },
   {
     "code": "IP-0327",
@@ -2940,7 +3266,8 @@
     "canonicalName": "导热系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 327
   },
   {
     "code": "IP-0328",
@@ -2949,7 +3276,8 @@
     "canonicalName": "剪切强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 328
   },
   {
     "code": "IP-0329",
@@ -2958,7 +3286,8 @@
     "canonicalName": "压折比（或柔韧性）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 329
   },
   {
     "code": "IP-0330",
@@ -2967,7 +3296,8 @@
     "canonicalName": "气密性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 330
   },
   {
     "code": "IP-0331",
@@ -2976,7 +3306,8 @@
     "canonicalName": "水密性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 331
   },
   {
     "code": "IP-0332",
@@ -2985,7 +3316,8 @@
     "canonicalName": "抗风压性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 332
   },
   {
     "code": "IP-0333",
@@ -2994,7 +3326,8 @@
     "canonicalName": "传热系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 333
   },
   {
     "code": "IP-0334",
@@ -3003,7 +3336,8 @@
     "canonicalName": "玻璃的太阳得热系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 334
   },
   {
     "code": "IP-0335",
@@ -3012,7 +3346,8 @@
     "canonicalName": "可见光透射比",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 335
   },
   {
     "code": "IP-0336",
@@ -3021,7 +3356,8 @@
     "canonicalName": "中空玻璃密封性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 336
   },
   {
     "code": "IP-0337",
@@ -3030,7 +3366,8 @@
     "canonicalName": "外墙节能构造及保温层厚度（钻芯法）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 337
   },
   {
     "code": "IP-0338",
@@ -3039,7 +3376,8 @@
     "canonicalName": "保温板与基层的拉伸粘结强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 338
   },
   {
     "code": "IP-0339",
@@ -3048,7 +3386,8 @@
     "canonicalName": "锚固件的锚固力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 339
   },
   {
     "code": "IP-0340",
@@ -3057,7 +3396,8 @@
     "canonicalName": "外窗气密性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 340
   },
   {
     "code": "IP-0341",
@@ -3066,7 +3406,8 @@
     "canonicalName": "室内平均温度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 341
   },
   {
     "code": "IP-0342",
@@ -3075,7 +3416,8 @@
     "canonicalName": "风口风量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 342
   },
   {
     "code": "IP-0343",
@@ -3084,7 +3426,8 @@
     "canonicalName": "通风与空调系统总风量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 343
   },
   {
     "code": "IP-0344",
@@ -3093,7 +3436,8 @@
     "canonicalName": "风道系统单位风量耗功率空调机组水流量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 344
   },
   {
     "code": "IP-0345",
@@ -3102,7 +3446,8 @@
     "canonicalName": "空调系统冷热水",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 345
   },
   {
     "code": "IP-0346",
@@ -3111,7 +3456,8 @@
     "canonicalName": "冷却水循环流量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 346
   },
   {
     "code": "IP-0347",
@@ -3120,7 +3466,8 @@
     "canonicalName": "室外供热管网水力平衡度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 347
   },
   {
     "code": "IP-0348",
@@ -3129,7 +3476,8 @@
     "canonicalName": "室外供热管网热损失率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 348
   },
   {
     "code": "IP-0349",
@@ -3138,7 +3486,8 @@
     "canonicalName": "照度与照明功率密度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 349
   },
   {
     "code": "IP-0350",
@@ -3147,7 +3496,8 @@
     "canonicalName": "外墙传热系数或热阻",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 350
   },
   {
     "code": "IP-0351",
@@ -3156,7 +3506,8 @@
     "canonicalName": "导体电阻值",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 351
   },
   {
     "code": "IP-0352",
@@ -3165,7 +3516,8 @@
     "canonicalName": "邵氏硬度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 352
   },
   {
     "code": "IP-0353",
@@ -3174,7 +3526,8 @@
     "canonicalName": "结构胶标准条件下的拉伸粘结强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 353
   },
   {
     "code": "IP-0354",
@@ -3183,7 +3536,8 @@
     "canonicalName": "相容性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 354
   },
   {
     "code": "IP-0355",
@@ -3192,7 +3546,8 @@
     "canonicalName": "剥离粘结性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 355
   },
   {
     "code": "IP-0356",
@@ -3201,7 +3556,8 @@
     "canonicalName": "石材用密封胶的污染性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 356
   },
   {
     "code": "IP-0357",
@@ -3210,7 +3566,8 @@
     "canonicalName": "耐候胶标准状态下的拉伸模量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 357
   },
   {
     "code": "IP-0358",
@@ -3219,7 +3576,8 @@
     "canonicalName": "石材用密封胶的拉伸模量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 358
   },
   {
     "code": "IP-0359",
@@ -3228,7 +3586,8 @@
     "canonicalName": "太阳得热系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 359
   },
   {
     "code": "IP-0360",
@@ -3237,7 +3596,8 @@
     "canonicalName": "中空玻璃的密封性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 360
   },
   {
     "code": "IP-0361",
@@ -3246,7 +3606,8 @@
     "canonicalName": "层间变形性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 361
   },
   {
     "code": "IP-0362",
@@ -3255,7 +3616,8 @@
     "canonicalName": "后置埋件抗拔承载力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 362
   },
   {
     "code": "IP-0363",
@@ -3264,7 +3626,8 @@
     "canonicalName": "保温隔热性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 363
   },
   {
     "code": "IP-0364",
@@ -3273,7 +3636,8 @@
     "canonicalName": "隔声性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 364
   },
   {
     "code": "IP-0365",
@@ -3282,7 +3646,8 @@
     "canonicalName": "采光性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 365
   },
   {
     "code": "IP-0366",
@@ -3291,7 +3656,8 @@
     "canonicalName": "耐撞击性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 366
   },
   {
     "code": "IP-0367",
@@ -3300,7 +3666,8 @@
     "canonicalName": "防火性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 367
   },
   {
     "code": "IP-0368",
@@ -3309,7 +3676,8 @@
     "canonicalName": "液限",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 368
   },
   {
     "code": "IP-0369",
@@ -3318,7 +3686,8 @@
     "canonicalName": "塑限",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 369
   },
   {
     "code": "IP-0370",
@@ -3327,7 +3696,8 @@
     "canonicalName": "击实",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 370
   },
   {
     "code": "IP-0371",
@@ -3336,7 +3706,8 @@
     "canonicalName": "粗粒土和巨粒土最大干密度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 371
   },
   {
     "code": "IP-0372",
@@ -3345,7 +3716,8 @@
     "canonicalName": "承载比（CBR）试验",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 372
   },
   {
     "code": "IP-0373",
@@ -3354,7 +3726,8 @@
     "canonicalName": "无侧限抗压强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 373
   },
   {
     "code": "IP-0374",
@@ -3363,7 +3736,8 @@
     "canonicalName": "水泥或石灰剂量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 374
   },
   {
     "code": "IP-0375",
@@ -3372,7 +3746,8 @@
     "canonicalName": "塑性指数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 375
   },
   {
     "code": "IP-0376",
@@ -3381,7 +3756,8 @@
     "canonicalName": "不均匀系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 376
   },
   {
     "code": "IP-0377",
@@ -3390,7 +3766,8 @@
     "canonicalName": "0.6mm 以下颗粒含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 377
   },
   {
     "code": "IP-0378",
@@ -3399,7 +3776,8 @@
     "canonicalName": "颗粒分析",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 378
   },
   {
     "code": "IP-0379",
@@ -3408,7 +3786,8 @@
     "canonicalName": "有机质含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 379
   },
   {
     "code": "IP-0380",
@@ -3417,7 +3796,8 @@
     "canonicalName": "易溶盐含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 380
   },
   {
     "code": "IP-0381",
@@ -3426,7 +3806,8 @@
     "canonicalName": "拉伸粘接强度（抹灰、砌筑）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 381
   },
   {
     "code": "IP-0382",
@@ -3435,7 +3816,8 @@
     "canonicalName": "剥离性能胶粘带：剪切性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 382
   },
   {
     "code": "IP-0383",
@@ -3444,7 +3826,8 @@
     "canonicalName": "剥离性能防水卷材：接缝剥离强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 383
   },
   {
     "code": "IP-0384",
@@ -3453,7 +3836,8 @@
     "canonicalName": "硫酸根离子含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 384
   },
   {
     "code": "IP-0385",
@@ -3462,7 +3846,8 @@
     "canonicalName": "不溶物含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 385
   },
   {
     "code": "IP-0386",
@@ -3471,7 +3856,8 @@
     "canonicalName": "凝结时间差",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 386
   },
   {
     "code": "IP-0387",
@@ -3480,7 +3866,8 @@
     "canonicalName": "有效氧化钙和氧化镁含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 387
   },
   {
     "code": "IP-0388",
@@ -3489,7 +3876,8 @@
     "canonicalName": "未消化残渣含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 388
   },
   {
     "code": "IP-0389",
@@ -3498,7 +3886,8 @@
     "canonicalName": "干燥压缩强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 389
   },
   {
     "code": "IP-0390",
@@ -3507,7 +3896,8 @@
     "canonicalName": "水饱和压缩强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 390
   },
   {
     "code": "IP-0391",
@@ -3516,7 +3906,8 @@
     "canonicalName": "干燥弯曲强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 391
   },
   {
     "code": "IP-0392",
@@ -3525,7 +3916,8 @@
     "canonicalName": "水饱和弯曲强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 392
   },
   {
     "code": "IP-0393",
@@ -3534,7 +3926,8 @@
     "canonicalName": "体积密度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 393
   },
   {
     "code": "IP-0394",
@@ -3543,7 +3936,8 @@
     "canonicalName": "梯形撕裂强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 394
   },
   {
     "code": "IP-0395",
@@ -3552,7 +3946,8 @@
     "canonicalName": "CBR 顶破强力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 395
   },
   {
     "code": "IP-0396",
@@ -3561,7 +3956,8 @@
     "canonicalName": "厚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 396
   },
   {
     "code": "IP-0397",
@@ -3570,7 +3966,8 @@
     "canonicalName": "垂直渗透系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 397
   },
   {
     "code": "IP-0398",
@@ -3579,7 +3976,8 @@
     "canonicalName": "刺破强力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 398
   },
   {
     "code": "IP-0399",
@@ -3588,7 +3986,8 @@
     "canonicalName": "SiO 含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 399
   },
   {
     "code": "IP-0400",
@@ -3597,7 +3996,8 @@
     "canonicalName": "AlO 含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 400
   },
   {
     "code": "IP-0401",
@@ -3606,7 +4006,8 @@
     "canonicalName": "FeO 含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 401
   },
   {
     "code": "IP-0402",
@@ -3615,7 +4016,8 @@
     "canonicalName": "2 2 3 2 3比表面积",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 402
   },
   {
     "code": "IP-0403",
@@ -3624,7 +4026,8 @@
     "canonicalName": "游离氧化钙含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 403
   },
   {
     "code": "IP-0404",
@@ -3633,7 +4036,8 @@
     "canonicalName": "粉化率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 404
   },
   {
     "code": "IP-0405",
@@ -3642,7 +4046,8 @@
     "canonicalName": "压碎值",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 405
   },
   {
     "code": "IP-0406",
@@ -3651,7 +4056,8 @@
     "canonicalName": "颗粒组成",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 406
   },
   {
     "code": "IP-0407",
@@ -3660,7 +4066,8 @@
     "canonicalName": "针入度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 407
   },
   {
     "code": "IP-0408",
@@ -3669,7 +4076,8 @@
     "canonicalName": "软化点",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 408
   },
   {
     "code": "IP-0409",
@@ -3678,7 +4086,8 @@
     "canonicalName": "延度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 409
   },
   {
     "code": "IP-0410",
@@ -3687,7 +4096,8 @@
     "canonicalName": "质量变化",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 410
   },
   {
     "code": "IP-0411",
@@ -3696,7 +4106,8 @@
     "canonicalName": "残留针入度比",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 411
   },
   {
     "code": "IP-0412",
@@ -3705,7 +4116,8 @@
     "canonicalName": "残留延度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 412
   },
   {
     "code": "IP-0413",
@@ -3714,7 +4126,8 @@
     "canonicalName": "破乳速度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 413
   },
   {
     "code": "IP-0414",
@@ -3723,7 +4136,8 @@
     "canonicalName": "标准黏度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 414
   },
   {
     "code": "IP-0415",
@@ -3732,7 +4146,8 @@
     "canonicalName": "蒸发残留物",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 415
   },
   {
     "code": "IP-0416",
@@ -3741,7 +4156,8 @@
     "canonicalName": "弹性恢复",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 416
   },
   {
     "code": "IP-0417",
@@ -3750,7 +4166,8 @@
     "canonicalName": "运动黏度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 417
   },
   {
     "code": "IP-0418",
@@ -3759,7 +4176,8 @@
     "canonicalName": "布氏旋转黏度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 418
   },
   {
     "code": "IP-0419",
@@ -3768,7 +4186,8 @@
     "canonicalName": "针入度指数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 419
   },
   {
     "code": "IP-0420",
@@ -3777,7 +4196,8 @@
     "canonicalName": "蜡含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 420
   },
   {
     "code": "IP-0421",
@@ -3786,7 +4206,8 @@
     "canonicalName": "闪点",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 421
   },
   {
     "code": "IP-0422",
@@ -3795,7 +4216,8 @@
     "canonicalName": "动力黏度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 422
   },
   {
     "code": "IP-0423",
@@ -3804,7 +4226,8 @@
     "canonicalName": "溶解度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 423
   },
   {
     "code": "IP-0424",
@@ -3813,7 +4236,8 @@
     "canonicalName": "粒子电荷",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 424
   },
   {
     "code": "IP-0425",
@@ -3822,7 +4246,8 @@
     "canonicalName": "1.18mm 筛筛上残留物",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 425
   },
   {
     "code": "IP-0426",
@@ -3831,7 +4256,8 @@
     "canonicalName": "恩格拉黏度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 426
   },
   {
     "code": "IP-0427",
@@ -3840,7 +4266,8 @@
     "canonicalName": "与粗集料的粘附性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 427
   },
   {
     "code": "IP-0428",
@@ -3849,7 +4276,8 @@
     "canonicalName": "长度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 428
   },
   {
     "code": "IP-0429",
@@ -3858,7 +4286,8 @@
     "canonicalName": "灰分含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 429
   },
   {
     "code": "IP-0430",
@@ -3867,7 +4296,8 @@
     "canonicalName": "吸油率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 430
   },
   {
     "code": "IP-0431",
@@ -3876,7 +4306,8 @@
     "canonicalName": "表观相对密度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 431
   },
   {
     "code": "IP-0432",
@@ -3885,7 +4316,8 @@
     "canonicalName": "亲水系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 432
   },
   {
     "code": "IP-0433",
@@ -3894,7 +4326,8 @@
     "canonicalName": "加热安定性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 433
   },
   {
     "code": "IP-0434",
@@ -3903,7 +4336,8 @@
     "canonicalName": "筛分",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 434
   },
   {
     "code": "IP-0435",
@@ -3912,7 +4346,8 @@
     "canonicalName": "洛杉矶磨耗损失",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 435
   },
   {
     "code": "IP-0436",
@@ -3921,7 +4356,8 @@
     "canonicalName": "沥青黏附性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 436
   },
   {
     "code": "IP-0437",
@@ -3930,7 +4366,8 @@
     "canonicalName": "软弱颗粒或软石含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 437
   },
   {
     "code": "IP-0438",
@@ -3939,7 +4376,8 @@
     "canonicalName": "磨光值",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 438
   },
   {
     "code": "IP-0439",
@@ -3948,7 +4386,8 @@
     "canonicalName": "<0.075mm 颗粒含量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 439
   },
   {
     "code": "IP-0440",
@@ -3957,7 +4396,8 @@
     "canonicalName": "砂当量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 440
   },
   {
     "code": "IP-0441",
@@ -3966,7 +4406,8 @@
     "canonicalName": "棱角性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 441
   },
   {
     "code": "IP-0442",
@@ -3975,7 +4416,8 @@
     "canonicalName": "亚甲蓝值",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 442
   },
   {
     "code": "IP-0443",
@@ -3984,7 +4426,8 @@
     "canonicalName": "马歇尔稳定度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 443
   },
   {
     "code": "IP-0444",
@@ -3993,7 +4436,8 @@
     "canonicalName": "流值",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 444
   },
   {
     "code": "IP-0445",
@@ -4002,7 +4446,8 @@
     "canonicalName": "矿料级配",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 445
   },
   {
     "code": "IP-0446",
@@ -4011,7 +4456,8 @@
     "canonicalName": "油石比",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 446
   },
   {
     "code": "IP-0447",
@@ -4020,7 +4466,8 @@
     "canonicalName": "动稳定度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 447
   },
   {
     "code": "IP-0448",
@@ -4029,7 +4476,8 @@
     "canonicalName": "残留稳定度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 448
   },
   {
     "code": "IP-0449",
@@ -4038,7 +4486,8 @@
     "canonicalName": "冻融劈裂强度比",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 449
   },
   {
     "code": "IP-0450",
@@ -4047,7 +4496,8 @@
     "canonicalName": "防滑性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 450
   },
   {
     "code": "IP-0451",
@@ -4056,7 +4506,8 @@
     "canonicalName": "耐磨性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 451
   },
   {
     "code": "IP-0452",
@@ -4065,7 +4516,8 @@
     "canonicalName": "抗冻性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 452
   },
   {
     "code": "IP-0453",
@@ -4074,7 +4526,8 @@
     "canonicalName": "透水系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 453
   },
   {
     "code": "IP-0454",
@@ -4083,7 +4536,8 @@
     "canonicalName": "抗盐冻性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 454
   },
   {
     "code": "IP-0455",
@@ -4092,7 +4546,8 @@
     "canonicalName": "试验荷载",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 455
   },
   {
     "code": "IP-0456",
@@ -4101,7 +4556,8 @@
     "canonicalName": "压实度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 456
   },
   {
     "code": "IP-0457",
@@ -4110,7 +4566,8 @@
     "canonicalName": "弯沉值",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 457
   },
   {
     "code": "IP-0458",
@@ -4119,7 +4576,8 @@
     "canonicalName": "渗水系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 458
   },
   {
     "code": "IP-0459",
@@ -4128,7 +4586,8 @@
     "canonicalName": "抗滑性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 459
   },
   {
     "code": "IP-0460",
@@ -4137,7 +4596,8 @@
     "canonicalName": "土基回弹模量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 460
   },
   {
     "code": "IP-0461",
@@ -4146,7 +4606,8 @@
     "canonicalName": "地基承载力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 461
   },
   {
     "code": "IP-0462",
@@ -4155,7 +4616,8 @@
     "canonicalName": "回填土压实度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 462
   },
   {
     "code": "IP-0463",
@@ -4164,7 +4626,8 @@
     "canonicalName": "背后土体密实性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 463
   },
   {
     "code": "IP-0464",
@@ -4173,7 +4636,8 @@
     "canonicalName": "严密性试验",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 464
   },
   {
     "code": "IP-0465",
@@ -4182,7 +4646,8 @@
     "canonicalName": "构造深度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 465
   },
   {
     "code": "IP-0466",
@@ -4191,7 +4656,8 @@
     "canonicalName": "静态应变（应力）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 466
   },
   {
     "code": "IP-0467",
@@ -4200,7 +4666,8 @@
     "canonicalName": "动态应变（应力）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 467
   },
   {
     "code": "IP-0468",
@@ -4209,7 +4676,8 @@
     "canonicalName": "位移",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 468
   },
   {
     "code": "IP-0469",
@@ -4218,7 +4686,8 @@
     "canonicalName": "模态参数（频率、振型、阻尼比）",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 469
   },
   {
     "code": "IP-0470",
@@ -4227,7 +4696,8 @@
     "canonicalName": "索力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 470
   },
   {
     "code": "IP-0471",
@@ -4236,7 +4706,8 @@
     "canonicalName": "承载能力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 471
   },
   {
     "code": "IP-0472",
@@ -4245,7 +4716,8 @@
     "canonicalName": "桥梁线形",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 472
   },
   {
     "code": "IP-0473",
@@ -4254,7 +4726,8 @@
     "canonicalName": "动态挠度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 473
   },
   {
     "code": "IP-0474",
@@ -4263,7 +4736,8 @@
     "canonicalName": "静态挠度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 474
   },
   {
     "code": "IP-0475",
@@ -4272,7 +4746,8 @@
     "canonicalName": "结构尺寸",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 475
   },
   {
     "code": "IP-0476",
@@ -4281,7 +4756,8 @@
     "canonicalName": "轴线偏位",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 476
   },
   {
     "code": "IP-0477",
@@ -4290,7 +4766,8 @@
     "canonicalName": "竖直度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 477
   },
   {
     "code": "IP-0478",
@@ -4299,7 +4776,8 @@
     "canonicalName": "混凝土碳化深度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 478
   },
   {
     "code": "IP-0479",
@@ -4308,7 +4786,8 @@
     "canonicalName": "钢筋位置及保护层厚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 479
   },
   {
     "code": "IP-0480",
@@ -4317,7 +4796,8 @@
     "canonicalName": "预应力孔道摩阻损失",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 480
   },
   {
     "code": "IP-0481",
@@ -4326,7 +4806,8 @@
     "canonicalName": "有效预应力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 481
   },
   {
     "code": "IP-0482",
@@ -4335,7 +4816,8 @@
     "canonicalName": "孔道压浆密实性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 482
   },
   {
     "code": "IP-0483",
@@ -4344,7 +4826,8 @@
     "canonicalName": "风速",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 483
   },
   {
     "code": "IP-0484",
@@ -4353,7 +4836,8 @@
     "canonicalName": "温度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 484
   },
   {
     "code": "IP-0485",
@@ -4362,7 +4846,8 @@
     "canonicalName": "加速度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 485
   },
   {
     "code": "IP-0486",
@@ -4371,7 +4856,8 @@
     "canonicalName": "速度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 486
   },
   {
     "code": "IP-0487",
@@ -4380,7 +4866,8 @@
     "canonicalName": "冲击性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 487
   },
   {
     "code": "IP-0488",
@@ -4389,7 +4876,8 @@
     "canonicalName": "混凝土电阻率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 488
   },
   {
     "code": "IP-0489",
@@ -4398,7 +4886,8 @@
     "canonicalName": "钢筋锈蚀状况",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 489
   },
   {
     "code": "IP-0490",
@@ -4407,7 +4896,8 @@
     "canonicalName": "断面尺寸",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 490
   },
   {
     "code": "IP-0491",
@@ -4416,7 +4906,8 @@
     "canonicalName": "锚杆拉拔力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 491
   },
   {
     "code": "IP-0492",
@@ -4425,7 +4916,8 @@
     "canonicalName": "衬砌厚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 492
   },
   {
     "code": "IP-0493",
@@ -4434,7 +4926,8 @@
     "canonicalName": "衬砌及背后密实状况",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 493
   },
   {
     "code": "IP-0494",
@@ -4443,7 +4936,8 @@
     "canonicalName": "墙面平整度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 494
   },
   {
     "code": "IP-0495",
@@ -4452,7 +4946,8 @@
     "canonicalName": "钢筋网格尺寸",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 495
   },
   {
     "code": "IP-0496",
@@ -4461,7 +4956,8 @@
     "canonicalName": "锚杆长度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 496
   },
   {
     "code": "IP-0497",
@@ -4470,7 +4966,8 @@
     "canonicalName": "锚杆锚固密实度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 497
   },
   {
     "code": "IP-0498",
@@ -4479,7 +4976,8 @@
     "canonicalName": "管片几何尺寸",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 498
   },
   {
     "code": "IP-0499",
@@ -4488,7 +4986,8 @@
     "canonicalName": "错台",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 499
   },
   {
     "code": "IP-0500",
@@ -4497,7 +4996,8 @@
     "canonicalName": "椭圆度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 500
   },
   {
     "code": "IP-0501",
@@ -4506,7 +5006,8 @@
     "canonicalName": "衬砌内钢筋间距",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 501
   },
   {
     "code": "IP-0502",
@@ -4515,7 +5016,8 @@
     "canonicalName": "仰拱厚度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 502
   },
   {
     "code": "IP-0503",
@@ -4524,7 +5026,8 @@
     "canonicalName": "渗漏水",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 503
   },
   {
     "code": "IP-0504",
@@ -4533,7 +5036,8 @@
     "canonicalName": "桥面系外观质量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 504
   },
   {
     "code": "IP-0505",
@@ -4542,7 +5046,8 @@
     "canonicalName": "桥梁上部外观质量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 505
   },
   {
     "code": "IP-0506",
@@ -4551,7 +5056,8 @@
     "canonicalName": "桥梁下部外观质量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 506
   },
   {
     "code": "IP-0507",
@@ -4560,7 +5066,8 @@
     "canonicalName": "桥梁附属设施外观质量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 507
   },
   {
     "code": "IP-0508",
@@ -4569,7 +5076,8 @@
     "canonicalName": "内在质量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 508
   },
   {
     "code": "IP-0509",
@@ -4578,7 +5086,8 @@
     "canonicalName": "抗压弹性模量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 509
   },
   {
     "code": "IP-0510",
@@ -4587,7 +5096,8 @@
     "canonicalName": "极限抗压强度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 510
   },
   {
     "code": "IP-0511",
@@ -4596,7 +5106,8 @@
     "canonicalName": "盆环径向变形",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 511
   },
   {
     "code": "IP-0512",
@@ -4605,7 +5116,8 @@
     "canonicalName": "抗剪弹性模量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 512
   },
   {
     "code": "IP-0513",
@@ -4614,7 +5126,8 @@
     "canonicalName": "抗剪粘结性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 513
   },
   {
     "code": "IP-0514",
@@ -4623,7 +5136,8 @@
     "canonicalName": "抗剪老化",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 514
   },
   {
     "code": "IP-0515",
@@ -4632,7 +5146,8 @@
     "canonicalName": "摩擦系数",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 515
   },
   {
     "code": "IP-0516",
@@ -4641,7 +5156,8 @@
     "canonicalName": "转动性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 516
   },
   {
     "code": "IP-0517",
@@ -4650,7 +5166,8 @@
     "canonicalName": "尺寸偏差",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 517
   },
   {
     "code": "IP-0518",
@@ -4659,7 +5176,8 @@
     "canonicalName": "转角试验",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 518
   },
   {
     "code": "IP-0519",
@@ -4668,7 +5186,8 @@
     "canonicalName": "焊缝尺寸",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 519
   },
   {
     "code": "IP-0520",
@@ -4677,7 +5196,8 @@
     "canonicalName": "焊缝探伤",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 520
   },
   {
     "code": "IP-0521",
@@ -4686,7 +5206,8 @@
     "canonicalName": "橡胶密封带夹持性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 521
   },
   {
     "code": "IP-0522",
@@ -4695,7 +5216,8 @@
     "canonicalName": "装配公差",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 522
   },
   {
     "code": "IP-0523",
@@ -4704,7 +5226,8 @@
     "canonicalName": "变形性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 523
   },
   {
     "code": "IP-0524",
@@ -4713,7 +5236,8 @@
     "canonicalName": "防水性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 524
   },
   {
     "code": "IP-0525",
@@ -4722,7 +5246,8 @@
     "canonicalName": "承载性能",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 525
   },
   {
     "code": "IP-0526",
@@ -4731,7 +5256,8 @@
     "canonicalName": "照度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 526
   },
   {
     "code": "IP-0527",
@@ -4740,7 +5266,8 @@
     "canonicalName": "噪声",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 527
   },
   {
     "code": "IP-0528",
@@ -4749,7 +5276,8 @@
     "canonicalName": "一氧化碳浓度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 528
   },
   {
     "code": "IP-0529",
@@ -4758,7 +5286,8 @@
     "canonicalName": "二氧化碳浓度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 529
   },
   {
     "code": "IP-0530",
@@ -4767,7 +5296,8 @@
     "canonicalName": "二氧化硫浓度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 530
   },
   {
     "code": "IP-0531",
@@ -4776,7 +5306,8 @@
     "canonicalName": "氧浓度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 531
   },
   {
     "code": "IP-0532",
@@ -4785,7 +5316,8 @@
     "canonicalName": "一氧化氮浓度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 532
   },
   {
     "code": "IP-0533",
@@ -4794,7 +5326,8 @@
     "canonicalName": "二氧化氮浓度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 533
   },
   {
     "code": "IP-0534",
@@ -4803,7 +5336,8 @@
     "canonicalName": "瓦斯浓度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 534
   },
   {
     "code": "IP-0535",
@@ -4812,7 +5346,8 @@
     "canonicalName": "硫化氢浓度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 535
   },
   {
     "code": "IP-0536",
@@ -4821,7 +5356,8 @@
     "canonicalName": "烟尘浓度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 536
   },
   {
     "code": "IP-0537",
@@ -4830,7 +5366,8 @@
     "canonicalName": "自振频率",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 537
   },
   {
     "code": "IP-0538",
@@ -4839,7 +5376,8 @@
     "canonicalName": "桥面线形",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 538
   },
   {
     "code": "IP-0539",
@@ -4848,7 +5386,8 @@
     "canonicalName": "变形缝质量",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 539
   },
   {
     "code": "IP-0540",
@@ -4857,7 +5396,8 @@
     "canonicalName": "防水层的缝宽和搭接长度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 540
   },
   {
     "code": "IP-0541",
@@ -4866,7 +5406,8 @@
     "canonicalName": "栏杆水平推力",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 541
   },
   {
     "code": "IP-0542",
@@ -4875,7 +5416,8 @@
     "canonicalName": "衬砌密实性",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 542
   },
   {
     "code": "IP-0543",
@@ -4884,6 +5426,7 @@
     "canonicalName": "接缝宽度",
     "methodText": "见对应标准条款",
     "aliases": [],
-    "sourceType": "official"
+    "sourceType": "official",
+    "sortOrder": 543
   }
 ]

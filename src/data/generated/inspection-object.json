@@ -7,7 +7,8 @@
     "name": "水泥",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 1
   },
   {
     "code": "OBJ-SP01-P2",
@@ -17,7 +18,8 @@
     "name": "钢筋（含焊接与机械连接）",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 2
   },
   {
     "code": "OBJ-SP01-P3-细骨料",
@@ -27,7 +29,8 @@
     "name": "细骨料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 3
   },
   {
     "code": "OBJ-SP01-P3-粗骨料",
@@ -37,7 +40,8 @@
     "name": "粗骨料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 4
   },
   {
     "code": "OBJ-SP01-P3-轻集料",
@@ -47,7 +51,8 @@
     "name": "轻集料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 5
   },
   {
     "code": "OBJ-SP01-P4",
@@ -57,7 +62,8 @@
     "name": "砖、砌块、瓦、墙板",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 6
   },
   {
     "code": "OBJ-SP01-P5",
@@ -67,7 +73,8 @@
     "name": "混凝土及拌合用水",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 7
   },
   {
     "code": "OBJ-SP01-P6",
@@ -77,7 +84,8 @@
     "name": "混凝土外加剂",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 8
   },
   {
     "code": "OBJ-SP01-P7",
@@ -87,7 +95,8 @@
     "name": "混凝土掺合料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 9
   },
   {
     "code": "OBJ-SP01-P8",
@@ -97,7 +106,8 @@
     "name": "砂浆",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 10
   },
   {
     "code": "OBJ-SP01-P9",
@@ -107,7 +117,8 @@
     "name": "土",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 11
   },
   {
     "code": "OBJ-SP01-P10-防水卷材",
@@ -117,7 +128,8 @@
     "name": "防水卷材",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 12
   },
   {
     "code": "OBJ-SP01-P10-防水涂料",
@@ -127,7 +139,8 @@
     "name": "防水涂料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 13
   },
   {
     "code": "OBJ-SP01-P10-防水密封材料及其他防水材料",
@@ -137,7 +150,8 @@
     "name": "防水密封材料及其他防水材料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 14
   },
   {
     "code": "OBJ-SP01-P11",
@@ -147,7 +161,8 @@
     "name": "瓷砖及石材",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 15
   },
   {
     "code": "OBJ-SP01-P12-塑料管材",
@@ -157,7 +172,8 @@
     "name": "塑料管材",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 16
   },
   {
     "code": "OBJ-SP01-P12-金属管材",
@@ -167,7 +183,8 @@
     "name": "金属管材",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 17
   },
   {
     "code": "OBJ-SP01-P13",
@@ -177,7 +194,8 @@
     "name": "预制混凝土构件",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 18
   },
   {
     "code": "OBJ-SP01-P14",
@@ -187,7 +205,8 @@
     "name": "预应力钢绞线",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 19
   },
   {
     "code": "OBJ-SP01-P15",
@@ -197,7 +216,8 @@
     "name": "预应力混凝土用锚具夹具及连接器",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 20
   },
   {
     "code": "OBJ-SP01-P16-金属波纹管",
@@ -207,7 +227,8 @@
     "name": "金属波纹管",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 21
   },
   {
     "code": "OBJ-SP01-P16-塑料波纹管",
@@ -217,7 +238,8 @@
     "name": "塑料波纹管",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 22
   },
   {
     "code": "OBJ-SP01-P17",
@@ -227,7 +249,8 @@
     "name": "材料中有害物质",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 23
   },
   {
     "code": "OBJ-SP01-P18-位移相关型阻尼器",
@@ -237,7 +260,8 @@
     "name": "位移相关型阻尼器",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 24
   },
   {
     "code": "OBJ-SP01-P18-速度相关型阻尼器",
@@ -247,7 +271,8 @@
     "name": "速度相关型阻尼器",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 25
   },
   {
     "code": "OBJ-SP01-P19-叠层橡胶隔震支座",
@@ -257,7 +282,8 @@
     "name": "叠层橡胶隔震支座",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 26
   },
   {
     "code": "OBJ-SP01-P19-建筑摩擦摆隔震支座",
@@ -267,7 +293,8 @@
     "name": "建筑摩擦摆隔震支座",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 27
   },
   {
     "code": "OBJ-SP01-P20",
@@ -277,7 +304,8 @@
     "name": "铝塑复合板",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 28
   },
   {
     "code": "OBJ-SP01-P21",
@@ -287,7 +315,8 @@
     "name": "木材料及构配件",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 29
   },
   {
     "code": "OBJ-SP01-P22",
@@ -297,7 +326,8 @@
     "name": "加固材料",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 30
   },
   {
     "code": "OBJ-SP01-P23",
@@ -307,7 +337,8 @@
     "name": "焊接材料",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 31
   },
   {
     "code": "OBJ-SP02-P1",
@@ -317,7 +348,8 @@
     "name": "混凝土结构构件强度、砌体结构构件强度",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 32
   },
   {
     "code": "OBJ-SP02-P2",
@@ -327,7 +359,8 @@
     "name": "钢筋及保护层厚度",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 33
   },
   {
     "code": "OBJ-SP02-P3",
@@ -337,7 +370,8 @@
     "name": "植筋锚固力",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 34
   },
   {
     "code": "OBJ-SP02-P4",
@@ -347,7 +381,8 @@
     "name": "构件位置和尺寸（涵盖砌体、混凝土、木结构）",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 35
   },
   {
     "code": "OBJ-SP02-P5",
@@ -357,7 +392,8 @@
     "name": "外观质量及内部缺陷",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 36
   },
   {
     "code": "OBJ-SP02-P6",
@@ -367,7 +403,8 @@
     "name": "装配式混凝土结构节点",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 37
   },
   {
     "code": "OBJ-SP02-P7",
@@ -377,7 +414,8 @@
     "name": "结构构件性能（涵盖砌体、混凝土、木结构）",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 38
   },
   {
     "code": "OBJ-SP02-P8",
@@ -387,7 +425,8 @@
     "name": "装饰装修工程",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 39
   },
   {
     "code": "OBJ-SP02-P9",
@@ -397,7 +436,8 @@
     "name": "室内环境污染物",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 40
   },
   {
     "code": "OBJ-SP03-P1",
@@ -407,7 +447,8 @@
     "name": "钢材及焊接材料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 41
   },
   {
     "code": "OBJ-SP03-P2",
@@ -417,7 +458,8 @@
     "name": "焊缝",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 42
   },
   {
     "code": "OBJ-SP03-P3",
@@ -427,7 +469,8 @@
     "name": "钢结构防腐及防火涂装",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 43
   },
   {
     "code": "OBJ-SP03-P4",
@@ -437,7 +480,8 @@
     "name": "高强度螺栓及普通紧固件",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 44
   },
   {
     "code": "OBJ-SP03-P5",
@@ -447,7 +491,8 @@
     "name": "构件位置与尺寸",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 45
   },
   {
     "code": "OBJ-SP03-P6",
@@ -457,7 +502,8 @@
     "name": "结构构件性能",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 46
   },
   {
     "code": "OBJ-SP03-P7",
@@ -467,7 +513,8 @@
     "name": "金属屋面",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 47
   },
   {
     "code": "OBJ-SP04-P1",
@@ -477,7 +524,8 @@
     "name": "地基及复合地基",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 48
   },
   {
     "code": "OBJ-SP04-P2",
@@ -487,7 +535,8 @@
     "name": "桩的承载力",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 49
   },
   {
     "code": "OBJ-SP04-P3",
@@ -497,7 +546,8 @@
     "name": "桩身完整性",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 50
   },
   {
     "code": "OBJ-SP04-P4",
@@ -507,7 +557,8 @@
     "name": "锚杆抗拔承载力",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 51
   },
   {
     "code": "OBJ-SP04-P5",
@@ -517,7 +568,8 @@
     "name": "地下连续墙",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 52
   },
   {
     "code": "OBJ-SP05-P1",
@@ -527,7 +579,8 @@
     "name": "保温、绝热材料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 53
   },
   {
     "code": "OBJ-SP05-P2",
@@ -537,7 +590,8 @@
     "name": "粘接材料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 54
   },
   {
     "code": "OBJ-SP05-P3",
@@ -547,7 +601,8 @@
     "name": "增强加固材料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 55
   },
   {
     "code": "OBJ-SP05-P4",
@@ -557,7 +612,8 @@
     "name": "保温砂浆",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 56
   },
   {
     "code": "OBJ-SP05-P5",
@@ -567,7 +623,8 @@
     "name": "抹面材料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 57
   },
   {
     "code": "OBJ-SP05-P6",
@@ -577,7 +634,8 @@
     "name": "隔热型材",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 58
   },
   {
     "code": "OBJ-SP05-P7",
@@ -587,7 +645,8 @@
     "name": "建筑外窗",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 59
   },
   {
     "code": "OBJ-SP05-P8",
@@ -597,7 +656,8 @@
     "name": "节能工程",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 60
   },
   {
     "code": "OBJ-SP05-P9",
@@ -607,7 +667,8 @@
     "name": "电线电缆",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 61
   },
   {
     "code": "OBJ-SP05-P10",
@@ -617,7 +678,8 @@
     "name": "反射隔热材料",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 62
   },
   {
     "code": "OBJ-SP05-P11-风机盘管机组",
@@ -627,7 +689,8 @@
     "name": "风机盘管机组",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 63
   },
   {
     "code": "OBJ-SP05-P11-采暖散热器",
@@ -637,7 +700,8 @@
     "name": "采暖散热器",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 64
   },
   {
     "code": "OBJ-SP05-P11-绝热材料",
@@ -647,7 +711,8 @@
     "name": "绝热材料",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 65
   },
   {
     "code": "OBJ-SP05-P12-照明光源",
@@ -657,7 +722,8 @@
     "name": "照明光源",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 66
   },
   {
     "code": "OBJ-SP05-P12-灯具",
@@ -667,7 +733,8 @@
     "name": "灯具",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 67
   },
   {
     "code": "OBJ-SP05-P12-设备",
@@ -677,7 +744,8 @@
     "name": "设备",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 68
   },
   {
     "code": "OBJ-SP05-P13-太阳能集热器",
@@ -687,7 +755,8 @@
     "name": "太阳能集热器",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 69
   },
   {
     "code": "OBJ-SP05-P13-太阳能热利用系统的太阳能集热系统",
@@ -697,7 +766,8 @@
     "name": "太阳能热利用系统的太阳能集热系统",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 70
   },
   {
     "code": "OBJ-SP05-P13-太阳能光伏组件",
@@ -707,7 +777,8 @@
     "name": "太阳能光伏组件",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 71
   },
   {
     "code": "OBJ-SP05-P13-太阳能光伏发电系统",
@@ -717,7 +788,8 @@
     "name": "太阳能光伏发电系统",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 72
   },
   {
     "code": "OBJ-SP06-P1",
@@ -727,7 +799,8 @@
     "name": "密封胶",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 73
   },
   {
     "code": "OBJ-SP06-P2",
@@ -737,7 +810,8 @@
     "name": "幕墙玻璃",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 74
   },
   {
     "code": "OBJ-SP06-P3",
@@ -747,7 +821,8 @@
     "name": "幕墙",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 75
   },
   {
     "code": "OBJ-SP07-P1",
@@ -757,7 +832,8 @@
     "name": "土、无机结合稳定材料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 76
   },
   {
     "code": "OBJ-SP07-P2",
@@ -767,7 +843,8 @@
     "name": "土工合成材料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 77
   },
   {
     "code": "OBJ-SP07-P3",
@@ -777,7 +854,8 @@
     "name": "掺合料（粉煤灰、钢渣）",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 78
   },
   {
     "code": "OBJ-SP07-P4",
@@ -787,7 +865,8 @@
     "name": "沥青及乳化沥青",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 79
   },
   {
     "code": "OBJ-SP07-P5-粗集料",
@@ -797,7 +876,8 @@
     "name": "粗集料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 80
   },
   {
     "code": "OBJ-SP07-P5-细集料",
@@ -807,7 +887,8 @@
     "name": "细集料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 81
   },
   {
     "code": "OBJ-SP07-P5-矿粉",
@@ -817,7 +898,8 @@
     "name": "矿粉",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 82
   },
   {
     "code": "OBJ-SP07-P5-木质素纤维",
@@ -827,7 +909,8 @@
     "name": "木质素纤维",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 83
   },
   {
     "code": "OBJ-SP07-P6",
@@ -837,7 +920,8 @@
     "name": "沥青混合料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 84
   },
   {
     "code": "OBJ-SP07-P7",
@@ -847,7 +931,8 @@
     "name": "路面砖及路缘石",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 85
   },
   {
     "code": "OBJ-SP07-P8",
@@ -857,7 +942,8 @@
     "name": "检查井盖、水篦、混凝土模块、防撞墩、隔离墩",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 86
   },
   {
     "code": "OBJ-SP07-P9",
@@ -867,7 +953,8 @@
     "name": "水泥",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 87
   },
   {
     "code": "OBJ-SP07-P10",
@@ -877,7 +964,8 @@
     "name": "骨料、集料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 88
   },
   {
     "code": "OBJ-SP07-P11",
@@ -887,7 +975,8 @@
     "name": "钢筋（含焊接与机械连接）",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 89
   },
   {
     "code": "OBJ-SP07-P12",
@@ -897,7 +986,8 @@
     "name": "外加剂",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 90
   },
   {
     "code": "OBJ-SP07-P13",
@@ -907,7 +997,8 @@
     "name": "砂浆",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 91
   },
   {
     "code": "OBJ-SP07-P14",
@@ -917,7 +1008,8 @@
     "name": "混凝土",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 92
   },
   {
     "code": "OBJ-SP07-P15",
@@ -927,7 +1019,8 @@
     "name": "防水材料及防水密封材料",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 93
   },
   {
     "code": "OBJ-SP07-P16",
@@ -937,7 +1030,8 @@
     "name": "水",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 94
   },
   {
     "code": "OBJ-SP07-P17",
@@ -947,7 +1041,8 @@
     "name": "石灰",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 95
   },
   {
     "code": "OBJ-SP07-P18",
@@ -957,7 +1052,8 @@
     "name": "石材",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 96
   },
   {
     "code": "OBJ-SP07-P19",
@@ -967,7 +1063,8 @@
     "name": "螺栓、锚具夹具及连接器",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 97
   },
   {
     "code": "OBJ-SP08-P1",
@@ -977,7 +1074,8 @@
     "name": "沥青混合料路面",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 98
   },
   {
     "code": "OBJ-SP08-P2",
@@ -987,7 +1085,8 @@
     "name": "基层及底基层",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 99
   },
   {
     "code": "OBJ-SP08-P3",
@@ -997,7 +1096,8 @@
     "name": "土路基",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 100
   },
   {
     "code": "OBJ-SP08-P4",
@@ -1007,7 +1107,8 @@
     "name": "排水管道工程",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 101
   },
   {
     "code": "OBJ-SP08-P5",
@@ -1017,7 +1118,8 @@
     "name": "水泥混凝土路面",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 102
   },
   {
     "code": "OBJ-SP09-P1",
@@ -1027,7 +1129,8 @@
     "name": "桥梁结构与构件",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 103
   },
   {
     "code": "OBJ-SP09-P2",
@@ -1037,7 +1140,8 @@
     "name": "隧道主体结构",
     "isOptionalForQualification": false,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 104
   },
   {
     "code": "OBJ-SP09-P3",
@@ -1047,7 +1151,8 @@
     "name": "桥梁及附属物",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 105
   },
   {
     "code": "OBJ-SP09-P4",
@@ -1057,7 +1162,8 @@
     "name": "桥梁支座",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 106
   },
   {
     "code": "OBJ-SP09-P5",
@@ -1067,7 +1173,8 @@
     "name": "桥梁伸缩装置",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 107
   },
   {
     "code": "OBJ-SP09-P6",
@@ -1077,7 +1184,8 @@
     "name": "隧道环境",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 108
   },
   {
     "code": "OBJ-SP09-P7",
@@ -1087,7 +1195,8 @@
     "name": "人行天桥及地下通道",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 109
   },
   {
     "code": "OBJ-SP09-P8",
@@ -1097,7 +1206,8 @@
     "name": "综合管廊主体结构",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 110
   },
   {
     "code": "OBJ-SP09-P9",
@@ -1107,6 +1217,7 @@
     "name": "涵洞主体结构",
     "isOptionalForQualification": true,
     "isOfficial": true,
-    "enabled": true
+    "enabled": true,
+    "sortOrder": 111
   }
 ]

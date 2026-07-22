@@ -24,6 +24,8 @@ export interface InspectionObject {
   isOfficial: boolean;
   /** 机构是否启用。 */
   enabled: boolean;
+  /** 列表展示排序。 */
+  sortOrder: number;
   createdAt: string;
   updatedAt: string;
 }

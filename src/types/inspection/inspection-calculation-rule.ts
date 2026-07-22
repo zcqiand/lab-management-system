@@ -24,13 +24,13 @@ export interface InspectionCalculationRule {
   specimenCount: number;
   /** 公式或计算说明，formula/manual 时使用。 */
   formula?: string;
-  /** 结果单位。 */
-  unit?: string;
   /** 适用条件文本。 */
   conditions?: string;
   /** 修约规则。 */
   roundingRule?: string;
   remark?: string;
+  /** 列表展示排序。 */
+  sortOrder: number;
   createdAt: string;
   updatedAt: string;
 }

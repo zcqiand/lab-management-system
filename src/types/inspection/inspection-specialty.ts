@@ -17,6 +17,8 @@ export interface InspectionSpecialty {
   isOfficial: boolean;
   /** 机构是否启用；未启用的专项仍可被查询与展示。 */
   enabled: boolean;
+  /** 列表展示排序。 */
+  sortOrder: number;
   createdAt: string;
   updatedAt: string;
 }

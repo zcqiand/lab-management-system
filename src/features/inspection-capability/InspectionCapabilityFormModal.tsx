@@ -25,7 +25,7 @@ const PATHS: Record<Resource, string> = {
   standards: "/inspection-standards",
 };
 
-type FieldType = "text" | "select" | "checkbox" | "aliases";
+type FieldType = "text" | "number" | "select" | "checkbox" | "aliases";
 interface Field {
   name: string;
   label: string;
@@ -43,6 +43,7 @@ const FIELDS: Record<Resource, Field[]> = {
     { name: "name", label: "名称", required: true },
     { name: "isOfficial", label: "官方", type: "checkbox" },
     { name: "enabled", label: "启用", type: "checkbox", default: true },
+    { name: "sortOrder", label: "排序", type: "number", placeholder: "999" },
   ],
   objects: [
     { name: "code", label: "编码", required: true, placeholder: "OBJ-SP01-P24" },
@@ -58,6 +59,7 @@ const FIELDS: Record<Resource, Field[]> = {
     { name: "isOptionalForQualification", label: "资质可选", type: "checkbox" },
     { name: "isOfficial", label: "官方", type: "checkbox" },
     { name: "enabled", label: "启用", type: "checkbox", default: true },
+    { name: "sortOrder", label: "排序", type: "number", placeholder: "999" },
   ],
   parameters: [
     { name: "code", label: "编码", required: true, placeholder: "IP-CUSTOM-1" },
@@ -73,6 +75,7 @@ const FIELDS: Record<Resource, Field[]> = {
       type: "select",
       options: ["official", "custom"],
     },
+    { name: "sortOrder", label: "排序", type: "number", placeholder: "999" },
   ],
   standards: [
     { name: "code", label: "编码", required: true, placeholder: "GB/T CUSTOM-2026" },
@@ -85,6 +88,7 @@ const FIELDS: Record<Resource, Field[]> = {
       options: ["active", "superseded", "draft"],
     },
     { name: "sourceDocumentId", label: "来源文件" },
+    { name: "sortOrder", label: "排序", type: "number", placeholder: "999" },
   ],
 };
 
@@ -169,6 +173,7 @@ export function InspectionCapabilityFormModal({
     for (const f of fields) {
       const v = values[f.name];
       if (f.type === "checkbox") payload[f.name] = v === "true";
+      else if (f.type === "number") payload[f.name] = v === "" || v == null ? undefined : Number(v);
       else if (f.type === "aliases")
         payload[f.name] = v
           .split(",")
@@ -303,6 +308,7 @@ export function InspectionCapabilityFormModal({
                   </span>
                   <input
                     aria-label={f.label}
+                    type={f.type === "number" ? "number" : "text"}
                     value={values[f.name] ?? ""}
                     onChange={(e) => setValues({ ...values, [f.name]: e.target.value })}
                     placeholder={f.placeholder}

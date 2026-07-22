@@ -22,6 +22,8 @@ export interface InspectionParameter {
   unit?: string;
   /** official / custom。 */
   sourceType: "official" | "custom";
+  /** 列表展示排序。 */
+  sortOrder: number;
   createdAt: string;
   updatedAt: string;
 }

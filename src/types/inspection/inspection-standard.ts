@@ -17,6 +17,8 @@ export interface InspectionStandard {
   sourceDocumentId?: string;
   /** 源文件 SHA-256。 */
   sourceHash?: string;
+  /** 列表展示排序。 */
+  sortOrder: number;
   createdAt: string;
   updatedAt: string;
 }

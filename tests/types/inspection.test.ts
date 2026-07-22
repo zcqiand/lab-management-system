@@ -30,6 +30,7 @@ describe("types/inspection M06 检测能力领域", () => {
       name: "建筑材料及构配件",
       isOfficial: true,
       enabled: true,
+      sortOrder: 1,
       createdAt: "2026-07-22T00:00:00Z",
       updatedAt: "2026-07-22T00:00:00Z",
     };
@@ -48,6 +49,7 @@ describe("types/inspection M06 检测能力领域", () => {
       isOptionalForQualification: false,
       isOfficial: true,
       enabled: true,
+      sortOrder: 3,
       createdAt: "2026-07-22T00:00:00Z",
       updatedAt: "2026-07-22T00:00:00Z",
     };
@@ -66,6 +68,7 @@ describe("types/inspection M06 检测能力领域", () => {
       aliases: ["屈服强度", "屈服点"],
       unit: "MPa",
       sourceType: "official",
+      sortOrder: 1,
       createdAt: "2026-07-22T00:00:00Z",
       updatedAt: "2026-07-22T00:00:00Z",
     };
@@ -81,6 +84,7 @@ describe("types/inspection M06 检测能力领域", () => {
       version: "2024",
       status: "active",
       sourceDocumentId: "raw/standards/pdf/GB_1499.2-2024.pdf",
+      sortOrder: 1,
       createdAt: "2026-07-22T00:00:00Z",
       updatedAt: "2026-07-22T00:00:00Z",
     };
@@ -145,9 +149,9 @@ describe("types/inspection M06 检测能力领域", () => {
       testingStandardCode: "GB/T 50081-2019",
       algorithmType: "compressive_strength",
       specimenCount: 3,
-      unit: "MPa",
       conditions: "furnaceNo=?",
       roundingRule: "修约到 0.1",
+      sortOrder: 1,
       createdAt: "2026-07-22T00:00:00Z",
       updatedAt: "2026-07-22T00:00:00Z",
     };
@@ -171,6 +175,11 @@ describe("types/inspection M06 检测能力领域", () => {
       verificationStatus: "verified",
       clause: "7.3.2",
       sourcePage: 12,
+      brand: "HRB400",
+      model: "",
+      grade: "Ⅱ类",
+      spec: "",
+      sortOrder: 1,
       createdAt: "2026-07-22T00:00:00Z",
       updatedAt: "2026-07-22T00:00:00Z",
     };

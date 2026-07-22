@@ -34,7 +34,17 @@ export interface InspectionTechnicalRequirement {
   clause?: string;
   sourcePage?: number;
   sourceHash?: string;
+  /** 适用牌号（如 HRB400），空表示不限。 */
+  brand?: string;
+  /** 适用型号，空表示不限。 */
+  model?: string;
+  /** 适用等级，空表示不限。 */
+  grade?: string;
+  /** 适用规格，空表示不限。 */
+  spec?: string;
   remark?: string;
+  /** 列表展示排序。 */
+  sortOrder: number;
   createdAt: string;
   updatedAt: string;
 }

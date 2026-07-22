@@ -4,69 +4,79 @@
     "name": "通用硅酸盐水泥",
     "version": "2023",
     "status": "active",
-    "sourceDocumentId": "raw/standards/pdf/GB 175-2023.pdf"
+    "sourceDocumentId": "raw/standards/pdf/GB 175-2023.pdf",
+    "sortOrder": 1
   },
   {
     "code": "GB/T 228.1-2021",
     "name": "金属材料 拉伸试验 第1部分：室温试验方法",
     "version": "2021",
     "status": "active",
-    "sourceDocumentId": "raw/standards/pdf/GB_T 228.1-2021.pdf"
+    "sourceDocumentId": "raw/standards/pdf/GB_T 228.1-2021.pdf",
+    "sortOrder": 2
   },
   {
     "code": "GB 1499.2-2024",
     "name": "钢筋混凝土用钢 第2部分：热轧带肋钢筋",
     "version": "2024",
     "status": "active",
-    "sourceDocumentId": "raw/standards/pdf/GB 1499.2-2024.pdf"
+    "sourceDocumentId": "raw/standards/pdf/GB 1499.2-2024.pdf",
+    "sortOrder": 3
   },
   {
     "code": "GB 1499.1-2024",
     "name": "钢筋混凝土用钢 第1部分：热轧光圆钢筋",
     "version": "2024",
     "status": "active",
-    "sourceDocumentId": "raw/standards/pdf/GB 1499.1-2024.pdf"
+    "sourceDocumentId": "raw/standards/pdf/GB 1499.1-2024.pdf",
+    "sortOrder": 4
   },
   {
     "code": "GB/T 1346-2024",
     "name": "水泥标准稠度用水量、凝结时间、安定性检验方法",
     "version": "2024",
     "status": "active",
-    "sourceDocumentId": "raw/standards/pdf/GB_T 1346-2024.pdf"
+    "sourceDocumentId": "raw/standards/pdf/GB_T 1346-2024.pdf",
+    "sortOrder": 5
   },
   {
     "code": "GB/T 50081-2019",
     "name": "混凝土物理力学性能试验方法标准",
     "version": "2019",
     "status": "active",
-    "sourceDocumentId": "raw/standards/pdf/GB_T 50081-2019.pdf"
+    "sourceDocumentId": "raw/standards/pdf/GB_T 50081-2019.pdf",
+    "sortOrder": 6
   },
   {
     "code": "GB/T 14684-2022",
     "name": "建设用砂",
     "version": "2022",
     "status": "active",
-    "sourceDocumentId": "raw/standards/pdf/GB_T 14684-2022.pdf"
+    "sourceDocumentId": "raw/standards/pdf/GB_T 14684-2022.pdf",
+    "sortOrder": 7
   },
   {
     "code": "GB/T 14685-2022",
     "name": "建设用卵石和碎石",
     "version": "2022",
     "status": "active",
-    "sourceDocumentId": "raw/standards/pdf/GB_T 14685-2022.pdf"
+    "sourceDocumentId": "raw/standards/pdf/GB_T 14685-2022.pdf",
+    "sortOrder": 8
   },
   {
     "code": "JGJ 107-2016",
     "name": "钢筋机械连接技术规程",
     "version": "2016",
     "status": "active",
-    "sourceDocumentId": "raw/standards/pdf/JGJ 107-2016.pdf"
+    "sourceDocumentId": "raw/standards/pdf/JGJ 107-2016.pdf",
+    "sortOrder": 9
   },
   {
     "code": "JGJ 18-2012",
     "name": "钢筋焊接及验收规程",
     "version": "2012",
     "status": "active",
-    "sourceDocumentId": "raw/standards/pdf/JGJ 18-2012.pdf"
+    "sourceDocumentId": "raw/standards/pdf/JGJ 18-2012.pdf",
+    "sortOrder": 10
   }
 ]

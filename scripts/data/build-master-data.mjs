@@ -67,15 +67,16 @@ function str(v, fallback) {
 }
 
 function build() {
-  const specialties = readCsv("inspection-specialties.csv").map((r) => ({
+  const specialties = readCsv("inspection-specialties.csv").map((r, i) => ({
     code: r.code,
     officialNo: r.officialNo,
     name: r.name,
     isOfficial: bool(r.isOfficial, true),
     enabled: bool(r.enabled, true),
+    sortOrder: num(r.sortOrder, i + 1),
   }));
 
-  const objects = readCsv("inspection-objects.csv").map((r) => ({
+  const objects = readCsv("inspection-objects.csv").map((r, i) => ({
     code: r.code,
     inspectionSpecialtyCode: r.inspectionSpecialtyCode,
     sourceProjectNo: r.sourceProjectNo,
@@ -84,9 +85,10 @@ function build() {
     isOptionalForQualification: bool(r.isOptionalForQualification, false),
     isOfficial: bool(r.isOfficial, true),
     enabled: bool(r.enabled, true),
+    sortOrder: num(r.sortOrder, i + 1),
   }));
 
-  const parameters = readCsv("inspection-parameters.csv").map((r) => ({
+  const parameters = readCsv("inspection-parameters.csv").map((r, i) => ({
     code: r.code,
     name: r.name,
     rawName: str(r.rawName, r.name),
@@ -95,14 +97,16 @@ function build() {
     aliases: [],
     unit: str(r.unit, undefined),
     sourceType: str(r.sourceType, "official"),
+    sortOrder: num(r.sortOrder, i + 1),
   }));
 
-  const standards = readCsv("inspection-standards.csv").map((r) => ({
+  const standards = readCsv("inspection-standards.csv").map((r, i) => ({
     code: r.code,
     name: r.name,
     version: str(r.version, undefined),
     status: str(r.status, "active"),
     sourceDocumentId: str(r.sourceDocumentId, undefined),
+    sortOrder: num(r.sortOrder, i + 1),
   }));
 
   const objectParameters = readCsv("inspection-object-parameters.csv").map((r) => ({

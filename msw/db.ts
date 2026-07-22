@@ -298,6 +298,7 @@ export const inspectionSpecialtyTable = new MockTable<{
   name: string
   isOfficial: boolean
   enabled: boolean
+  sortOrder: number
   createdAt: string
   updatedAt: string
 }>('insp-sp')
@@ -313,6 +314,7 @@ export const inspectionObjectTable = new MockTable<{
   isOptionalForQualification: boolean
   isOfficial: boolean
   enabled: boolean
+  sortOrder: number
   createdAt: string
   updatedAt: string
 }>('insp-obj')
@@ -328,6 +330,7 @@ export const inspectionParameterTable = new MockTable<{
   aliases: string[]
   unit?: string
   sourceType: 'official' | 'custom'
+  sortOrder: number
   createdAt: string
   updatedAt: string
 }>('insp-param')
@@ -341,6 +344,7 @@ export const inspectionStandardTable = new MockTable<{
   status: 'active' | 'superseded' | 'draft'
   sourceDocumentId?: string
   sourceHash?: string
+  sortOrder: number
   createdAt: string
   updatedAt: string
 }>('insp-std')
@@ -1148,10 +1152,10 @@ export function seedMasterDataIntoMockDb(): void {
     inspectionStandardParameters: generatedStandardParameters ?? [],
     inspectionSpecialtyObjects: generatedSpecialtyObjects ?? [],
   } as {
-    inspectionSpecialties: Array<{ code: string; officialNo: string; name: string; isOfficial: boolean; enabled: boolean }>
-    inspectionObjects: Array<{ code: string; inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean }>
-    inspectionParameters: Array<{ code: string; name: string; rawName: string; canonicalName: string; methodText?: string; aliases: string[]; unit?: string; sourceType: 'official' | 'custom' }>
-    inspectionStandards: Array<{ code: string; name: string; version?: string; status: string; sourceDocumentId?: string }>
+    inspectionSpecialties: Array<{ code: string; officialNo: string; name: string; isOfficial: boolean; enabled: boolean; sortOrder: number }>
+    inspectionObjects: Array<{ code: string; inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean; sortOrder: number }>
+    inspectionParameters: Array<{ code: string; name: string; rawName: string; canonicalName: string; methodText?: string; aliases: string[]; unit?: string; sourceType: 'official' | 'custom'; sortOrder: number }>
+    inspectionStandards: Array<{ code: string; name: string; version?: string; status: string; sourceDocumentId?: string; sortOrder: number }>
     inspectionObjectParameters: Array<{ inspectionObjectCode: string; inspectionParameterCode: string; qualificationLevel: 'QUALIFIED' | 'RESTRICTED' }>
     inspectionObjectStandards: Array<{ inspectionObjectCode: string; inspectionStandardCode: string; role: 'TESTING' | 'JUDGMENT' }>
     inspectionStandardParameters: Array<{ inspectionStandardCode: string; inspectionParameterCode: string }>
@@ -1166,6 +1170,7 @@ export function seedMasterDataIntoMockDb(): void {
       name: s.name,
       isOfficial: s.isOfficial,
       enabled: s.enabled,
+      sortOrder: s.sortOrder,
     } as never);
     inspectionSpecialtyTable.update(inspectionSpecialtyTable.findById(`insp-sp-${s.code}`)!.id, {
       createdAt: now,
@@ -1183,6 +1188,7 @@ export function seedMasterDataIntoMockDb(): void {
       isOptionalForQualification: o.isOptionalForQualification,
       isOfficial: o.isOfficial,
       enabled: o.enabled,
+      sortOrder: o.sortOrder,
     } as never);
     inspectionObjectTable.update(`insp-obj-${o.code}`, {
       createdAt: now,
@@ -1200,6 +1206,7 @@ export function seedMasterDataIntoMockDb(): void {
       aliases: p.aliases,
       unit: p.unit,
       sourceType: p.sourceType,
+      sortOrder: p.sortOrder,
     } as never);
     inspectionParameterTable.update(`insp-param-${p.code}`, {
       createdAt: now,
@@ -1214,6 +1221,7 @@ export function seedMasterDataIntoMockDb(): void {
       version: s.version,
       status: (s.status as 'active' | 'superseded' | 'draft') ?? 'active',
       sourceDocumentId: s.sourceDocumentId,
+      sortOrder: s.sortOrder,
     } as never);
     inspectionStandardTable.update(`insp-std-${s.code}`, {
       createdAt: now,
