@@ -345,9 +345,10 @@ export function InspectionCapabilityFormModal({
             extraFields={[
               {
                 name: "role",
-                label: "角色",
+                label: "标准性质",
                 type: "select",
                 options: ["TESTING", "JUDGMENT"],
+                valueLabels: { TESTING: "检测依据", JUDGMENT: "判定依据" },
               },
             ]}
             fnId="M06.F02.I04"
@@ -371,8 +372,8 @@ export function InspectionCapabilityFormModal({
                 label: "资质级别",
                 type: "select",
                 options: ["QUALIFIED", "RESTRICTED"],
+                valueLabels: { QUALIFIED: "必备", RESTRICTED: "可选" },
               },
-              { name: "sortOrder", label: "排序", type: "text" },
             ]}
             fnId="M06.F02.I06"
           />

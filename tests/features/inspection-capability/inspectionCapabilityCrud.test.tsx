@@ -319,6 +319,30 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     expect(await screen.findByRole("button", { name: "关联检测参数" })).toBeTruthy();
   });
 
+  fnTest(["M06.F02.I04", "M06.F02.I05"], "检测标准关联 标准性质 下拉以中文呈现", async () => {
+    renderPage("objects");
+    await flush();
+    const user = userEvent.setup();
+    const editBtns = await screen.findAllByRole("button", { name: /^编辑 / });
+    await user.click(editBtns[0]!);
+    await user.click(await screen.findByRole("button", { name: "关联检测标准" }));
+    const select = await screen.findByLabelText("标准性质");
+    expect(within(select).getByRole("option", { name: "检测依据" })).toBeTruthy();
+    expect(within(select).getByRole("option", { name: "判定依据" })).toBeTruthy();
+  });
+
+  fnTest(["M06.F02.I06"], "检测参数关联 资质级别 下拉以中文呈现", async () => {
+    renderPage("objects");
+    await flush();
+    const user = userEvent.setup();
+    const editBtns = await screen.findAllByRole("button", { name: /^编辑 / });
+    await user.click(editBtns[0]!);
+    await user.click(await screen.findByRole("button", { name: "关联检测参数" }));
+    const select = await screen.findByLabelText("资质级别");
+    expect(within(select).getByRole("option", { name: "必备" })).toBeTruthy();
+    expect(within(select).getByRole("option", { name: "可选" })).toBeTruthy();
+  });
+
   // 防御性用例：当 apiClient.get 返回畸形响应（无 items 字段，例如 MSW 未启动时
   // /api/* 被 bypass 到 Vite dev server 返回 index.html）时，页面不得抛错，
   // 而是落入 error/empty 分支。回归浏览器 MSW 起不来导致的运行时崩溃。

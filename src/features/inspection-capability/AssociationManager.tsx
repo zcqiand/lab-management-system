@@ -6,6 +6,7 @@ interface ExtraField {
   label: string;
   type?: "text" | "select";
   options?: string[];
+  valueLabels?: Record<string, string>; // 枚举值 → 中文呈现（值仍存英文枚举）
 }
 
 interface Props {
@@ -137,7 +138,9 @@ export function AssociationManager(props: Props) {
             >
               <span>
                 {display}
-                {extraFields.map((f) => ` · ${f.label}: ${r[f.name] ?? ""}`).join("")}
+                {extraFields
+                  .map((f) => ` · ${f.label}: ${f.valueLabels?.[r[f.name]] ?? r[f.name] ?? ""}`)
+                  .join("")}
               </span>
               <button
                 type="button"
@@ -180,7 +183,7 @@ export function AssociationManager(props: Props) {
                 <option value="">（选）</option>
                 {(f.options ?? []).map((o) => (
                   <option key={o} value={o}>
-                    {o}
+                    {f.valueLabels?.[o] ?? o}
                   </option>
                 ))}
               </select>
