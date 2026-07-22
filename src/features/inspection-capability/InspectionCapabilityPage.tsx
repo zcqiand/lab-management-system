@@ -199,7 +199,7 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
           </button>
         </div>
       </header>
-      <p className="text-xs text-gray-500">数据源：src/data/generated/lab-master-data.json</p>
+      <p className="text-xs text-gray-500">数据源：src/data/generated/inspection-*.json（按类型分文件）</p>
       {state.error && (
         <div role="alert" className="text-red-600 text-sm bg-red-50 p-2 rounded">
           {state.error}

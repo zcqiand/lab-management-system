@@ -10,8 +10,16 @@
 // 注意：本模块会被 msw/browser.ts 引入浏览器 bundle，因此不得在顶层使用
 // node:* 内建模块（Vite 会将其 externalize 为 undefined，导致 module load 抛错、
 // MSW 起不来，最终 /api/* 被 bypass 到 Vite dev server 返回 index.html）。
-// master data 通过 Vite/TS 静态 JSON 导入（resolveJsonModule 已开启）。
-import generatedMasterData from '../src/data/generated/lab-master-data.json'
+// master data 通过 Vite/TS 静态 JSON 导入（resolveJsonModule 已开启），
+// 每个类型一个文件（裸数组），由 scripts/data/build-master-data.mjs 从 CSV 生成。
+import generatedSpecialties from '../src/data/generated/inspection-specialty.json'
+import generatedObjects from '../src/data/generated/inspection-object.json'
+import generatedParameters from '../src/data/generated/inspection-parameter.json'
+import generatedStandards from '../src/data/generated/inspection-standard.json'
+import generatedObjectParameters from '../src/data/generated/inspection-object-parameter.json'
+import generatedObjectStandards from '../src/data/generated/inspection-object-standard.json'
+import generatedStandardParameters from '../src/data/generated/inspection-standard-parameter.json'
+import generatedSpecialtyObjects from '../src/data/generated/inspection-specialty-object.json'
 
 export interface Timestamped {
   createdAt: string
@@ -1127,13 +1135,22 @@ export function resetMockDb() {
 }
 
 /**
- * 把 src/data/generated/lab-master-data.json 装入 M06 8 张内存表。
+ * 把 src/data/generated/*.json（按类型分文件）装入 M06 8 张内存表。
  * 测试与开发模式共享同一来源；接样、计算、评定等流程后续切换到 M06。
  */
 export function seedMasterDataIntoMockDb(): void {
   // 浏览器侧：master data 通过顶层静态 JSON 导入获取（见文件顶部 import），
-  // 不再走 node:fs / __dirname。空对象兜底，避免 JSON 结构异常时后续 for 循环报错。
-  const data = (generatedMasterData ?? {}) as {
+  // 不再走 node:fs / __dirname。空数组兜底，避免 JSON 结构异常时后续 for 循环报错。
+  const data = {
+    inspectionSpecialties: generatedSpecialties ?? [],
+    inspectionObjects: generatedObjects ?? [],
+    inspectionParameters: generatedParameters ?? [],
+    inspectionStandards: generatedStandards ?? [],
+    inspectionObjectParameters: generatedObjectParameters ?? [],
+    inspectionObjectStandards: generatedObjectStandards ?? [],
+    inspectionStandardParameters: generatedStandardParameters ?? [],
+    inspectionSpecialtyObjects: generatedSpecialtyObjects ?? [],
+  } as {
     inspectionSpecialties: Array<{ code: string; officialNo: string; name: string; isOfficial: boolean; enabled: boolean }>
     inspectionObjects: Array<{ code: string; inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean }>
     inspectionParameters: Array<{ code: string; name: string; rawName: string; canonicalName: string; methodText?: string; aliases: string[]; unit?: string; sourceType: 'official' | 'custom' }>

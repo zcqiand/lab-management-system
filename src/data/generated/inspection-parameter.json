@@ -1,0 +1,152 @@
+[
+  {
+    "code": "IP-CON002",
+    "name": "抗压强度",
+    "rawName": "抗压强度",
+    "canonicalName": "抗压强度",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "MPa",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-CON006",
+    "name": "抗折强度",
+    "rawName": "抗折强度",
+    "canonicalName": "抗折强度",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "MPa",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-STE001",
+    "name": "下屈服强度 ReL",
+    "rawName": "下屈服强度 ReL",
+    "canonicalName": "下屈服强度",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "MPa",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-STE003",
+    "name": "抗拉强度 Rm",
+    "rawName": "抗拉强度 Rm",
+    "canonicalName": "抗拉强度",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "MPa",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-STE004",
+    "name": "断后伸长率 A",
+    "rawName": "断后伸长率 A",
+    "canonicalName": "断后伸长率",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "%",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-STE009",
+    "name": "重量偏差",
+    "rawName": "重量偏差",
+    "canonicalName": "重量偏差",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "%",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-CEM012",
+    "name": "3天抗压强度",
+    "rawName": "3天抗压强度",
+    "canonicalName": "3天抗压强度",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "MPa",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-CEM014",
+    "name": "28天抗压强度",
+    "rawName": "28天抗压强度",
+    "canonicalName": "28天抗压强度",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "MPa",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-CEM003",
+    "name": "初凝时间",
+    "rawName": "初凝时间",
+    "canonicalName": "初凝时间",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "min",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-CEM004",
+    "name": "终凝时间",
+    "rawName": "终凝时间",
+    "canonicalName": "终凝时间",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "min",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-SND002",
+    "name": "含泥量",
+    "rawName": "含泥量",
+    "canonicalName": "含泥量",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "%",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-SND003",
+    "name": "泥块含量",
+    "rawName": "泥块含量",
+    "canonicalName": "泥块含量",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "%",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-GRV005",
+    "name": "压碎指标",
+    "rawName": "压碎指标",
+    "canonicalName": "压碎指标",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "%",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-RMK001",
+    "name": "接头极限抗拉强度",
+    "rawName": "接头极限抗拉强度",
+    "canonicalName": "接头极限抗拉强度",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "MPa",
+    "sourceType": "official"
+  },
+  {
+    "code": "IP-RWD001",
+    "name": "抗拉强度（焊接）",
+    "rawName": "抗拉强度（焊接）",
+    "canonicalName": "抗拉强度",
+    "methodText": "见对应标准条款",
+    "aliases": [],
+    "unit": "MPa",
+    "sourceType": "official"
+  }
+]
