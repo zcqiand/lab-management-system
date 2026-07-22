@@ -94,7 +94,6 @@ describe("types/inspection M06 检测能力领域", () => {
       inspectionObjectCode: "OBJ-SP01-P03-FINE",
       inspectionParameterCode: "IP-STE001",
       qualificationLevel: "QUALIFIED",
-      sortOrder: 1,
       sourcePage: 2,
       createdAt: "2026-07-22T00:00:00Z",
       updatedAt: "2026-07-22T00:00:00Z",

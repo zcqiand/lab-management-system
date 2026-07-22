@@ -109,7 +109,6 @@ function build() {
     inspectionObjectCode: r.inspectionObjectCode,
     inspectionParameterCode: r.inspectionParameterCode,
     qualificationLevel: str(r.qualificationLevel, "QUALIFIED"),
-    sortOrder: num(r.sortOrder, 0),
   }));
 
   const objectStandards = readCsv("inspection-object-standards.csv").map((r) => ({

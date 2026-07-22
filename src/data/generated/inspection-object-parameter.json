@@ -2,907 +2,756 @@
   {
     "inspectionObjectCode": "OBJ-SP01-P1",
     "inspectionParameterCode": "IP-CEM003",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 1
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P1",
     "inspectionParameterCode": "IP-CEM004",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 2
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P1",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 3
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P1",
     "inspectionParameterCode": "IP-CEM014",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 4
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P2",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 5
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P2",
     "inspectionParameterCode": "IP-STE003",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 6
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P2",
     "inspectionParameterCode": "IP-STE004",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 7
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P2",
     "inspectionParameterCode": "IP-STE009",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 8
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P2",
     "inspectionParameterCode": "IP-RWD001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 9
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P3-细骨料",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 10
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P3-细骨料",
     "inspectionParameterCode": "IP-SND003",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 11
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P3-粗骨料",
     "inspectionParameterCode": "IP-GRV005",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 12
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P3-轻集料",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 13
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P4",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 14
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P5",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 15
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P5",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 16
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P6",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 17
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P6",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 18
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P7",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 19
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P7",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 20
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P8",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 21
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P8",
     "inspectionParameterCode": "IP-SND003",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 22
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P8",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 23
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P9",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 24
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P10-防水卷材",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 25
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P10-防水涂料",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 26
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P10-防水密封材料及其他防水材料",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 27
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P11",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 28
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P12-塑料管材",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 29
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P12-金属管材",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 30
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P13",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 31
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P13",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 32
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P14",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 33
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P15",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 34
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P15",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 35
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P16-金属波纹管",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 36
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P16-塑料波纹管",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 37
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P17",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 38
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P18-位移相关型阻尼器",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 39
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P18-速度相关型阻尼器",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 40
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P19-叠层橡胶隔震支座",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 41
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P19-建筑摩擦摆隔震支座",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 42
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P20",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 43
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P21",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 44
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P22",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 45
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP01-P23",
     "inspectionParameterCode": "IP-RWD001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 46
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P1",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 47
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P1",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 48
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P2",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 49
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P2",
     "inspectionParameterCode": "IP-STE003",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 50
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P2",
     "inspectionParameterCode": "IP-STE004",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 51
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P2",
     "inspectionParameterCode": "IP-STE009",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 52
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P3",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 53
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P4",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 54
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P4",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 55
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P5",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 56
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P6",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 57
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P6",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 58
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P7",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 59
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P7",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 60
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P8",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 61
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP02-P9",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 62
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP03-P1",
     "inspectionParameterCode": "IP-RWD001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 63
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP03-P2",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 64
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP03-P3",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 65
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP03-P4",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 66
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP03-P5",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 67
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP03-P6",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 68
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP03-P7",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 69
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP04-P1",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 70
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP04-P2",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 71
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP04-P3",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 72
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP04-P4",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 73
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP04-P5",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 74
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P1",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 75
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P2",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 76
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P3",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 77
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P4",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 78
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P4",
     "inspectionParameterCode": "IP-SND003",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 79
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P4",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 80
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P5",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 81
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P6",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 82
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P7",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 83
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P8",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 84
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P9",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 85
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P10",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 86
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P11-风机盘管机组",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 87
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P11-采暖散热器",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 88
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P11-绝热材料",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 89
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P12-照明光源",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 90
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P12-灯具",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 91
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P12-设备",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 92
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P13-太阳能集热器",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 93
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P13-太阳能热利用系统的太阳能集热系统",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 94
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P13-太阳能光伏组件",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 95
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP05-P13-太阳能光伏发电系统",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 96
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP06-P1",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 97
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP06-P2",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 98
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP06-P3",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 99
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P1",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 100
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P2",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 101
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P3",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 102
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P4",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 103
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P5-粗集料",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 104
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P5-细集料",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 105
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P5-矿粉",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 106
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P5-木质素纤维",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 107
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P6",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 108
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P7",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 109
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P8",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 110
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P8",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 111
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P9",
     "inspectionParameterCode": "IP-CEM003",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 112
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P9",
     "inspectionParameterCode": "IP-CEM004",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 113
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P9",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 114
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P9",
     "inspectionParameterCode": "IP-CEM014",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 115
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P10",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 116
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P11",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 117
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P11",
     "inspectionParameterCode": "IP-STE003",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 118
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P11",
     "inspectionParameterCode": "IP-STE004",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 119
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P11",
     "inspectionParameterCode": "IP-STE009",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 120
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P11",
     "inspectionParameterCode": "IP-RWD001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 121
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P12",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 122
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P13",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 123
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P13",
     "inspectionParameterCode": "IP-SND003",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 124
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P13",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 125
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P14",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 126
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P14",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 127
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P15",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 128
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P16",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 129
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P17",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 130
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P18",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 131
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP07-P19",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 132
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP08-P1",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 133
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP08-P2",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 134
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP08-P3",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 135
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP08-P4",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 136
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP08-P5",
     "inspectionParameterCode": "IP-CEM003",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 137
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP08-P5",
     "inspectionParameterCode": "IP-CEM004",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 138
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP08-P5",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 139
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP08-P5",
     "inspectionParameterCode": "IP-CEM014",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 140
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP08-P5",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 141
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP08-P5",
     "inspectionParameterCode": "IP-CON006",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 142
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP09-P1",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 143
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP09-P2",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 144
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP09-P3",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 145
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP09-P4",
     "inspectionParameterCode": "IP-CEM012",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 146
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP09-P5",
     "inspectionParameterCode": "IP-SND002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 147
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP09-P6",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 148
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP09-P7",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 149
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP09-P8",
     "inspectionParameterCode": "IP-STE001",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 150
+    "qualificationLevel": "QUALIFIED"
   },
   {
     "inspectionObjectCode": "OBJ-SP09-P9",
     "inspectionParameterCode": "IP-CON002",
-    "qualificationLevel": "QUALIFIED",
-    "sortOrder": 151
+    "qualificationLevel": "QUALIFIED"
   }
 ]

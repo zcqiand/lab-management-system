@@ -76,7 +76,6 @@ describe("MSW 检测能力 M06 CRUD handler", () => {
         inspectionObjectCode: "OBJ-SP01-P1",
         inspectionParameterCode: "IP-CON002",
         qualificationLevel: "QUALIFIED",
-        sortOrder: 99,
       }),
     });
     expect(res.status).toBe(201);

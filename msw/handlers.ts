@@ -1345,7 +1345,7 @@ export const handlers = [
         filters: {
           inspectionObjectCode: url.searchParams.get('inspectionObjectCode') ?? undefined,
         },
-        sortField: 'sortOrder',
+        sortField: 'inspectionParameterCode',
       }),
     )
   }),
@@ -1520,7 +1520,7 @@ export const handlers = [
 
   // M06.F02.I06 检测项目-检测参数关联
   http.post('*/inspection-object-parameters', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ inspectionObjectCode: string; inspectionParameterCode: string; qualificationLevel: 'QUALIFIED' | 'RESTRICTED'; sortOrder: number }>
+    const body = (await request.json()) as Partial<{ inspectionObjectCode: string; inspectionParameterCode: string; qualificationLevel: 'QUALIFIED' | 'RESTRICTED' }>
     if (!body.inspectionObjectCode || !body.inspectionParameterCode) {
       return HttpResponse.json({ message: 'inspectionObjectCode/inspectionParameterCode 必填' }, { status: 400 })
     }
@@ -1535,7 +1535,6 @@ export const handlers = [
       inspectionObjectCode: body.inspectionObjectCode,
       inspectionParameterCode: body.inspectionParameterCode,
       qualificationLevel: body.qualificationLevel ?? 'QUALIFIED',
-      sortOrder: body.sortOrder ?? 0,
     } as never)
     inspectionObjectParameterTable.update(id, { createdAt: now, updatedAt: now })
     return HttpResponse.json(inspectionObjectParameterTable.findById(id), { status: 201 })

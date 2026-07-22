@@ -12,8 +12,6 @@ export interface InspectionObjectParameter {
   inspectionParameterCode: string;
   /** 资质等级：具备能力或受范围限制。 */
   qualificationLevel: InspectionQualificationLevel;
-  /** 在对象内的展示顺序。 */
-  sortOrder: number;
   /** 官方附件2 中的来源页码。 */
   sourcePage?: number;
   remark?: string;

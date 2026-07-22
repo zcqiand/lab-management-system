@@ -351,7 +351,6 @@ export const inspectionObjectParameterTable = new MockTable<{
   inspectionObjectCode: string
   inspectionParameterCode: string
   qualificationLevel: 'QUALIFIED' | 'RESTRICTED'
-  sortOrder: number
   sourcePage?: number
   remark?: string
   createdAt: string
@@ -1153,7 +1152,7 @@ export function seedMasterDataIntoMockDb(): void {
     inspectionObjects: Array<{ code: string; inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean }>
     inspectionParameters: Array<{ code: string; name: string; rawName: string; canonicalName: string; methodText?: string; aliases: string[]; unit?: string; sourceType: 'official' | 'custom' }>
     inspectionStandards: Array<{ code: string; name: string; version?: string; status: string; sourceDocumentId?: string }>
-    inspectionObjectParameters: Array<{ inspectionObjectCode: string; inspectionParameterCode: string; qualificationLevel: 'QUALIFIED' | 'RESTRICTED'; sortOrder: number }>
+    inspectionObjectParameters: Array<{ inspectionObjectCode: string; inspectionParameterCode: string; qualificationLevel: 'QUALIFIED' | 'RESTRICTED' }>
     inspectionObjectStandards: Array<{ inspectionObjectCode: string; inspectionStandardCode: string; role: 'TESTING' | 'JUDGMENT' }>
     inspectionStandardParameters: Array<{ inspectionStandardCode: string; inspectionParameterCode: string }>
     inspectionSpecialtyObjects: Array<{ inspectionSpecialtyCode: string; inspectionObjectCode: string }>
@@ -1227,7 +1226,6 @@ export function seedMasterDataIntoMockDb(): void {
       inspectionObjectCode: r.inspectionObjectCode,
       inspectionParameterCode: r.inspectionParameterCode,
       qualificationLevel: r.qualificationLevel,
-      sortOrder: r.sortOrder,
     } as never);
     inspectionObjectParameterTable.update(
       `insp-obj-param-${r.inspectionObjectCode}-${r.inspectionParameterCode}`,
