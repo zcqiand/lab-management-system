@@ -349,6 +349,7 @@ export function InspectionCapabilityFormModal({
                 type: "select",
                 options: ["TESTING", "JUDGMENT"],
                 valueLabels: { TESTING: "检测依据", JUDGMENT: "判定依据" },
+                rowPrefix: { TESTING: "【检测依据】", JUDGMENT: "【判定依据】" },
               },
             ]}
             fnId="M06.F02.I04"
@@ -373,6 +374,7 @@ export function InspectionCapabilityFormModal({
                 type: "select",
                 options: ["QUALIFIED", "RESTRICTED"],
                 valueLabels: { QUALIFIED: "必备", RESTRICTED: "可选" },
+                rowPrefix: { QUALIFIED: "*", RESTRICTED: "" },
               },
             ]}
             fnId="M06.F02.I06"

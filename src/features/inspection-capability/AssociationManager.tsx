@@ -7,6 +7,7 @@ interface ExtraField {
   type?: "text" | "select";
   options?: string[];
   valueLabels?: Record<string, string>; // 枚举值 → 中文呈现（值仍存英文枚举）
+  rowPrefix?: Record<string, string>; // 枚举值 → 行内前缀（如【检测依据】/*），有则不再显示后缀
 }
 
 interface Props {
@@ -137,8 +138,13 @@ export function AssociationManager(props: Props) {
               className="flex items-center justify-between px-1 py-2"
             >
               <span>
+                {extraFields
+                  .filter((f) => f.rowPrefix)
+                  .map((f) => f.rowPrefix?.[r[f.name]] ?? "")
+                  .join("")}
                 {display}
                 {extraFields
+                  .filter((f) => !f.rowPrefix)
                   .map((f) => ` · ${f.label}: ${f.valueLabels?.[r[f.name]] ?? r[f.name] ?? ""}`)
                   .join("")}
               </span>
