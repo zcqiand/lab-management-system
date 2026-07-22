@@ -1406,6 +1406,44 @@ export const handlers = [
     return HttpResponse.json(inspectionObjectTable.findById(`insp-obj-${body.code}`), { status: 201 })
   }),
 
+  // M06.F02.I02 检测项目编辑（code 不可变；改专项需校验存在）
+  http.put('*/inspection-objects/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const row = inspectionObjectTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '检测项目不存在' }, { status: 404 })
+    const body = (await request.json()) as Record<string, unknown>
+    // 仅允许白名单字段进入 patch；code/id 不可变
+    const patch: Record<string, unknown> = {}
+    for (const key of ['inspectionSpecialtyCode', 'sourceProjectNo', 'sourceProjectName', 'name', 'isOptionalForQualification', 'isOfficial', 'enabled'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    if (typeof patch.inspectionSpecialtyCode === 'string' && patch.inspectionSpecialtyCode !== row.inspectionSpecialtyCode) {
+      if (!inspectionSpecialtyTable.findById(`insp-sp-${patch.inspectionSpecialtyCode}`)) {
+        return HttpResponse.json({ message: '检测专项不存在' }, { status: 400 })
+      }
+    }
+    const updated = inspectionObjectTable.update(id, patch as Partial<{ inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean }>)
+    return HttpResponse.json(updated)
+  }),
+
+  // M06.F02.I03 检测项目删除保护：官方/被引用不可删
+  http.delete('*/inspection-objects/:id', ({ params }) => {
+    const row = inspectionObjectTable.findById(String(params.id))
+    if (!row) return HttpResponse.json({ message: '检测项目不存在' }, { status: 404 })
+    if (row.isOfficial) {
+      return HttpResponse.json({ message: '官方检测项目不可删除' }, { status: 400 })
+    }
+    const refs =
+      countBy(inspectionObjectParameterTable, 'inspectionObjectCode', row.code) +
+      countBy(inspectionObjectStandardTable, 'inspectionObjectCode', row.code) +
+      countBy(inspectionSpecialtyObjectTable, 'inspectionObjectCode', row.code)
+    if (refs > 0) {
+      return HttpResponse.json({ message: `被 ${refs} 处引用，不可删除`, references: refs }, { status: 400 })
+    }
+    inspectionObjectTable.remove(String(params.id))
+    return new HttpResponse(null, { status: 204 })
+  }),
+
   // M06.F02.I06 检测项目-检测参数关联
   http.post('*/inspection-object-parameters', async ({ request }) => {
     const body = (await request.json()) as Partial<{ inspectionObjectCode: string; inspectionParameterCode: string; qualificationLevel: 'QUALIFIED' | 'RESTRICTED'; sortOrder: number }>

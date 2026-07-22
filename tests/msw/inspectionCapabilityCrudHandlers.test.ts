@@ -225,4 +225,72 @@ describe("MSW 检测能力 M06 CRUD handler", () => {
     const data = (await res.json()) as { references: number };
     expect(data.references).toBeGreaterThanOrEqual(1);
   });
+
+  fnTest(["M06.F02.I02"], "PUT /inspection-objects/:id 更新自定义项目且 code 不可变", async () => {
+    const created = await fetch(`${API_BASE}/inspection-objects`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "OBJ-CUST-1", inspectionSpecialtyCode: "SP01", sourceProjectNo: "1", sourceProjectName: "x", name: "临时项目", isOfficial: false, enabled: true }),
+    });
+    const row = (await created.json()) as { id: string };
+    const res = await fetch(`${API_BASE}/inspection-objects/${row.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "CHANGED", name: "改名项目" }),
+    });
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as { code: string; name: string };
+    expect(data.code).toBe("OBJ-CUST-1");
+    expect(data.name).toBe("改名项目");
+  });
+
+  fnTest(["M06.F02.I02"], "PUT /inspection-objects/:id 改 inspectionSpecialtyCode 到不存在专项返回 400", async () => {
+    const created = await fetch(`${API_BASE}/inspection-objects`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "OBJ-CUST-2", inspectionSpecialtyCode: "SP01", sourceProjectNo: "1", sourceProjectName: "x", name: "y", isOfficial: false, enabled: true }),
+    });
+    const row = (await created.json()) as { id: string };
+    const res = await fetch(`${API_BASE}/inspection-objects/${row.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ inspectionSpecialtyCode: "SP-NOPE" }),
+    });
+    expect(res.status).toBe(400);
+  });
+
+  fnTest(["M06.F02.I03"], "DELETE /inspection-objects/:id 删除未被引用的自定义项目", async () => {
+    const created = await fetch(`${API_BASE}/inspection-objects`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "OBJ-CUST-3", inspectionSpecialtyCode: "SP01", sourceProjectNo: "1", sourceProjectName: "x", name: "z", isOfficial: false, enabled: true }),
+    });
+    const row = (await created.json()) as { id: string };
+    const res = await fetch(`${API_BASE}/inspection-objects/${row.id}`, { method: "DELETE" });
+    expect(res.status).toBe(204);
+  });
+
+  fnTest(["M06.F02.I03"], "DELETE /inspection-objects/:id 官方项目拒绝", async () => {
+    const res = await fetch(`${API_BASE}/inspection-objects/insp-obj-OBJ-SP01-P1`, { method: "DELETE" });
+    expect(res.status).toBe(400);
+  });
+
+  fnTest(["M06.F02.I03"], "DELETE /inspection-objects/:id 被引用时硬拒绝并返回计数", async () => {
+    const created = await fetch(`${API_BASE}/inspection-objects`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "OBJ-CUST-4", inspectionSpecialtyCode: "SP01", sourceProjectNo: "1", sourceProjectName: "x", name: "w", isOfficial: false, enabled: true }),
+    });
+    const row = (await created.json()) as { id: string; code: string };
+    // 制造引用：关联一个官方参数 IP-CEM003
+    await fetch(`${API_BASE}/inspection-object-parameters`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ inspectionObjectCode: row.code, inspectionParameterCode: "IP-CEM003" }),
+    });
+    const res = await fetch(`${API_BASE}/inspection-objects/${row.id}`, { method: "DELETE" });
+    expect(res.status).toBe(400);
+    const data = (await res.json()) as { references: number };
+    expect(data.references).toBeGreaterThanOrEqual(1);
+  });
 });
