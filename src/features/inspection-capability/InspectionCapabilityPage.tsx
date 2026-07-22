@@ -115,7 +115,7 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
     try {
       await apiClient.delete(`${PATHS[key]}/${rowId(deleting)}`)
       setDeleting(null)
-      load()()
+      load()
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? '删除失败'
       setDeleteError(msg)
@@ -350,14 +350,17 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
         resource={key}
         open={createOpen}
         onClose={() => setCreateOpen(false)}
-        onSaved={() => load()()}
+        onSaved={() => load()}
       />
       <InspectionCapabilityFormModal
         resource={key}
         open={editing !== null}
         editing={editing ? { id: rowId(editing), ...(editing as object) } : null}
         onClose={() => setEditing(null)}
-        onSaved={() => { setEditing(null); load()() }}
+        onSaved={() => {
+          setEditing(null)
+          load()
+        }}
       />
       <ConfirmModal
         open={deleting !== null}

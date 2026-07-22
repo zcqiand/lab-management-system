@@ -186,9 +186,11 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     await user.click(await screen.findByRole("button", { name: `删除 SP91` }));
     // 确认弹窗
     await user.click(await screen.findByRole("button", { name: "确认" }));
-    // 列表刷新后 SP91 消失
+    // 列表刷新后 SP91 消失，且列表确实完成了重新加载（稳定的官方专项 SP01 仍在，
+    // 而非停留在“空 + 加载中”态——回归 load()() 误触发 abort 导致刷新被中断的 bug）
     await waitFor(() => {
       expect(screen.queryByRole("button", { name: `删除 SP91` })).toBeNull();
+      expect(screen.getByRole("button", { name: `删除 SP01` })).toBeTruthy();
     });
   });
 
