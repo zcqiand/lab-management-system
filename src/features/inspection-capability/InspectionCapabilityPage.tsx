@@ -43,17 +43,17 @@ const FN_ID: Record<ResourceKey, string> = {
 }
 
 const FN_CREATE: Record<ResourceKey, string> = {
-  specialties: 'M06.F01.I02',
-  objects: 'M06.F02.I02',
-  parameters: 'M06.F03.I02',
-  standards: 'M06.F04.I02',
+  specialties: 'M06.F01.I02', // @entry M06.F01.I02 新建/编辑专项按钮（页面顶部"新建专项"+ 行内"编辑"）
+  objects: 'M06.F02.I02', // @entry M06.F02.I02 新建/编辑项目按钮
+  parameters: 'M06.F03.I02', // @entry M06.F03.I02 新建/编辑参数按钮
+  standards: 'M06.F04.I02', // @entry M06.F04.I02 新建/编辑标准按钮
 }
 
 const FN_DELETE: Record<ResourceKey, string> = {
-  specialties: 'M06.F01.I03',
-  objects: 'M06.F02.I03',
-  parameters: 'M06.F03.I03',
-  standards: 'M06.F04.I03',
+  specialties: 'M06.F01.I03', // @entry M06.F01.I03 删除专项按钮（行内"删除"，触发 ConfirmModal）
+  objects: 'M06.F02.I03', // @entry M06.F02.I03 删除项目按钮
+  parameters: 'M06.F03.I03', // @entry M06.F03.I03 删除参数按钮
+  standards: 'M06.F04.I03', // @entry M06.F04.I03 删除标准按钮
 }
 
 interface ResourceState {
