@@ -313,6 +313,7 @@ export function InspectionCapabilityFormModal({
           </div>
         )}
         {editing && tab === "assocObject" && resource === "specialties" && (
+          // @entry M06.F02.I07 关联检测专项（专项↔项目多对多）
           <AssociationManager
             ariaLabel="关联检测项目"
             endpoint="/inspection-specialty-objects"
@@ -327,6 +328,7 @@ export function InspectionCapabilityFormModal({
           />
         )}
         {editing && tab === "assocStandard" && resource === "objects" && (
+          // @entry M06.F02.I04 关联检测依据(role=TESTING) / @entry M06.F02.I05 关联判定依据(role=JUDGMENT)
           <AssociationManager
             ariaLabel="关联检测标准"
             endpoint="/inspection-object-standards"
@@ -349,6 +351,7 @@ export function InspectionCapabilityFormModal({
           />
         )}
         {editing && tab === "assocParameter" && resource === "objects" && (
+          // @entry M06.F02.I06 关联检测参数（项目↔参数多对多，含资质级别）
           <AssociationManager
             ariaLabel="关联检测参数"
             endpoint="/inspection-object-parameters"
