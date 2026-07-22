@@ -337,4 +337,45 @@ describe("MSW 检测能力 M06 CRUD handler", () => {
     const data = (await res.json()) as { message: string };
     expect(data.message).toContain("官方");
   });
+
+  fnTest(["M06.F04.I02"], "PUT /inspection-standards/:id 更新自定义标准且 code 不可变", async () => {
+    const created = await fetch(`${API_BASE}/inspection-standards`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "GB-TCUST-2026", name: "临时标准", status: "active" }),
+    });
+    const row = (await created.json()) as { id: string };
+    const res = await fetch(`${API_BASE}/inspection-standards/${row.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "CHANGED", name: "改名标准", status: "draft" }),
+    });
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as { code: string; name: string; status: string };
+    expect(data.code).toBe("GB-TCUST-2026");
+    expect(data.name).toBe("改名标准");
+    expect(data.status).toBe("draft");
+  });
+
+  fnTest(["M06.F04.I03"], "DELETE /inspection-standards/:id 删除未被引用的自定义标准", async () => {
+    const created = await fetch(`${API_BASE}/inspection-standards`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "GB-TDEL-2026", name: "可删标准", status: "active" }),
+    });
+    const row = (await created.json()) as { id: string };
+    const res = await fetch(`${API_BASE}/inspection-standards/${row.id}`, { method: "DELETE" });
+    expect(res.status).toBe(204);
+  });
+
+  fnTest(["M06.F04.I03"], "DELETE /inspection-standards/:id 官方标准（带 sourceDocumentId）拒绝", async () => {
+    // GB 175-2023 是种子标准，带 sourceDocumentId（id 含空格，先 GET 取真实 id 再 DELETE）
+    const list = await fetch(`${API_BASE}/inspection-standards?keyword=GB 175`);
+    const listData = (await list.json()) as { items: Array<{ id: string; code: string }> };
+    const target = listData.items.find((it) => it.code.includes("GB 175")) ?? listData.items[0];
+    const res = await fetch(`${API_BASE}/inspection-standards/${target.id}`, { method: "DELETE" });
+    expect(res.status).toBe(400);
+    const data = (await res.json()) as { message: string };
+    expect(data.message).toContain("官方");
+  });
 });

@@ -1587,6 +1587,38 @@ export const handlers = [
     return HttpResponse.json(inspectionStandardTable.findById(id), { status: 201 })
   }),
 
+  // M06.F04.I02 检测标准编辑（code 不可变）
+  http.put('*/inspection-standards/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const row = inspectionStandardTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '检测标准不存在' }, { status: 404 })
+    const body = (await request.json()) as Record<string, unknown>
+    // 仅允许白名单字段进入 patch；code/id 不可变
+    const patch: Record<string, unknown> = {}
+    for (const key of ['name', 'version', 'status'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    const updated = inspectionStandardTable.update(id, patch as Partial<{ name: string; version: string; status: 'active' | 'superseded' | 'draft' }>)
+    return HttpResponse.json(updated)
+  }),
+
+  // M06.F04.I03 检测标准删除保护：官方（带 sourceDocumentId）/被引用不可删
+  http.delete('*/inspection-standards/:id', ({ params }) => {
+    const row = inspectionStandardTable.findById(String(params.id))
+    if (!row) return HttpResponse.json({ message: '检测标准不存在' }, { status: 404 })
+    if (row.sourceDocumentId != null) {
+      return HttpResponse.json({ message: '官方检测标准不可删除' }, { status: 400 })
+    }
+    const refs =
+      countBy(inspectionObjectStandardTable, 'inspectionStandardCode', row.code) +
+      countBy(inspectionStandardParameterTable, 'inspectionStandardCode', row.code)
+    if (refs > 0) {
+      return HttpResponse.json({ message: `被 ${refs} 处引用，不可删除`, references: refs }, { status: 400 })
+    }
+    inspectionStandardTable.remove(String(params.id))
+    return new HttpResponse(null, { status: 204 })
+  }),
+
   // M06.F04.I04 检测标准-检测参数关联
   http.post('*/inspection-standard-parameters', async ({ request }) => {
     const body = (await request.json()) as Partial<{ inspectionStandardCode: string; inspectionParameterCode: string; clause?: string; methodName?: string; unit?: string }>
