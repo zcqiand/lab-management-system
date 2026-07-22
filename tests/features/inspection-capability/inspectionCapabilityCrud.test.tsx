@@ -176,10 +176,10 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     renderPage("parameters");
     await flush();
     const user = userEvent.setup();
-    // 参数主表已回填数百条，分页后 IP-CEM003 不在首页——用搜索框过滤到它
-    await user.type(screen.getByLabelText("搜索"), "IP-CEM003");
-    // IP-CEM003 是官方参数，删除按钮 disabled，不会触发请求；验证其删除按钮被禁用
-    const delBtn = await screen.findByRole("button", { name: `删除 IP-CEM003` });
+    // 参数主表已回填数百条，分页后目标不在首页——用搜索框过滤到它
+    await user.type(screen.getByLabelText("搜索"), "IP-0001");
+    // IP-0001（凝结时间）是官方参数，删除按钮 disabled，不会触发请求；验证其删除按钮被禁用
+    const delBtn = await screen.findByRole("button", { name: `删除 IP-0001` });
     expect((delBtn as HTMLButtonElement).disabled).toBe(true);
   });
 
@@ -331,9 +331,9 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
         />
       </MemoryRouter>,
     );
-    // 种子 OBJ-SP01-P1 含 IP-CEM003(初凝时间, QUALIFIED) → 行内呈现 *初凝时间（无「· 资质级别: 必备」后缀）
+    // 种子 OBJ-SP01-P1 含 IP-0001(凝结时间, QUALIFIED) → 行内呈现 *凝结时间（无「· 资质级别: 必备」后缀）
     const list = await screen.findByRole("list");
-    expect(await within(list).findByText("*初凝时间")).toBeTruthy();
+    expect(await within(list).findByText("*凝结时间")).toBeTruthy();
   });
 
   fnTest(["M06.F02.I04"], "AssociationManager 行内前缀：检测标准性质以【】呈现", async () => {

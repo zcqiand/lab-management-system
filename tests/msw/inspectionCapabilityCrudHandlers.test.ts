@@ -321,13 +321,13 @@ describe("MSW 检测能力 M06 CRUD handler", () => {
   });
 
   fnTest(["M06.F03.I03"], "DELETE /inspection-parameters/:id 官方参数拒绝", async () => {
-    const res = await fetch(`${API_BASE}/inspection-parameters/insp-param-IP-CEM003`, { method: "DELETE" });
+    const res = await fetch(`${API_BASE}/inspection-parameters/insp-param-IP-0001`, { method: "DELETE" });
     expect(res.status).toBe(400);
   });
 
   fnTest(["M06.F03.I03"], "DELETE /inspection-parameters/:id 被引用时硬拒绝并返回计数", async () => {
-    // IP-CEM003 已被种子数据中多个项目引用
-    const res = await fetch(`${API_BASE}/inspection-parameters/insp-param-IP-CEM003`, { method: "DELETE" });
+    // IP-0001（凝结时间）为官方参数且被多个项目引用
+    const res = await fetch(`${API_BASE}/inspection-parameters/insp-param-IP-0001`, { method: "DELETE" });
     expect(res.status).toBe(400);
     // 官方参数会先被 isOfficial(sourceType) 拦截，这里验证官方参数无论如何不可删
     const data = (await res.json()) as { message: string };
