@@ -52,6 +52,24 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     expect(dialog).toBeTruthy();
   });
 
+  fnTest(["M06.F02.I01"], "检测项目页按检测专项过滤", async () => {
+    const getSpy = vi.spyOn(apiClient, "get");
+    renderPage("objects");
+    await flush();
+    const select = screen.getByLabelText("检测专项筛选") as HTMLSelectElement;
+    expect(select).toBeTruthy();
+    const user = userEvent.setup();
+    await user.selectOptions(select, "SP01");
+    await flush();
+    const filteredCall = getSpy.mock.calls.find(
+      ([path, cfg]) =>
+        path === "/inspection-objects" &&
+        (cfg as unknown as { params?: { inspectionSpecialtyCode?: string } })?.params
+          ?.inspectionSpecialtyCode === "SP01",
+    );
+    expect(filteredCall).toBeTruthy();
+  });
+
   fnTest(["M06.F02.I02"], "检测项目页打开“新建项目”弹窗", async () => {
     renderPage("objects");
     await flush();

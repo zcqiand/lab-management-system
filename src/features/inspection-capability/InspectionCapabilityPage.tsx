@@ -101,6 +101,8 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
   const [deleting, setDeleting] = useState<ResourceState['items'][number] | null>(null)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [deletingBusy, setDeletingBusy] = useState(false)
+  const [specialtyFilter, setSpecialtyFilter] = useState('')
+  const [specialtyOptions, setSpecialtyOptions] = useState<InspectionSpecialty[]>([])
 
   const confirmDelete = async () => {
     if (!deleting) return
@@ -121,9 +123,14 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
   const load = () => {
     const controller = new AbortController()
     setState({ items: [], loading: true, error: null })
+    const params: { page: number; pageSize: string; inspectionSpecialtyCode?: string } = {
+      page: 1,
+      pageSize: String(PAGE_SIZE),
+    }
+    if (key === 'objects' && specialtyFilter) params.inspectionSpecialtyCode = specialtyFilter
     apiClient
       .get<{ items: ResourceState['items']; total: number }>(PATHS[key], {
-        params: { page: 1, pageSize: String(PAGE_SIZE) },
+        params,
         signal: controller.signal,
       })
       .then((res) =>
@@ -141,20 +148,56 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => load(), [key])
+  useEffect(() => load(), [key, specialtyFilter])
+
+  // 检测项目页：加载检测专项下拉选项
+  useEffect(() => {
+    if (key !== 'objects') {
+      setSpecialtyOptions([])
+      return
+    }
+    const controller = new AbortController()
+    apiClient
+      .get<{ items: InspectionSpecialty[] }>(PATHS.specialties, {
+        params: { page: 1, pageSize: '100' },
+        signal: controller.signal,
+      })
+      .then((res) => setSpecialtyOptions(Array.isArray(res.data?.items) ? res.data.items : []))
+      .catch(() => {
+        /* 下拉加载失败不阻塞主列表 */
+      })
+    return () => controller.abort()
+  }, [key])
 
   return (
     <div className="space-y-4" data-fn={FN_ID[key]}>
       <header className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">{TITLES[key]}</h2>
-        <button
-          type="button"
-          onClick={() => setCreateOpen(true)}
-          data-fn={FN_CREATE[key]}
-          className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          {CREATE_LABELS[key]}
-        </button>
+        <div className="flex items-center gap-2">
+          {key === 'objects' && (
+            <select
+              aria-label="检测专项筛选"
+              value={specialtyFilter}
+              onChange={(e) => setSpecialtyFilter(e.target.value)}
+              className="px-2 py-1.5 text-sm border rounded"
+            >
+              <option value="">全部专项</option>
+              {specialtyOptions.map((s) => (
+                <option key={s.code} value={s.code}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          )}
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            data-fn={FN_CREATE[key]}
+            className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            {CREATE_LABELS[key]}
+          </button>
+        </div>
       </header>
       <p className="text-xs text-gray-500">数据源：src/data/generated/lab-master-data.json</p>
       {state.error && (
