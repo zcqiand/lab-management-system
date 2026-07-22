@@ -105,6 +105,7 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
   const [specialtyOptions, setSpecialtyOptions] = useState<InspectionSpecialty[]>([])
   const [objectFilter, setObjectFilter] = useState('')
   const [standardFilter, setStandardFilter] = useState('')
+  const [keyword, setKeyword] = useState('')
   const [objectOptions, setObjectOptions] = useState<InspectionObject[]>([])
   const [standardOptions, setStandardOptions] = useState<InspectionStandard[]>([])
 
@@ -127,10 +128,11 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
   const load = () => {
     const controller = new AbortController()
     setState({ items: [], loading: true, error: null })
-    const params: { page: number; pageSize: string; inspectionSpecialtyCode?: string; inspectionObjectCode?: string; inspectionStandardCode?: string } = {
+    const params: { page: number; pageSize: string; keyword?: string; inspectionSpecialtyCode?: string; inspectionObjectCode?: string; inspectionStandardCode?: string } = {
       page: 1,
       pageSize: String(PAGE_SIZE),
     }
+    if (keyword.trim()) params.keyword = keyword.trim()
     if (key === 'objects' && specialtyFilter) params.inspectionSpecialtyCode = specialtyFilter
     if (key === 'standards') {
       if (specialtyFilter) params.inspectionSpecialtyCode = specialtyFilter
@@ -161,7 +163,7 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => load(), [key, specialtyFilter, objectFilter, standardFilter])
+  useEffect(() => load(), [key, specialtyFilter, objectFilter, standardFilter, keyword])
 
   // 专项下拉选项（objects/standards/parameters，专项页本身不需要筛专项）
   useEffect(() => {
@@ -213,6 +215,13 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
       <header className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">{TITLES[key]}</h2>
         <div className="flex items-center gap-2">
+          <input
+            aria-label="搜索"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="搜索编码/名称"
+            className="px-2 py-1.5 text-sm border rounded"
+          />
           {key !== 'specialties' && (
             <select
               aria-label="检测专项筛选"

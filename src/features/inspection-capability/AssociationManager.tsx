@@ -54,7 +54,7 @@ export function AssociationManager(props: Props) {
       .catch(() => setError("加载失败"));
     apiClient
       .get<{ items: Array<Record<string, string>> }>(targetEndpoint, {
-        params: { page: 1, pageSize: "200" },
+        params: { page: 1, pageSize: "1000" },
       })
       .then((res) => setTargets(Array.isArray(res.data?.items) ? res.data.items : []))
       .catch(() => {});

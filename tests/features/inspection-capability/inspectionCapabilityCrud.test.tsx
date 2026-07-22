@@ -164,6 +164,8 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
       renderPage("parameters");
       await flush();
       const user = userEvent.setup();
+      // 参数主表已回填数百条，分页后目标不在首页——用搜索框过滤到它
+      await user.type(screen.getByLabelText("搜索"), "IP-FORM-1");
       await user.click(await screen.findByRole("button", { name: "编辑 IP-FORM-1" }));
       expect(await screen.findByLabelText("来源类型")).toBeTruthy();
       expect(screen.getByLabelText("别名（逗号分隔）")).toBeTruthy();
@@ -173,8 +175,10 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
   fnTest(["M06.F03.I03"], "检测参数删除被引用时展示错误", async () => {
     renderPage("parameters");
     await flush();
-    // IP-CEM003 是官方参数，删除按钮 disabled，不会触发请求；改用新建一个自定义参数再删
-    // 这里验证官方参数的删除按钮被禁用
+    const user = userEvent.setup();
+    // 参数主表已回填数百条，分页后 IP-CEM003 不在首页——用搜索框过滤到它
+    await user.type(screen.getByLabelText("搜索"), "IP-CEM003");
+    // IP-CEM003 是官方参数，删除按钮 disabled，不会触发请求；验证其删除按钮被禁用
     const delBtn = await screen.findByRole("button", { name: `删除 IP-CEM003` });
     expect((delBtn as HTMLButtonElement).disabled).toBe(true);
   });
