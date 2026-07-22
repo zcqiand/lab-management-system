@@ -228,7 +228,7 @@ export function InspectionCapabilityFormModal({
     >
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-5 space-y-3"
+        className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-5 space-y-3 max-h-[85vh] overflow-y-auto"
       >
         <h3 className="text-lg font-semibold">
           {editing ? EDIT_TITLES[resource] : TITLES[resource]}

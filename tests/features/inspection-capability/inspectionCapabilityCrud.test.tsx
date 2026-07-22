@@ -410,6 +410,29 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     expect(within(select).getByRole("option", { name: "可选" })).toBeTruthy();
   });
 
+  fnTest(["M06.F04.I01"], "检测标准清单状态以中文显示（现行）", async () => {
+    renderPage("standards");
+    await flush();
+    expect((await screen.findAllByText("现行")).length).toBeGreaterThan(0);
+  });
+
+  fnTest(["M06.F02.I01"], "检测项目清单聚合显示检测参数名", async () => {
+    renderPage("objects");
+    await flush();
+    const user = userEvent.setup();
+    await user.type(screen.getByLabelText("搜索"), "OBJ-SP01-P1");
+    await flush();
+    // 水泥(OBJ-SP01-P1) 聚合列含 凝结时间
+    expect((await screen.findAllByText((t) => t.includes("凝结时间"))).length).toBeGreaterThan(0);
+  });
+
+  fnTest(["M06.F03.I01"], "检测参数清单分页：可翻到下一页", async () => {
+    renderPage("parameters");
+    await flush();
+    const next = await screen.findByRole("button", { name: "下一页" });
+    expect((next as HTMLButtonElement).disabled).toBe(false);
+  });
+
   // 防御性用例：当 apiClient.get 返回畸形响应（无 items 字段，例如 MSW 未启动时
   // /api/* 被 bypass 到 Vite dev server 返回 index.html）时，页面不得抛错，
   // 而是落入 error/empty 分支。回归浏览器 MSW 起不来导致的运行时崩溃。

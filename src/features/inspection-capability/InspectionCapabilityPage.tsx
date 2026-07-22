@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { useParams } from 'react-router'
 import { apiClient } from '../../api/client'
 import type {
@@ -58,24 +59,9 @@ const FN_DELETE: Record<ResourceKey, string> = {
 
 interface ResourceState {
   items: Array<InspectionSpecialty | InspectionObject | InspectionParameter | InspectionStandard>
+  total: number
   loading: boolean
   error: string | null
-}
-
-function asObject(item: ResourceState['items'][number]): item is InspectionObject {
-  return (item as InspectionObject).code !== undefined && (item as InspectionObject).inspectionSpecialtyCode !== undefined
-}
-
-function asParameter(item: ResourceState['items'][number]): item is InspectionParameter {
-  return (item as InspectionParameter).canonicalName !== undefined
-}
-
-function asStandard(item: ResourceState['items'][number]): item is InspectionStandard {
-  return (item as InspectionStandard).status !== undefined
-}
-
-function asSpecialty(item: ResourceState['items'][number]): item is InspectionSpecialty {
-  return (item as InspectionSpecialty).officialNo !== undefined
 }
 
 function rowId(item: ResourceState['items'][number]): string {
@@ -92,10 +78,63 @@ export interface InspectionCapabilityPageProps {
   resource?: ResourceKey
 }
 
+const STANDARD_STATUS_CN: Record<string, string> = {
+  active: '现行',
+  superseded: '被替代',
+  draft: '草案',
+}
+
+interface AggRow {
+  code: string
+  name: string
+  officialNo?: string
+  enabled?: boolean
+  sourceType?: string
+  status?: string
+  parameterNames?: string
+  standardCodes?: string
+}
+
+interface Column {
+  header: string
+  cell: (i: AggRow) => ReactNode
+}
+
+const codeCell = (i: AggRow): ReactNode => <span className="font-mono text-xs">{i.code}</span>
+const aggCell = (v?: string): ReactNode => (
+  <span className="text-xs text-gray-500 line-clamp-2">{v && v.length > 0 ? v : '-'}</span>
+)
+
+const COLUMNS: Record<ResourceKey, Column[]> = {
+  specialties: [
+    { header: '编码', cell: codeCell },
+    { header: '名称', cell: (i) => i.name },
+    { header: '状态', cell: (i) => (i.enabled ? '启用' : '停用') },
+  ],
+  objects: [
+    { header: '编码', cell: codeCell },
+    { header: '名称', cell: (i) => i.name },
+    { header: '检测参数', cell: (i) => aggCell(i.parameterNames) },
+    { header: '检测标准', cell: (i) => aggCell(i.standardCodes) },
+    { header: '状态', cell: (i) => (i.enabled ? '启用' : '停用') },
+  ],
+  parameters: [
+    { header: '编码', cell: codeCell },
+    { header: '名称', cell: (i) => i.name },
+    { header: '状态', cell: (i) => (i.sourceType === 'official' ? '官方' : '自定义') },
+  ],
+  standards: [
+    { header: '编码', cell: codeCell },
+    { header: '名称', cell: (i) => i.name },
+    { header: '状态', cell: (i) => STANDARD_STATUS_CN[i.status ?? ''] ?? i.status ?? '-' },
+    { header: '检测参数', cell: (i) => aggCell(i.parameterNames) },
+  ],
+}
+
 export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = {}) {
   const params = useParams<{ resource?: ResourceKey }>()
   const key = (props.resource ?? params.resource ?? 'specialties') as ResourceKey
-  const [state, setState] = useState<ResourceState>({ items: [], loading: true, error: null })
+  const [state, setState] = useState<ResourceState>({ items: [], total: 0, loading: true, error: null })
   const [createOpen, setCreateOpen] = useState(false)
   const [editing, setEditing] = useState<ResourceState['items'][number] | null>(null)
   const [deleting, setDeleting] = useState<ResourceState['items'][number] | null>(null)
@@ -106,6 +145,7 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
   const [objectFilter, setObjectFilter] = useState('')
   const [standardFilter, setStandardFilter] = useState('')
   const [keyword, setKeyword] = useState('')
+  const [page, setPage] = useState(1)
   const [objectOptions, setObjectOptions] = useState<InspectionObject[]>([])
   const [standardOptions, setStandardOptions] = useState<InspectionStandard[]>([])
 
@@ -127,9 +167,9 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
 
   const load = () => {
     const controller = new AbortController()
-    setState({ items: [], loading: true, error: null })
+    setState({ items: [], total: 0, loading: true, error: null })
     const params: { page: number; pageSize: string; keyword?: string; inspectionSpecialtyCode?: string; inspectionObjectCode?: string; inspectionStandardCode?: string } = {
-      page: 1,
+      page,
       pageSize: String(PAGE_SIZE),
     }
     if (keyword.trim()) params.keyword = keyword.trim()
@@ -151,19 +191,20 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
       .then((res) =>
         setState({
           items: Array.isArray(res.data?.items) ? res.data.items : [],
+          total: typeof res.data?.total === 'number' ? res.data.total : 0,
           loading: false,
           error: Array.isArray(res.data?.items) ? null : '加载失败：响应格式异常',
         }),
       )
       .catch((err: unknown) => {
         if (controller.signal.aborted) return
-        setState({ items: [], loading: false, error: err instanceof Error ? err.message : '加载失败' })
+        setState({ items: [], total: 0, loading: false, error: err instanceof Error ? err.message : '加载失败' })
       })
     return () => controller.abort()
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => load(), [key, specialtyFilter, objectFilter, standardFilter, keyword])
+  useEffect(() => load(), [key, specialtyFilter, objectFilter, standardFilter, keyword, page])
 
   // 专项下拉选项（objects/standards/parameters，专项页本身不需要筛专项）
   useEffect(() => {
@@ -218,7 +259,7 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
           <input
             aria-label="搜索"
             value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={(e) => { setKeyword(e.target.value); setPage(1) }}
             placeholder="搜索编码/名称"
             className="px-2 py-1.5 text-sm border rounded"
           />
@@ -226,7 +267,7 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
             <select
               aria-label="检测专项筛选"
               value={specialtyFilter}
-              onChange={(e) => { setSpecialtyFilter(e.target.value); setObjectFilter(''); setStandardFilter('') }}
+              onChange={(e) => { setSpecialtyFilter(e.target.value); setObjectFilter(''); setStandardFilter(''); setPage(1) }}
               className="px-2 py-1.5 text-sm border rounded"
             >
               <option value="">全部专项</option>
@@ -241,7 +282,7 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
             <select
               aria-label="检测项目筛选"
               value={objectFilter}
-              onChange={(e) => { setObjectFilter(e.target.value); setStandardFilter('') }}
+              onChange={(e) => { setObjectFilter(e.target.value); setStandardFilter(''); setPage(1) }}
               className="px-2 py-1.5 text-sm border rounded"
             >
               <option value="">全部项目</option>
@@ -256,7 +297,7 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
             <select
               aria-label="检测标准筛选"
               value={standardFilter}
-              onChange={(e) => setStandardFilter(e.target.value)}
+              onChange={(e) => { setStandardFilter(e.target.value); setPage(1) }}
               className="px-2 py-1.5 text-sm border rounded"
             >
               <option value="">全部标准</option>
@@ -287,49 +328,29 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
         <table className="w-full text-sm">
           <thead className="bg-gray-50 text-gray-600">
             <tr>
-              <th className="px-4 py-2 text-left">编码</th>
-              <th className="px-4 py-2 text-left">名称</th>
-              <th className="px-4 py-2 text-left">来源/单位</th>
-              <th className="px-4 py-2 text-left">状态/资质</th>
+              {COLUMNS[key].map((c) => (
+                <th key={c.header} className="px-4 py-2 text-left">{c.header}</th>
+              ))}
               <th className="px-4 py-2 text-left">操作</th>
             </tr>
           </thead>
           <tbody>
             {state.loading && state.items.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">加载中...</td>
+                <td colSpan={COLUMNS[key].length + 1} className="px-4 py-8 text-center text-gray-400">加载中...</td>
               </tr>
             )}
             {!state.loading && state.items.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">暂无数据</td>
+                <td colSpan={COLUMNS[key].length + 1} className="px-4 py-8 text-center text-gray-400">暂无数据</td>
               </tr>
             )}
             {state.items.map((item) => (
               <tr key={(item as { code: string }).code} className="border-t hover:bg-gray-50">
-                <td className="px-4 py-2 font-mono text-xs">{(item as { code: string }).code}</td>
-                <td className="px-4 py-2">{(item as { name: string }).name}</td>
-                <td className="px-4 py-2 text-gray-500 text-xs">
-                  {asObject(item)
-                    ? `${item.sourceProjectName}（${item.inspectionSpecialtyCode}#${item.sourceProjectNo}）`
-                    : asParameter(item)
-                    ? `${item.unit ?? '-'} / ${item.canonicalName}`
-                    : asStandard(item)
-                    ? `${item.version ?? '-'} / ${item.status}`
-                    : asSpecialty(item)
-                    ? `第 ${item.officialNo} 类`
-                    : '-'}
-                </td>
-                <td className="px-4 py-2 text-xs">
-                  {asObject(item)
-                    ? (item.isOptionalForQualification ? '资质可选' : '资质必选')
-                    : asStandard(item)
-                    ? (item.status === 'active' ? '现行' : item.status)
-                    : asSpecialty(item)
-                    ? (item.isOfficial ? '官方' : '自定义')
-                    : '-'}
-                </td>
-                <td className="px-4 py-2 text-xs whitespace-nowrap">
+                {COLUMNS[key].map((c) => (
+                  <td key={c.header} className="px-4 py-2 align-top">{c.cell(item as AggRow)}</td>
+                ))}
+                <td className="px-4 py-2 text-xs whitespace-nowrap align-top">
                   <button
                     type="button"
                     onClick={() => setEditing(item)}
@@ -354,6 +375,30 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="flex items-center justify-between text-sm text-gray-600">
+        <span>共 {state.total} 条</span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label="上一页"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            className="px-2 py-1 border rounded disabled:opacity-40"
+          >
+            上一页
+          </button>
+          <span>第 {page} / {Math.max(1, Math.ceil(state.total / PAGE_SIZE))} 页</span>
+          <button
+            type="button"
+            aria-label="下一页"
+            disabled={page >= Math.ceil(state.total / PAGE_SIZE)}
+            onClick={() => setPage((p) => p + 1)}
+            className="px-2 py-1 border rounded disabled:opacity-40"
+          >
+            下一页
+          </button>
+        </div>
       </div>
       <InspectionCapabilityFormModal
         resource={key}

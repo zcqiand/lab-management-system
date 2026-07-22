@@ -1235,18 +1235,38 @@ export const handlers = [
   // M06.F02 检测项目
   http.get('*/inspection-objects', ({ request }) => {
     const url = new URL(request.url)
-    return HttpResponse.json(
-      inspectionObjectTable.query({
-        page: Number(url.searchParams.get('page') ?? '1'),
-        pageSize: Number(url.searchParams.get('pageSize') ?? '20'),
-        keyword: url.searchParams.get('keyword') ?? undefined,
-        keywordFields: ['code', 'name', 'sourceProjectName'],
-        filters: {
-          inspectionSpecialtyCode: url.searchParams.get('inspectionSpecialtyCode') ?? undefined,
-        },
-        sortField: 'sortOrder',
-      }),
-    )
+    const result = inspectionObjectTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '20'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['code', 'name', 'sourceProjectName'],
+      filters: {
+        inspectionSpecialtyCode: url.searchParams.get('inspectionSpecialtyCode') ?? undefined,
+      },
+      sortField: 'sortOrder',
+    })
+    // 聚合列：该项目关联的检测参数名 / 检测标准编码（逗号串，供清单直接展示）
+    const paramNameByCode = new Map(inspectionParameterTable.all().map((p) => [p.code, p.name]))
+    const items = result.items.map((o) => {
+      const parameterNames = [
+        ...new Set(
+          inspectionObjectParameterTable
+            .all()
+            .filter((r) => r.inspectionObjectCode === o.code)
+            .map((r) => paramNameByCode.get(r.inspectionParameterCode) ?? r.inspectionParameterCode),
+        ),
+      ].join('，')
+      const standardCodes = [
+        ...new Set(
+          inspectionObjectStandardTable
+            .all()
+            .filter((r) => r.inspectionObjectCode === o.code)
+            .map((r) => r.inspectionStandardCode),
+        ),
+      ].join('，')
+      return { ...o, parameterNames, standardCodes }
+    })
+    return HttpResponse.json({ ...result, items })
   }),
 
   // M06.F03 检测参数（级联过滤：专项/项目 → 标准维度，多条件取交集）
@@ -1323,16 +1343,28 @@ export const handlers = [
       }
       match = (r) => allowed.has(r.code)
     }
-    return HttpResponse.json(
-      inspectionStandardTable.query({
-        page: Number(url.searchParams.get('page') ?? '1'),
-        pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
-        keyword: url.searchParams.get('keyword') ?? undefined,
-        keywordFields: ['code', 'name'],
-        sortField: 'sortOrder',
-        match,
-      }),
-    )
+    const result = inspectionStandardTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['code', 'name'],
+      sortField: 'sortOrder',
+      match,
+    })
+    // 聚合列：该标准关联的检测参数名（逗号串）
+    const paramNameByCode = new Map(inspectionParameterTable.all().map((p) => [p.code, p.name]))
+    const items = result.items.map((s) => {
+      const parameterNames = [
+        ...new Set(
+          inspectionStandardParameterTable
+            .all()
+            .filter((r) => r.inspectionStandardCode === s.code)
+            .map((r) => paramNameByCode.get(r.inspectionParameterCode) ?? r.inspectionParameterCode),
+        ),
+      ].join('，')
+      return { ...s, parameterNames }
+    })
+    return HttpResponse.json({ ...result, items })
   }),
 
   // M06.F02.I06 检测项目-检测参数关联
