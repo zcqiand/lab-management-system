@@ -125,6 +125,26 @@ describe("M06 主数据校验（red-first 锁数据契约）", () => {
     }
   });
 
+  fnTest(["M06.F03.I01"], "检测参数主表已按官方能力表回填（≥300）", () => {
+    const data = loadMasterData();
+    expect(data.inspectionParameters.length).toBeGreaterThanOrEqual(300);
+  });
+
+  fnTest(["M06.F02.I06"], "水泥(OBJ-SP01-P1) 必备参数含 凝结时间/安定性/胶砂强度/氯离子含量", () => {
+    const data = loadMasterData();
+    const nameByCode = new Map(data.inspectionParameters.map((p) => [p.code, p.name]));
+    const required = new Set(
+      data.inspectionObjectParameters
+        .filter(
+          (r) => r.inspectionObjectCode === "OBJ-SP01-P1" && r.qualificationLevel === "QUALIFIED",
+        )
+        .map((r) => nameByCode.get(r.inspectionParameterCode)),
+    );
+    for (const n of ["凝结时间", "安定性", "胶砂强度", "氯离子含量"]) {
+      expect(required.has(n)).toBe(true);
+    }
+  });
+
   fnTest(["M06.F02.I04", "M06.F02.I05"], "InspectionObjectStandard 角色仅 TESTING/JUDGMENT 且同一项目标准允许两角色", () => {
     const data = loadMasterData();
     const st = new Set(data.inspectionStandards.map((s) => s.code));
