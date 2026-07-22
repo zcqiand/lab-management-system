@@ -53,6 +53,16 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     expect(dialog).toBeTruthy();
   });
 
+  fnTest(["M06.F01.I02"], "新建检测专项 启用 复选框默认勾选", async () => {
+    renderPage("specialties");
+    await flush();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "新建专项" }));
+    const enabled = (await screen.findByLabelText("启用")) as HTMLInputElement;
+    // 新建态默认启用（回归 payload.enabled ?? true 因 checkbox 恒为布尔而失效的缺陷）
+    expect(enabled.checked).toBe(true);
+  });
+
   fnTest(["M06.F02.I01"], "检测项目页按检测专项过滤", async () => {
     const getSpy = vi.spyOn(apiClient, "get");
     renderPage("objects");

@@ -33,6 +33,7 @@ interface Field {
   options?: string[]; // select 用
   required?: boolean;
   placeholder?: string;
+  default?: boolean; // checkbox 新建态默认值（缺省 false）
 }
 
 const FIELDS: Record<Resource, Field[]> = {
@@ -41,7 +42,7 @@ const FIELDS: Record<Resource, Field[]> = {
     { name: "officialNo", label: "官方序号", placeholder: "十" },
     { name: "name", label: "名称", required: true },
     { name: "isOfficial", label: "官方", type: "checkbox" },
-    { name: "enabled", label: "启用", type: "checkbox" },
+    { name: "enabled", label: "启用", type: "checkbox", default: true },
   ],
   objects: [
     { name: "code", label: "编码", required: true, placeholder: "OBJ-SP01-P24" },
@@ -56,7 +57,7 @@ const FIELDS: Record<Resource, Field[]> = {
     { name: "name", label: "名称", required: true },
     { name: "isOptionalForQualification", label: "资质可选", type: "checkbox" },
     { name: "isOfficial", label: "官方", type: "checkbox" },
-    { name: "enabled", label: "启用", type: "checkbox" },
+    { name: "enabled", label: "启用", type: "checkbox", default: true },
   ],
   parameters: [
     { name: "code", label: "编码", required: true, placeholder: "IP-CUSTOM-1" },
@@ -126,7 +127,7 @@ export function InspectionCapabilityFormModal({
   const initialValues: Record<string, string> = {};
   for (const f of fields) {
     const ftype = f.type ?? "text";
-    if (ftype === "checkbox") initialValues[f.name] = "false";
+    if (ftype === "checkbox") initialValues[f.name] = f.default ? "true" : "false";
     else initialValues[f.name] = "";
   }
   const [values, setValues] = useState<Record<string, string>>(initialValues);
@@ -140,9 +141,11 @@ export function InspectionCapabilityFormModal({
       const init: Record<string, string> = {};
       for (const f of fields) {
         const v = editing ? (editing as Record<string, unknown>)[f.name] : "";
-        if (f.type === "checkbox")
-          init[f.name] = v === true || v === "true" ? "true" : "false";
-        else if (f.type === "aliases")
+        if (f.type === "checkbox") {
+          // 编辑态取现值；新建态取字段默认值（缺省 false）
+          if (editing) init[f.name] = v === true || v === "true" ? "true" : "false";
+          else init[f.name] = f.default ? "true" : "false";
+        } else if (f.type === "aliases")
           init[f.name] = Array.isArray(v) ? (v as string[]).join(", ") : "";
         else init[f.name] = v == null ? "" : String(v);
       }
