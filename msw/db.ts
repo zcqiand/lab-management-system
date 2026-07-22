@@ -5,6 +5,13 @@
 //       → 单项检测记录 TestItem（归属样品 sampleId，自动评定 + 手工修正）
 // 基础码表：报告类别 / 报告类别关联标准 / 检测参数 / 检测标准 / 技术要求 /
 //           型号 / 规格 / 等级 / 牌号（均归属报告类别）/ 报告模板（每类别一份）
+// M06 检测能力：专项 / 项目 / 参数 / 标准 / 4 张关联表
+
+// 注意：本模块会被 msw/browser.ts 引入浏览器 bundle，因此不得在顶层使用
+// node:* 内建模块（Vite 会将其 externalize 为 undefined，导致 module load 抛错、
+// MSW 起不来，最终 /api/* 被 bypass 到 Vite dev server 返回 index.html）。
+// master data 通过 Vite/TS 静态 JSON 导入（resolveJsonModule 已开启）。
+import generatedMasterData from '../src/data/generated/lab-master-data.json'
 
 export interface Timestamped {
   createdAt: string
@@ -267,6 +274,113 @@ export const brandTable = new MockTable<{
   createdAt: string
   updatedAt: string
 }>('brd')
+
+// =============================================================================
+// M06 检测能力内存表
+// =============================================================================
+
+/** 检测专项（InspectionSpecialty） */
+export const inspectionSpecialtyTable = new MockTable<{
+  id: string
+  code: string
+  officialNo: string
+  name: string
+  isOfficial: boolean
+  enabled: boolean
+  createdAt: string
+  updatedAt: string
+}>('insp-sp')
+
+/** 检测项目（InspectionObject） */
+export const inspectionObjectTable = new MockTable<{
+  id: string
+  code: string
+  inspectionSpecialtyCode: string
+  sourceProjectNo: string
+  sourceProjectName: string
+  name: string
+  isOptionalForQualification: boolean
+  isOfficial: boolean
+  enabled: boolean
+  createdAt: string
+  updatedAt: string
+}>('insp-obj')
+
+/** 检测参数（InspectionParameter） */
+export const inspectionParameterTable = new MockTable<{
+  id: string
+  code: string
+  name: string
+  rawName: string
+  canonicalName: string
+  methodText?: string
+  aliases: string[]
+  unit?: string
+  sourceType: 'official' | 'custom'
+  createdAt: string
+  updatedAt: string
+}>('insp-param')
+
+/** 检测标准（InspectionStandard） */
+export const inspectionStandardTable = new MockTable<{
+  id: string
+  code: string
+  name: string
+  version?: string
+  status: 'active' | 'superseded' | 'draft'
+  sourceDocumentId?: string
+  sourceHash?: string
+  createdAt: string
+  updatedAt: string
+}>('insp-std')
+
+/** 检测项目 ↔ 检测参数（InspectionObjectParameter） */
+export const inspectionObjectParameterTable = new MockTable<{
+  id: string
+  inspectionObjectCode: string
+  inspectionParameterCode: string
+  qualificationLevel: 'QUALIFIED' | 'RESTRICTED'
+  sortOrder: number
+  sourcePage?: number
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}>('insp-obj-param')
+
+/** 检测项目 ↔ 检测标准（InspectionObjectStandard） */
+export const inspectionObjectStandardTable = new MockTable<{
+  id: string
+  inspectionObjectCode: string
+  inspectionStandardCode: string
+  role: 'TESTING' | 'JUDGMENT'
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}>('insp-obj-std')
+
+/** 检测标准 ↔ 检测参数（InspectionStandardParameter） */
+export const inspectionStandardParameterTable = new MockTable<{
+  id: string
+  inspectionStandardCode: string
+  inspectionParameterCode: string
+  clause?: string
+  methodName?: string
+  unit?: string
+  sampleRule?: string
+  roundingRule?: string
+  createdAt: string
+  updatedAt: string
+}>('insp-std-param')
+
+/** 检测专项 ↔ 检测项目（InspectionSpecialtyObject） */
+export const inspectionSpecialtyObjectTable = new MockTable<{
+  id: string
+  inspectionSpecialtyCode: string
+  inspectionObjectCode: string
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}>('insp-sp-obj')
 
 /** 接样单表（接样表与报告表合并为一张表，携带报告类别与全流程状态） */
 export const receiptTable = new MockTable<{
@@ -1002,6 +1116,146 @@ export function resetMockDb() {
   orgInfoTable.reset()
   userTable.reset()
   roleTable.reset()
+  inspectionSpecialtyTable.reset()
+  inspectionObjectTable.reset()
+  inspectionParameterTable.reset()
+  inspectionStandardTable.reset()
+  inspectionObjectParameterTable.reset()
+  inspectionObjectStandardTable.reset()
+  inspectionStandardParameterTable.reset()
+  inspectionSpecialtyObjectTable.reset()
+}
+
+/**
+ * 把 src/data/generated/lab-master-data.json 装入 M06 8 张内存表。
+ * 测试与开发模式共享同一来源；接样、计算、评定等流程后续切换到 M06。
+ */
+export function seedMasterDataIntoMockDb(): void {
+  // 浏览器侧：master data 通过顶层静态 JSON 导入获取（见文件顶部 import），
+  // 不再走 node:fs / __dirname。空对象兜底，避免 JSON 结构异常时后续 for 循环报错。
+  const data = (generatedMasterData ?? {}) as {
+    inspectionSpecialties: Array<{ code: string; officialNo: string; name: string; isOfficial: boolean; enabled: boolean }>
+    inspectionObjects: Array<{ code: string; inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean }>
+    inspectionParameters: Array<{ code: string; name: string; rawName: string; canonicalName: string; methodText?: string; aliases: string[]; unit?: string; sourceType: 'official' | 'custom' }>
+    inspectionStandards: Array<{ code: string; name: string; version?: string; status: string; sourceDocumentId?: string }>
+    inspectionObjectParameters: Array<{ inspectionObjectCode: string; inspectionParameterCode: string; qualificationLevel: 'QUALIFIED' | 'RESTRICTED'; sortOrder: number }>
+    inspectionObjectStandards: Array<{ inspectionObjectCode: string; inspectionStandardCode: string; role: 'TESTING' | 'JUDGMENT' }>
+    inspectionStandardParameters: Array<{ inspectionStandardCode: string; inspectionParameterCode: string; clause?: string; methodName?: string; unit?: string }>
+    inspectionSpecialtyObjects: Array<{ inspectionSpecialtyCode: string; inspectionObjectCode: string }>
+  }
+  const now = new Date('2026-07-22T00:00:00Z').toISOString()
+  for (const s of data.inspectionSpecialties) {
+    inspectionSpecialtyTable.insert({
+      id: `insp-sp-${s.code}`,
+      code: s.code,
+      officialNo: s.officialNo,
+      name: s.name,
+      isOfficial: s.isOfficial,
+      enabled: s.enabled,
+    } as never);
+    inspectionSpecialtyTable.update(inspectionSpecialtyTable.findById(`insp-sp-${s.code}`)!.id, {
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+  for (const o of data.inspectionObjects) {
+    inspectionObjectTable.insert({
+      id: `insp-obj-${o.code}`,
+      code: o.code,
+      inspectionSpecialtyCode: o.inspectionSpecialtyCode,
+      sourceProjectNo: o.sourceProjectNo,
+      sourceProjectName: o.sourceProjectName,
+      name: o.name,
+      isOptionalForQualification: o.isOptionalForQualification,
+      isOfficial: o.isOfficial,
+      enabled: o.enabled,
+    } as never);
+    inspectionObjectTable.update(`insp-obj-${o.code}`, {
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+  for (const p of data.inspectionParameters) {
+    inspectionParameterTable.insert({
+      id: `insp-param-${p.code}`,
+      code: p.code,
+      name: p.name,
+      rawName: p.rawName,
+      canonicalName: p.canonicalName,
+      methodText: p.methodText,
+      aliases: p.aliases,
+      unit: p.unit,
+      sourceType: p.sourceType,
+    } as never);
+    inspectionParameterTable.update(`insp-param-${p.code}`, {
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+  for (const s of data.inspectionStandards) {
+    inspectionStandardTable.insert({
+      id: `insp-std-${s.code}`,
+      code: s.code,
+      name: s.name,
+      version: s.version,
+      status: (s.status as 'active' | 'superseded' | 'draft') ?? 'active',
+      sourceDocumentId: s.sourceDocumentId,
+    } as never);
+    inspectionStandardTable.update(`insp-std-${s.code}`, {
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+  for (const r of data.inspectionObjectParameters) {
+    inspectionObjectParameterTable.insert({
+      id: `insp-obj-param-${r.inspectionObjectCode}-${r.inspectionParameterCode}`,
+      inspectionObjectCode: r.inspectionObjectCode,
+      inspectionParameterCode: r.inspectionParameterCode,
+      qualificationLevel: r.qualificationLevel,
+      sortOrder: r.sortOrder,
+    } as never);
+    inspectionObjectParameterTable.update(
+      `insp-obj-param-${r.inspectionObjectCode}-${r.inspectionParameterCode}`,
+      { createdAt: now, updatedAt: now },
+    );
+  }
+  for (const r of data.inspectionObjectStandards) {
+    inspectionObjectStandardTable.insert({
+      id: `insp-obj-std-${r.inspectionObjectCode}-${r.inspectionStandardCode}-${r.role}`,
+      inspectionObjectCode: r.inspectionObjectCode,
+      inspectionStandardCode: r.inspectionStandardCode,
+      role: r.role,
+    } as never);
+    inspectionObjectStandardTable.update(
+      `insp-obj-std-${r.inspectionObjectCode}-${r.inspectionStandardCode}-${r.role}`,
+      { createdAt: now, updatedAt: now },
+    );
+  }
+  for (const r of data.inspectionStandardParameters) {
+    inspectionStandardParameterTable.insert({
+      id: `insp-std-param-${r.inspectionStandardCode}-${r.inspectionParameterCode}`,
+      inspectionStandardCode: r.inspectionStandardCode,
+      inspectionParameterCode: r.inspectionParameterCode,
+      clause: r.clause,
+      methodName: r.methodName,
+      unit: r.unit,
+    } as never);
+    inspectionStandardParameterTable.update(
+      `insp-std-param-${r.inspectionStandardCode}-${r.inspectionParameterCode}`,
+      { createdAt: now, updatedAt: now },
+    );
+  }
+  for (const r of data.inspectionSpecialtyObjects) {
+    inspectionSpecialtyObjectTable.insert({
+      id: `insp-sp-obj-${r.inspectionSpecialtyCode}-${r.inspectionObjectCode}`,
+      inspectionSpecialtyCode: r.inspectionSpecialtyCode,
+      inspectionObjectCode: r.inspectionObjectCode,
+    } as never);
+    inspectionSpecialtyObjectTable.update(
+      `insp-sp-obj-${r.inspectionSpecialtyCode}-${r.inspectionObjectCode}`,
+      { createdAt: now, updatedAt: now },
+    );
+  }
 }
 
 // =============================================================================

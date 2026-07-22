@@ -126,7 +126,13 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
         params: { page: 1, pageSize: String(PAGE_SIZE) },
         signal: controller.signal,
       })
-      .then((res) => setState({ items: res.data.items, loading: false, error: null }))
+      .then((res) =>
+        setState({
+          items: Array.isArray(res.data?.items) ? res.data.items : [],
+          loading: false,
+          error: Array.isArray(res.data?.items) ? null : '加载失败：响应格式异常',
+        }),
+      )
       .catch((err: unknown) => {
         if (controller.signal.aborted) return
         setState({ items: [], loading: false, error: err instanceof Error ? err.message : '加载失败' })

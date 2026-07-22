@@ -1,10 +1,11 @@
-import { describe, expect, beforeEach } from "vitest";
+import { describe, expect, beforeEach, vi, afterEach, it } from "vitest";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { fnTest } from "../../fn";
 import { resetMockDb, seedMasterDataIntoMockDb } from "../../../msw/db";
 import { InspectionCapabilityPage } from "../../../src/features/inspection-capability/InspectionCapabilityPage";
+import { apiClient } from "../../../src/api/client";
 import { useAuthStore } from "../../../src/features/auth/authStore";
 
 function loginAsAdmin() {
@@ -132,6 +133,36 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     // 列表刷新后 SP91 消失
     await waitFor(() => {
       expect(screen.queryByRole("button", { name: `删除 SP91` })).toBeNull();
+    });
+  });
+
+  // 防御性用例：当 apiClient.get 返回畸形响应（无 items 字段，例如 MSW 未启动时
+  // /api/* 被 bypass 到 Vite dev server 返回 index.html）时，页面不得抛错，
+  // 而是落入 error/empty 分支。回归浏览器 MSW 起不来导致的运行时崩溃。
+  describe("畸形响应防御", () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("apiClient.get 返回空对象时不抛错，落入 error/empty 分支", async () => {
+      const malformed = { data: {} } as unknown as { data: { items: never[]; total: number } };
+      vi.spyOn(apiClient, "get").mockResolvedValue(malformed);
+
+      // 渲染本身不得抛错
+      expect(() =>
+        render(
+          <MemoryRouter initialEntries={[`/inspection-specialties`]}>
+            <InspectionCapabilityPage resource="specialties" />
+          </MemoryRouter>,
+        ),
+      ).not.toThrow();
+
+      // 等待 loading 结束后，应出现 error 提示或"暂无数据"，二者满足其一即可
+      await waitFor(() => {
+        const alert = screen.queryByRole("alert");
+        const empty = screen.queryByText("暂无数据");
+        expect(alert !== null || empty !== null).toBe(true);
+      });
     });
   });
 });
