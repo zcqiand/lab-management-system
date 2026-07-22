@@ -1541,6 +1541,18 @@ export const handlers = [
     return HttpResponse.json(inspectionObjectParameterTable.findById(id), { status: 201 })
   }),
 
+  // M06.F02.I06 删除 项目-参数 关联（按复合查询参数）
+  http.delete('*/inspection-object-parameters', ({ request }) => {
+    const url = new URL(request.url)
+    const oc = url.searchParams.get('inspectionObjectCode')
+    const pc = url.searchParams.get('inspectionParameterCode')
+    if (!oc || !pc) return HttpResponse.json({ message: 'inspectionObjectCode/inspectionParameterCode 必填' }, { status: 400 })
+    const row = inspectionObjectParameterTable.all().find((r) => r.inspectionObjectCode === oc && r.inspectionParameterCode === pc)
+    if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
+    inspectionObjectParameterTable.remove(row.id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
   // M06.F02.I04 / I05 检测项目-检测标准关联（双角色）
   http.post('*/inspection-object-standards', async ({ request }) => {
     const body = (await request.json()) as Partial<{ inspectionObjectCode: string; inspectionStandardCode: string; role: 'TESTING' | 'JUDGMENT' }>
@@ -1564,6 +1576,20 @@ export const handlers = [
     return HttpResponse.json(inspectionObjectStandardTable.findById(id), { status: 201 })
   }),
 
+  // M06.F02.I04 / I05 删除 项目-标准 关联（按复合查询参数 + role）
+  http.delete('*/inspection-object-standards', ({ request }) => {
+    const url = new URL(request.url)
+    const oc = url.searchParams.get('inspectionObjectCode')
+    const sc = url.searchParams.get('inspectionStandardCode')
+    const role = url.searchParams.get('role') as 'TESTING' | 'JUDGMENT' | null
+    if (!oc || !sc || !role) return HttpResponse.json({ message: '对象/标准/角色 必填' }, { status: 400 })
+    if (!['TESTING', 'JUDGMENT'].includes(role)) return HttpResponse.json({ message: 'role 仅支持 TESTING/JUDGMENT' }, { status: 400 })
+    const row = inspectionObjectStandardTable.all().find((r) => r.inspectionObjectCode === oc && r.inspectionStandardCode === sc && r.role === role)
+    if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
+    inspectionObjectStandardTable.remove(row.id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
   // M06.F02.I07 检测专项-检测项目多对多关联
   http.post('*/inspection-specialty-objects', async ({ request }) => {
     const body = (await request.json()) as Partial<{ inspectionSpecialtyCode: string; inspectionObjectCode: string }>
@@ -1581,6 +1607,18 @@ export const handlers = [
     } as never)
     inspectionSpecialtyObjectTable.update(id, { createdAt: now, updatedAt: now })
     return HttpResponse.json(inspectionSpecialtyObjectTable.findById(id), { status: 201 })
+  }),
+
+  // M06.F02.I07 删除 专项-项目 关联（按复合查询参数）
+  http.delete('*/inspection-specialty-objects', ({ request }) => {
+    const url = new URL(request.url)
+    const sp = url.searchParams.get('inspectionSpecialtyCode')
+    const oc = url.searchParams.get('inspectionObjectCode')
+    if (!sp || !oc) return HttpResponse.json({ message: '专项/项目 必填' }, { status: 400 })
+    const row = inspectionSpecialtyObjectTable.all().find((r) => r.inspectionSpecialtyCode === sp && r.inspectionObjectCode === oc)
+    if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
+    inspectionSpecialtyObjectTable.remove(row.id)
+    return new HttpResponse(null, { status: 204 })
   }),
 
   // M06.F03.I02 检测参数新建
@@ -1722,5 +1760,17 @@ export const handlers = [
     } as never)
     inspectionStandardParameterTable.update(id, { createdAt: now, updatedAt: now })
     return HttpResponse.json(inspectionStandardParameterTable.findById(id), { status: 201 })
+  }),
+
+  // M06.F04.I04 删除 标准-参数 关联（按复合查询参数）
+  http.delete('*/inspection-standard-parameters', ({ request }) => {
+    const url = new URL(request.url)
+    const sc = url.searchParams.get('inspectionStandardCode')
+    const pc = url.searchParams.get('inspectionParameterCode')
+    if (!sc || !pc) return HttpResponse.json({ message: '标准/参数 必填' }, { status: 400 })
+    const row = inspectionStandardParameterTable.all().find((r) => r.inspectionStandardCode === sc && r.inspectionParameterCode === pc)
+    if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
+    inspectionStandardParameterTable.remove(row.id)
+    return new HttpResponse(null, { status: 204 })
   }),
 ]

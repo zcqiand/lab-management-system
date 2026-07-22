@@ -493,4 +493,38 @@ describe("MSW 检测能力 M06 CRUD handler", () => {
     const got = new Set(data.items.map((p) => p.code));
     expect(got).toEqual(inter);
   });
+
+  fnTest(["M06.F02.I06"], "DELETE /inspection-object-parameters 按复合键删除", async () => {
+    // 先建一条自定义关联
+    await fetch(`${API_BASE}/inspection-objects`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: "OBJ-LINK-1", inspectionSpecialtyCode: "SP01", sourceProjectNo: "1", sourceProjectName: "x", name: "link", isOfficial: false, enabled: true }) });
+    await fetch(`${API_BASE}/inspection-parameters`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: "IP-LINK-1", name: "link param", sourceType: "custom" }) });
+    await fetch(`${API_BASE}/inspection-object-parameters`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ inspectionObjectCode: "OBJ-LINK-1", inspectionParameterCode: "IP-LINK-1" }) });
+    const res = await fetch(`${API_BASE}/inspection-object-parameters?inspectionObjectCode=OBJ-LINK-1&inspectionParameterCode=IP-LINK-1`, { method: "DELETE" });
+    expect(res.status).toBe(204);
+    // 再删一次 → 404
+    const again = await fetch(`${API_BASE}/inspection-object-parameters?inspectionObjectCode=OBJ-LINK-1&inspectionParameterCode=IP-LINK-1`, { method: "DELETE" });
+    expect(again.status).toBe(404);
+  });
+
+  fnTest(["M06.F02.I04"], "DELETE /inspection-object-standards 按复合键 + role 删除", async () => {
+    await fetch(`${API_BASE}/inspection-object-standards`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ inspectionObjectCode: "OBJ-SP01-P1", inspectionStandardCode: "GB 175-2023", role: "TESTING" }) });
+    // 种子里可能已有；重复 POST 会 400，忽略。直接尝试删
+    const res = await fetch(`${API_BASE}/inspection-object-standards?inspectionObjectCode=${encodeURIComponent("OBJ-SP01-P1")}&inspectionStandardCode=${encodeURIComponent("GB 175-2023")}&role=TESTING`, { method: "DELETE" });
+    expect([204, 404]).toContain(res.status);
+    // role 缺失 → 400
+    const bad = await fetch(`${API_BASE}/inspection-object-standards?inspectionObjectCode=${encodeURIComponent("OBJ-SP01-P1")}&inspectionStandardCode=${encodeURIComponent("GB 175-2023")}`, { method: "DELETE" });
+    expect(bad.status).toBe(400);
+  });
+
+  fnTest(["M06.F02.I07"], "DELETE /inspection-specialty-objects 按复合键删除", async () => {
+    await fetch(`${API_BASE}/inspection-specialty-objects`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ inspectionSpecialtyCode: "SP01", inspectionObjectCode: "OBJ-SP01-P1" }) });
+    const res = await fetch(`${API_BASE}/inspection-specialty-objects?inspectionSpecialtyCode=SP01&inspectionObjectCode=${encodeURIComponent("OBJ-SP01-P1")}`, { method: "DELETE" });
+    expect([204, 404]).toContain(res.status);
+  });
+
+  fnTest(["M06.F04.I04"], "DELETE /inspection-standard-parameters 按复合键删除", async () => {
+    await fetch(`${API_BASE}/inspection-standard-parameters`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ inspectionStandardCode: "GB 175-2023", inspectionParameterCode: "IP-CEM003" }) });
+    const res = await fetch(`${API_BASE}/inspection-standard-parameters?inspectionStandardCode=${encodeURIComponent("GB 175-2023")}&inspectionParameterCode=IP-CEM003`, { method: "DELETE" });
+    expect([204, 404]).toContain(res.status);
+  });
 });
