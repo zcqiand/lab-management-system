@@ -1373,6 +1373,7 @@ export const handlers = [
       if (body[key] !== undefined) patch[key] = body[key]
     }
     const updated = inspectionSpecialtyTable.update(id, patch as Partial<{ officialNo: string; name: string; isOfficial: boolean; enabled: boolean }>)
+    if (!updated) return HttpResponse.json({ message: '检测专项不存在' }, { status: 404 })
     return HttpResponse.json(updated)
   }),
 
@@ -1437,6 +1438,7 @@ export const handlers = [
       }
     }
     const updated = inspectionObjectTable.update(id, patch as Partial<{ inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean }>)
+    if (!updated) return HttpResponse.json({ message: '检测项目不存在' }, { status: 404 })
     return HttpResponse.json(updated)
   }),
 
@@ -1560,6 +1562,7 @@ export const handlers = [
       if (body[key] !== undefined) patch[key] = body[key]
     }
     const updated = inspectionParameterTable.update(id, patch as Partial<{ name: string; rawName: string; canonicalName: string; methodText: string; aliases: string[]; unit: string; sourceType: 'official' | 'custom' }>)
+    if (!updated) return HttpResponse.json({ message: '检测参数不存在' }, { status: 404 })
     return HttpResponse.json(updated)
   }),
 
@@ -1619,6 +1622,7 @@ export const handlers = [
       if (body[key] !== undefined) patch[key] = body[key]
     }
     const updated = inspectionStandardTable.update(id, patch as Partial<{ name: string; version: string; status: 'active' | 'superseded' | 'draft' }>)
+    if (!updated) return HttpResponse.json({ message: '检测标准不存在' }, { status: 404 })
     return HttpResponse.json(updated)
   }),
 

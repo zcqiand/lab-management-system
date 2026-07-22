@@ -338,6 +338,31 @@ describe("MSW 检测能力 M06 CRUD handler", () => {
     expect(data.message).toContain("官方");
   });
 
+  fnTest(["M06.F03.I03"], "DELETE /inspection-parameters/:id 自定义参数被引用计数分支", async () => {
+    // 上面那条用例删除官方 IP-CEM003，会在 sourceType === 'official' 守卫处先返回，
+    // 真正的引用计数分支（objectParameter + standardParameter）从未被覆盖。
+    // 这里建一个自定义参数 + 一条对象引用，专门走引用计数分支。
+    const paramRes = await fetch(`${API_BASE}/inspection-parameters`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: "IP-REFCUST-1", name: "引用参数", sourceType: "custom" }),
+    });
+    expect(paramRes.status).toBe(201);
+    const paramRow = (await paramRes.json()) as { code: string };
+    // 制造引用：将 OBJ-SP01-P1（种子项目）挂到该自定义参数上
+    const linkRes = await fetch(`${API_BASE}/inspection-object-parameters`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ inspectionObjectCode: "OBJ-SP01-P1", inspectionParameterCode: paramRow.code }),
+    });
+    expect(linkRes.status).toBe(201);
+    const res = await fetch(`${API_BASE}/inspection-parameters/insp-param-${paramRow.code}`, { method: "DELETE" });
+    expect(res.status).toBe(400);
+    const data = (await res.json()) as { references: number; message: string };
+    expect(data.references).toBeGreaterThanOrEqual(1);
+    expect(data.message).toContain("引用");
+  });
+
   fnTest(["M06.F04.I02"], "PUT /inspection-standards/:id 更新自定义标准且 code 不可变", async () => {
     const created = await fetch(`${API_BASE}/inspection-standards`, {
       method: "POST",
