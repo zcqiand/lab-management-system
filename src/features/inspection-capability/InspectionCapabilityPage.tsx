@@ -103,6 +103,10 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
   const [deletingBusy, setDeletingBusy] = useState(false)
   const [specialtyFilter, setSpecialtyFilter] = useState('')
   const [specialtyOptions, setSpecialtyOptions] = useState<InspectionSpecialty[]>([])
+  const [objectFilter, setObjectFilter] = useState('')
+  const [standardFilter, setStandardFilter] = useState('')
+  const [objectOptions, setObjectOptions] = useState<InspectionObject[]>([])
+  const [standardOptions, setStandardOptions] = useState<InspectionStandard[]>([])
 
   const confirmDelete = async () => {
     if (!deleting) return
@@ -123,11 +127,20 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
   const load = () => {
     const controller = new AbortController()
     setState({ items: [], loading: true, error: null })
-    const params: { page: number; pageSize: string; inspectionSpecialtyCode?: string } = {
+    const params: { page: number; pageSize: string; inspectionSpecialtyCode?: string; inspectionObjectCode?: string; inspectionStandardCode?: string } = {
       page: 1,
       pageSize: String(PAGE_SIZE),
     }
     if (key === 'objects' && specialtyFilter) params.inspectionSpecialtyCode = specialtyFilter
+    if (key === 'standards') {
+      if (specialtyFilter) params.inspectionSpecialtyCode = specialtyFilter
+      if (objectFilter) params.inspectionObjectCode = objectFilter
+    }
+    if (key === 'parameters') {
+      if (specialtyFilter) params.inspectionSpecialtyCode = specialtyFilter
+      if (objectFilter) params.inspectionObjectCode = objectFilter
+      if (standardFilter) params.inspectionStandardCode = standardFilter
+    }
     apiClient
       .get<{ items: ResourceState['items']; total: number }>(PATHS[key], {
         params,
@@ -148,11 +161,11 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => load(), [key, specialtyFilter])
+  useEffect(() => load(), [key, specialtyFilter, objectFilter, standardFilter])
 
-  // 检测项目页：加载检测专项下拉选项
+  // 专项下拉选项（objects/standards/parameters，专项页本身不需要筛专项）
   useEffect(() => {
-    if (key !== 'objects') {
+    if (key === 'specialties') {
       setSpecialtyOptions([])
       return
     }
@@ -169,22 +182,78 @@ export function InspectionCapabilityPage(props: InspectionCapabilityPageProps = 
     return () => controller.abort()
   }, [key])
 
+  // 项目下拉选项（standards/parameters，按选中专项过滤）
+  useEffect(() => {
+    if (key !== 'standards' && key !== 'parameters') { setObjectOptions([]); return }
+    const controller = new AbortController()
+    const params: { page: number; pageSize: string; inspectionSpecialtyCode?: string } = { page: 1, pageSize: '200' }
+    if (specialtyFilter) params.inspectionSpecialtyCode = specialtyFilter
+    apiClient
+      .get<{ items: InspectionObject[] }>(PATHS.objects, { params, signal: controller.signal })
+      .then((res) => setObjectOptions(Array.isArray(res.data?.items) ? res.data.items : []))
+      .catch(() => {})
+    return () => controller.abort()
+  }, [key, specialtyFilter])
+
+  // 标准下拉选项（parameters，按选中项目过滤）
+  useEffect(() => {
+    if (key !== 'parameters') { setStandardOptions([]); return }
+    const controller = new AbortController()
+    const params: { page: number; pageSize: string; inspectionObjectCode?: string } = { page: 1, pageSize: '200' }
+    if (objectFilter) params.inspectionObjectCode = objectFilter
+    apiClient
+      .get<{ items: InspectionStandard[] }>(PATHS.standards, { params, signal: controller.signal })
+      .then((res) => setStandardOptions(Array.isArray(res.data?.items) ? res.data.items : []))
+      .catch(() => {})
+    return () => controller.abort()
+  }, [key, objectFilter])
+
   return (
     <div className="space-y-4" data-fn={FN_ID[key]}>
       <header className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">{TITLES[key]}</h2>
         <div className="flex items-center gap-2">
-          {key === 'objects' && (
+          {key !== 'specialties' && (
             <select
               aria-label="检测专项筛选"
               value={specialtyFilter}
-              onChange={(e) => setSpecialtyFilter(e.target.value)}
+              onChange={(e) => { setSpecialtyFilter(e.target.value); setObjectFilter(''); setStandardFilter('') }}
               className="px-2 py-1.5 text-sm border rounded"
             >
               <option value="">全部专项</option>
               {specialtyOptions.map((s) => (
                 <option key={s.code} value={s.code}>
                   {s.name}
+                </option>
+              ))}
+            </select>
+          )}
+          {(key === 'standards' || key === 'parameters') && (
+            <select
+              aria-label="检测项目筛选"
+              value={objectFilter}
+              onChange={(e) => { setObjectFilter(e.target.value); setStandardFilter('') }}
+              className="px-2 py-1.5 text-sm border rounded"
+            >
+              <option value="">全部项目</option>
+              {objectOptions.map((o) => (
+                <option key={o.code} value={o.code}>
+                  {o.name}
+                </option>
+              ))}
+            </select>
+          )}
+          {key === 'parameters' && (
+            <select
+              aria-label="检测标准筛选"
+              value={standardFilter}
+              onChange={(e) => setStandardFilter(e.target.value)}
+              className="px-2 py-1.5 text-sm border rounded"
+            >
+              <option value="">全部标准</option>
+              {standardOptions.map((s) => (
+                <option key={s.code} value={s.code}>
+                  {s.code}
                 </option>
               ))}
             </select>

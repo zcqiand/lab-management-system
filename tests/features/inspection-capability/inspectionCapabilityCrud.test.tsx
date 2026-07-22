@@ -154,6 +154,43 @@ describe("InspectionCapabilityPage M06 CRUD 入口", () => {
     });
   });
 
+  fnTest(["M06.F04.I01"], "检测标准页级联下拉：选专项后请求带 inspectionSpecialtyCode", async () => {
+    const getSpy = vi.spyOn(apiClient, "get");
+    renderPage("standards");
+    await flush();
+    const user = userEvent.setup();
+    const spSelect = screen.getByLabelText("检测专项筛选");
+    await user.selectOptions(spSelect, "SP01");
+    await flush();
+    const hit = getSpy.mock.calls.find(
+      ([path, cfg]) =>
+        path === "/inspection-standards" &&
+        (cfg as unknown as { params?: { inspectionSpecialtyCode?: string } })?.params?.inspectionSpecialtyCode === "SP01",
+    );
+    expect(hit).toBeTruthy();
+  });
+
+  fnTest(["M06.F03.I01"], "检测参数页三级级联：选专项→项目→标准后请求带全部参数", async () => {
+    const getSpy = vi.spyOn(apiClient, "get");
+    renderPage("parameters");
+    await flush();
+    const user = userEvent.setup();
+    await user.selectOptions(screen.getByLabelText("检测专项筛选"), "SP01");
+    await flush();
+    await user.selectOptions(await screen.findByLabelText("检测项目筛选"), "OBJ-SP01-P1");
+    await flush();
+    await user.selectOptions(await screen.findByLabelText("检测标准筛选"), "GB 175-2023");
+    await flush();
+    const hit = getSpy.mock.calls.find(
+      ([path, cfg]) =>
+        path === "/inspection-parameters" &&
+        (cfg as unknown as { params?: Record<string, string> })?.params?.inspectionSpecialtyCode === "SP01" &&
+        (cfg as unknown as { params?: Record<string, string> })?.params?.inspectionObjectCode === "OBJ-SP01-P1" &&
+        (cfg as unknown as { params?: Record<string, string> })?.params?.inspectionStandardCode === "GB 175-2023",
+    );
+    expect(hit).toBeTruthy();
+  });
+
   // 防御性用例：当 apiClient.get 返回畸形响应（无 items 字段，例如 MSW 未启动时
   // /api/* 被 bypass 到 Vite dev server 返回 index.html）时，页面不得抛错，
   // 而是落入 error/empty 分支。回归浏览器 MSW 起不来导致的运行时崩溃。
