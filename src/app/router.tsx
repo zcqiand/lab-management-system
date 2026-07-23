@@ -28,6 +28,7 @@ import { SummaryPage } from '../features/summary/SummaryPage'
 import { InspectionCapabilityPage } from '../features/inspection-capability/InspectionCapabilityPage'
 import { CalculationRuleList as InspectionCalculationRuleList } from '../features/inspection-capability/CalculationRuleList'
 import { TechnicalRequirementList as InspectionTechnicalRequirementList } from '../features/inspection-capability/TechnicalRequirementList'
+import { ReportNameList } from '../features/inspection-capability/ReportNameList'
 
 // v3: single flow pipeline — receiving → task-assignment → data-entry → review → approve → issue → archive
 export const routes: RouteObject[] = [
@@ -77,6 +78,7 @@ export const routes: RouteObject[] = [
       { path: 'inspection-standards', element: <InspectionCapabilityPage resource="standards" /> },
       { path: 'inspection-calculation-rules', element: <InspectionCalculationRuleList /> },
       { path: 'inspection-technical-requirements', element: <InspectionTechnicalRequirementList /> },
+      { path: 'report-names', element: <ReportNameList /> },
       {
         path: 'settings',
         children: [

@@ -18,10 +18,10 @@ import {
   reportCategoryTable,
   categoryStandardTable,
   standardParametersTable,
-  modelTable,
-  specificationTable,
-  gradeTable,
-  brandTable,
+  inspectionModelTable,
+  inspectionSpecTable,
+  inspectionGradeTable,
+  inspectionBrandTable,
   receiptTable,
   sampleTable,
   testItemTable,
@@ -49,6 +49,10 @@ import {
   inspectionSpecialtyObjectTable,
   inspectionCalculationRuleTable,
   inspectionTechnicalRequirementTable,
+  inspectionReportNameTable,
+  inspectionObjectReportNameTable,
+  inspectionReportNameStandardTable,
+  inspectionReportNameParameterTable,
 } from './db'
 
 /** v3 MSW handler 注册表
@@ -85,43 +89,58 @@ function extractInspectionStandardId(request: Request): string {
   return decodeURIComponent(tail)
 }
 
-/** 通用码表 CRUD handler 工厂（归属报告类别的字典：型号/规格/等级/牌号） */
-function dictHandlers(
+/** 通用码表 CRUD handler 工厂（按检测专项过滤的字典：型号/规格/等级/牌号） */
+function dictHandlers<T extends { id: string; name: string; remark?: string; createdAt: string; updatedAt: string }>(
   path: string,
-  table: MockTable<{ id: string; categoryCode: string; name: string; remark?: string; createdAt: string; updatedAt: string }>,
+  table: MockTable<T>,
   label: string,
+  filterField: string = 'categoryCode',
+  filterLabel: string = '报告类别',
+  beforeDelete?: (row: T) => { ok: false; message: string; references?: number } | { ok: true },
 ) {
   return [
     http.get(`*/${path}`, ({ request }) => {
       const url = new URL(request.url)
+      const filterValue = url.searchParams.get(filterField) ?? undefined
+      const filters = filterValue !== undefined ? ({ [filterField]: filterValue } as Partial<T>) : undefined
       const result = table.query({
         page: Number(url.searchParams.get('page') ?? '1'),
         pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
         keyword: url.searchParams.get('keyword') ?? undefined,
         keywordFields: ['name'],
-        filters: { categoryCode: url.searchParams.get('categoryCode') ?? undefined },
+        filters,
       })
       return HttpResponse.json(result)
     }),
     http.post(`*/${path}`, async ({ request }) => {
-      const body = (await request.json()) as Partial<{ categoryCode: string; name: string; remark: string }>
-      if (!body.categoryCode || !body.name) {
-        return HttpResponse.json({ message: 'categoryCode/name 必填' }, { status: 400 })
+      const body = (await request.json()) as Record<string, unknown>
+      if (!body[filterField] || !body.name) {
+        return HttpResponse.json({ message: `${filterField}/name 必填` }, { status: 400 })
       }
-      const dup = table.all().find((r) => r.categoryCode === body.categoryCode && r.name === body.name)
-      if (dup) return HttpResponse.json({ message: `该报告类别下已存在同名${label}` }, { status: 400 })
-      const created = table.insert({ categoryCode: body.categoryCode, name: body.name, remark: body.remark })
+      const dup = table.all().find(
+        (r) => (r as unknown as Record<string, unknown>)[filterField] === body[filterField] && r.name === body.name,
+      )
+      if (dup) return HttpResponse.json({ message: `该${filterLabel}下已存在同名${label}` }, { status: 400 })
+      const created = table.insert(body as unknown as Omit<T, 'id' | 'createdAt' | 'updatedAt'> & Partial<Pick<T, 'id'>>)
       return HttpResponse.json(created, { status: 201 })
     }),
     http.put(`*/${path}/:id`, async ({ params, request }) => {
       const body = (await request.json()) as Record<string, unknown>
-      const updated = table.update(String(params.id), body)
+      const updated = table.update(String(params.id), body as unknown as Partial<T>)
       if (!updated) return HttpResponse.json({ message: `${label}不存在` }, { status: 404 })
       return HttpResponse.json(updated)
     }),
     http.delete(`*/${path}/:id`, ({ params }) => {
-      const ok = table.remove(String(params.id))
-      if (!ok) return HttpResponse.json({ message: `${label}不存在` }, { status: 404 })
+      const id = String(params.id)
+      const row = table.findById(id)
+      if (!row) return HttpResponse.json({ message: `${label}不存在` }, { status: 404 })
+      if (beforeDelete) {
+        const check = beforeDelete(row)
+        if (!check.ok) {
+          return HttpResponse.json({ message: check.message, references: check.references }, { status: 400 })
+        }
+      }
+      table.remove(id)
       return new HttpResponse(null, { status: 204 })
     }),
   ]
@@ -276,7 +295,7 @@ export const handlers = [
   }),
 
   // ===========================================================
-  // /contract-categories：合同类别码表
+  // /contract-categories：合同类别码表（M04.F10 已废弃；读路径保留供历史数据，写路径仍可用）
   // ===========================================================
   http.get('*/contract-categories', ({ request }) => {
     const url = new URL(request.url)
@@ -473,10 +492,26 @@ export const handlers = [
   // ===========================================================
   // 型号/规格/等级/牌号 码表（归属报告类别）
   // ===========================================================
-  ...dictHandlers('models', modelTable, '型号'),
-  ...dictHandlers('specifications', specificationTable, '规格'),
-  ...dictHandlers('grades', gradeTable, '等级'),
-  ...dictHandlers('brands', brandTable, '牌号'),
+  ...dictHandlers('models', inspectionModelTable, '型号', 'inspectionSpecialtyCode', '检测专项', (row) => {
+    const refs = inspectionTechnicalRequirementTable.all().filter((r) => r.model === row.name).length
+    if (refs > 0) return { ok: false, message: `被 ${refs} 处技术要求引用，不可删除`, references: refs }
+    return { ok: true }
+  }),
+  ...dictHandlers('specifications', inspectionSpecTable, '规格', 'inspectionSpecialtyCode', '检测专项', (row) => {
+    const refs = inspectionTechnicalRequirementTable.all().filter((r) => r.spec === row.name).length
+    if (refs > 0) return { ok: false, message: `被 ${refs} 处技术要求引用，不可删除`, references: refs }
+    return { ok: true }
+  }),
+  ...dictHandlers('grades', inspectionGradeTable, '等级', 'inspectionSpecialtyCode', '检测专项', (row) => {
+    const refs = inspectionTechnicalRequirementTable.all().filter((r) => r.grade === row.name).length
+    if (refs > 0) return { ok: false, message: `被 ${refs} 处技术要求引用，不可删除`, references: refs }
+    return { ok: true }
+  }),
+  ...dictHandlers('brands', inspectionBrandTable, '牌号', 'inspectionSpecialtyCode', '检测专项', (row) => {
+    const refs = inspectionTechnicalRequirementTable.all().filter((r) => r.brand === row.name).length
+    if (refs > 0) return { ok: false, message: `被 ${refs} 处技术要求引用，不可删除`, references: refs }
+    return { ok: true }
+  }),
 
   // ===========================================================
   // /receipts：接样单（合并报告字段 + 流程管线）
@@ -1504,6 +1539,185 @@ export const handlers = [
       return HttpResponse.json({ message: `被 ${refs} 处引用，不可删除`, references: refs }, { status: 400 })
     }
     inspectionSpecialtyTable.remove(String(params.id))
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // M06.F07 报告名称
+  http.get('*/report-names', ({ request }) => {
+    const url = new URL(request.url)
+    return HttpResponse.json(
+      inspectionReportNameTable.query({
+        page: Number(url.searchParams.get('page') ?? '1'),
+        pageSize: Number(url.searchParams.get('pageSize') ?? '20'),
+        keyword: url.searchParams.get('keyword') ?? undefined,
+        keywordFields: ['code', 'name', 'description'],
+        sortField: 'sortOrder',
+      }),
+    )
+  }),
+
+  http.post('*/report-names', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ code: string; name: string; fullName: string; templatePath: string; description: string; sortOrder: number }>
+    if (!body.code || !body.name) {
+      return HttpResponse.json({ message: 'code/name 必填' }, { status: 400 })
+    }
+    const dup = inspectionReportNameTable.all().find((r) => r.code === body.code)
+    if (dup) return HttpResponse.json({ message: '报告名称编码已存在' }, { status: 400 })
+    const now = new Date().toISOString()
+    inspectionReportNameTable.insert({
+      id: `insp-rptn-${body.code}`,
+      code: body.code,
+      name: body.name,
+      fullName: body.fullName,
+      templatePath: body.templatePath,
+      description: body.description ?? '',
+      sortOrder: body.sortOrder ?? 999999,
+    } as never)
+    inspectionReportNameTable.update(`insp-rptn-${body.code}`, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionReportNameTable.findById(`insp-rptn-${body.code}`), { status: 201 })
+  }),
+
+  http.put('*/report-names/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const row = inspectionReportNameTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '报告名称不存在' }, { status: 404 })
+    const body = (await request.json()) as Partial<{ name: string; fullName: string; templatePath: string; description: string; sortOrder: number }>
+    const patch: Record<string, unknown> = {}
+    for (const key of ['name', 'fullName', 'templatePath', 'description', 'sortOrder'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    const updated = inspectionReportNameTable.update(id, patch as Partial<{ name: string; fullName: string; templatePath: string; description: string; sortOrder: number }>)
+    if (!updated) return HttpResponse.json({ message: '报告名称不存在' }, { status: 404 })
+    return HttpResponse.json(updated)
+  }),
+
+  http.delete('*/report-names/:id', ({ params }) => {
+    const id = String(params.id)
+    const row = inspectionReportNameTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '报告名称不存在' }, { status: 404 })
+    // M06.F07.I03 删除保护：被关联项目/标准/参数引用时拒绝（本阶段仅留 TODO 占位）
+    inspectionReportNameTable.remove(id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // M06.F07.I04 报告名称 ↔ 检测项目 多对多
+  http.get('*/inspection-object-report-names', ({ request }) => {
+    const url = new URL(request.url)
+    return HttpResponse.json(
+      inspectionObjectReportNameTable.query({
+        page: Number(url.searchParams.get('page') ?? '1'),
+        pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+        filters: {
+          reportNameCode: url.searchParams.get('reportNameCode') ?? undefined,
+          inspectionObjectCode: url.searchParams.get('inspectionObjectCode') ?? undefined,
+        },
+      }),
+    )
+  }),
+  http.post('*/inspection-object-report-names', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ inspectionObjectCode: string; reportNameCode: string }>
+    if (!body.inspectionObjectCode || !body.reportNameCode) {
+      return HttpResponse.json({ message: 'inspectionObjectCode/reportNameCode 必填' }, { status: 400 })
+    }
+    const id = `insp-obj-rptn-${body.reportNameCode}-${body.inspectionObjectCode}`
+    const dup = inspectionObjectReportNameTable.findById(id)
+    if (dup) return HttpResponse.json({ message: '对象报告名称关联已存在' }, { status: 400 })
+    const now = new Date().toISOString()
+    inspectionObjectReportNameTable.insert({ id, ...body } as never)
+    inspectionObjectReportNameTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionObjectReportNameTable.findById(id), { status: 201 })
+  }),
+  http.delete('*/inspection-object-report-names', ({ request }) => {
+    const url = new URL(request.url)
+    const oc = url.searchParams.get('inspectionObjectCode')
+    const rc = url.searchParams.get('reportNameCode')
+    if (!oc || !rc) return HttpResponse.json({ message: 'inspectionObjectCode/reportNameCode 必填' }, { status: 400 })
+    const id = `insp-obj-rptn-${rc}-${oc}`
+    const row = inspectionObjectReportNameTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
+    inspectionObjectReportNameTable.remove(id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // M06.F07.I05 / I06 报告名称 ↔ 检测标准 多对多（双角色）
+  http.get('*/inspection-report-name-standards', ({ request }) => {
+    const url = new URL(request.url)
+    return HttpResponse.json(
+      inspectionReportNameStandardTable.query({
+        page: Number(url.searchParams.get('page') ?? '1'),
+        pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+        filters: {
+          reportNameCode: url.searchParams.get('reportNameCode') ?? undefined,
+          role: (url.searchParams.get('role') as 'TESTING' | 'JUDGMENT' | null) ?? undefined,
+        },
+      }),
+    )
+  }),
+  http.post('*/inspection-report-name-standards', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ reportNameCode: string; inspectionStandardCode: string; role: 'TESTING' | 'JUDGMENT' }>
+    if (!body.reportNameCode || !body.inspectionStandardCode || !body.role) {
+      return HttpResponse.json({ message: 'reportNameCode/inspectionStandardCode/role 必填' }, { status: 400 })
+    }
+    if (!['TESTING', 'JUDGMENT'].includes(body.role)) {
+      return HttpResponse.json({ message: 'role 仅支持 TESTING/JUDGMENT' }, { status: 400 })
+    }
+    const id = `insp-rptn-std-${body.reportNameCode}-${body.inspectionStandardCode}-${body.role}`
+    const dup = inspectionReportNameStandardTable.findById(id)
+    if (dup) return HttpResponse.json({ message: '报告名称标准关联已存在' }, { status: 400 })
+    const now = new Date().toISOString()
+    inspectionReportNameStandardTable.insert({ id, ...body } as never)
+    inspectionReportNameStandardTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionReportNameStandardTable.findById(id), { status: 201 })
+  }),
+  http.delete('*/inspection-report-name-standards', ({ request }) => {
+    const url = new URL(request.url)
+    const rc = url.searchParams.get('reportNameCode')
+    const sc = url.searchParams.get('inspectionStandardCode')
+    const role = url.searchParams.get('role') as 'TESTING' | 'JUDGMENT' | null
+    if (!rc || !sc || !role) return HttpResponse.json({ message: 'reportNameCode/inspectionStandardCode/role 必填' }, { status: 400 })
+    if (!['TESTING', 'JUDGMENT'].includes(role)) return HttpResponse.json({ message: 'role 仅支持 TESTING/JUDGMENT' }, { status: 400 })
+    const id = `insp-rptn-std-${rc}-${sc}-${role}`
+    const row = inspectionReportNameStandardTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
+    inspectionReportNameStandardTable.remove(id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // M06.F07.I07 报告名称 ↔ 检测参数 多对多
+  http.get('*/inspection-report-name-parameters', ({ request }) => {
+    const url = new URL(request.url)
+    return HttpResponse.json(
+      inspectionReportNameParameterTable.query({
+        page: Number(url.searchParams.get('page') ?? '1'),
+        pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+        filters: {
+          reportNameCode: url.searchParams.get('reportNameCode') ?? undefined,
+        },
+      }),
+    )
+  }),
+  http.post('*/inspection-report-name-parameters', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ reportNameCode: string; inspectionParameterCode: string }>
+    if (!body.reportNameCode || !body.inspectionParameterCode) {
+      return HttpResponse.json({ message: 'reportNameCode/inspectionParameterCode 必填' }, { status: 400 })
+    }
+    const id = `insp-rptn-param-${body.reportNameCode}-${body.inspectionParameterCode}`
+    const dup = inspectionReportNameParameterTable.findById(id)
+    if (dup) return HttpResponse.json({ message: '报告名称参数关联已存在' }, { status: 400 })
+    const now = new Date().toISOString()
+    inspectionReportNameParameterTable.insert({ id, ...body } as never)
+    inspectionReportNameParameterTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionReportNameParameterTable.findById(id), { status: 201 })
+  }),
+  http.delete('*/inspection-report-name-parameters', ({ request }) => {
+    const url = new URL(request.url)
+    const rc = url.searchParams.get('reportNameCode')
+    const pc = url.searchParams.get('inspectionParameterCode')
+    if (!rc || !pc) return HttpResponse.json({ message: 'reportNameCode/inspectionParameterCode 必填' }, { status: 400 })
+    const id = `insp-rptn-param-${rc}-${pc}`
+    const row = inspectionReportNameParameterTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
+    inspectionReportNameParameterTable.remove(id)
     return new HttpResponse(null, { status: 204 })
   }),
 

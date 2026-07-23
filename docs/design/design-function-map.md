@@ -63,20 +63,20 @@
 | M03.F08.I01 | 报告归档页面 | ReportArchivePage.tsx | GET /reports?status=archived | reports | 已上线 |
 | M03.F08.I02 | 报告查看 | ReportArchivePage.tsx | GET /reports/:id | reports | 已上线 |
 | M03.F08.I03 | 归档操作 | ReportArchivePage.tsx | POST /reports/:id/archive | reports | 已上线 |
-| M04.F01.I01 | 报告类别列表 | ReportCategoryList.tsx | GET /categories | categories | 已上线 |
-| M04.F01.I02 | 报告类别新建/编辑 | ReportCategoryList.tsx | POST/PUT /categories | categories | 已上线 |
-| M04.F01.I03 | 报告类别删除 | ReportCategoryList.tsx | DELETE /categories/:id | categories | 已上线 |
-| M04.F01.I04 | 类别标准关联 | CategoryStandardList.tsx | GET/PUT /categories/:id/standards | category_standards | 已上线 |
-| M04.F02.I01 | 模板列表 | ReportTemplateList.tsx | GET /report-templates | report_templates | 已上线 |
-| M04.F02.I02 | 模板新建/编辑 | ReportTemplateList.tsx | POST/PUT /report-templates | report_templates | 已上线 |
-| M04.F02.I03 | 模板删除 | ReportTemplateList.tsx | DELETE /report-templates/:id | report_templates | 已上线 |
-| M04.F03.I01 | 检测标准列表 | TestStandardList.tsx | GET /test-standards | test_standards | 已上线 |
-| M04.F03.I02 | 检测标准新建/编辑 | TestStandardList.tsx | POST/PUT /test-standards | test_standards | 已上线 |
-| M04.F03.I03 | 检测标准删除 | TestStandardList.tsx | DELETE /test-standards/:id | test_standards | 已上线 |
-| M04.F03.I04 | 标准参数关联 | TestStandardList.tsx | GET/PUT /test-standards/:id/parameters | standard_parameters | 已上线 |
-| M04.F04.I01 | 检测参数列表 | TestParameterList.tsx | GET /test-parameters | test_parameters | 已上线 |
-| M04.F04.I02 | 检测参数新建/编辑 | TestParameterList.tsx | POST/PUT /test-parameters | test_parameters | 已上线 |
-| M04.F04.I03 | 检测参数删除 | TestParameterList.tsx | DELETE /test-parameters/:id | test_parameters | 已上线 |
+| M04.F01.I01 | 报告类别列表 | ReportCategoryList.tsx | GET /categories | categories | 已废弃 |
+| M04.F01.I02 | 报告类别新建/编辑 | ReportCategoryList.tsx | POST/PUT /categories | categories | 已废弃 |
+| M04.F01.I03 | 报告类别删除 | ReportCategoryList.tsx | DELETE /categories/:id | categories | 已废弃 |
+| M04.F01.I04 | 类别标准关联 | CategoryStandardList.tsx | GET/PUT /categories/:id/standards | category_standards | 已废弃 |
+| M04.F02.I01 | 模板列表 | ReportTemplateList.tsx | GET /report-templates | report_templates | 已废弃 |
+| M04.F02.I02 | 模板新建/编辑 | ReportTemplateList.tsx | POST/PUT /report-templates | report_templates | 已废弃 |
+| M04.F02.I03 | 模板删除 | ReportTemplateList.tsx | DELETE /report-templates/:id | report_templates | 已废弃 |
+| M04.F03.I01 | 检测标准列表 | TestStandardList.tsx | GET /test-standards | test_standards | 已废弃 |
+| M04.F03.I02 | 检测标准新建/编辑 | TestStandardList.tsx | POST/PUT /test-standards | test_standards | 已废弃 |
+| M04.F03.I03 | 检测标准删除 | TestStandardList.tsx | DELETE /test-standards/:id | test_standards | 已废弃 |
+| M04.F03.I04 | 标准参数关联 | TestStandardList.tsx | GET/PUT /test-standards/:id/parameters | standard_parameters | 已废弃 |
+| M04.F04.I01 | 检测参数列表 | TestParameterList.tsx | GET /test-parameters | test_parameters | 已废弃 |
+| M04.F04.I02 | 检测参数新建/编辑 | TestParameterList.tsx | POST/PUT /test-parameters | test_parameters | 已废弃 |
+| M04.F04.I03 | 检测参数删除 | TestParameterList.tsx | DELETE /test-parameters/:id | test_parameters | 已废弃 |
 | M04.F05.I01 | 技术要求列表 | TechnicalRequirementList.tsx | GET /technical-requirements | technical_requirements | 已上线 |
 | M04.F05.I02 | 技术要求新建/编辑 | TechnicalRequirementFormModal.tsx | POST/PUT /technical-requirements | technical_requirements | 已上线 |
 | M04.F05.I03 | 技术要求删除 | TechnicalRequirementList.tsx | DELETE /technical-requirements/:id | technical_requirements | 已上线 |
@@ -116,6 +116,13 @@
 | M06.F06.I01 | 技术要求列表 | src/features/inspection-capability/TechnicalRequirementList.tsx；src/types/inspection/technical-requirement.ts | GET /technical-requirements | technical_requirements | 规划 |
 | M06.F06.I02 | 技术要求新建/编辑 | src/features/inspection-capability/TechnicalRequirementFormModal.tsx | POST/PUT /technical-requirements | technical_requirements | 规划 |
 | M06.F06.I03 | 技术要求删除 | src/features/inspection-capability/TechnicalRequirementList.tsx | DELETE /technical-requirements/:id | technical_requirements | 规划 |
+| M06.F07.I01 | 报告名称列表 | src/features/inspection-capability/ReportNameList.tsx；src/types/inspection/inspection-report-name.ts | GET /report-names | report_names | 规划 |
+| M06.F07.I02 | 报告名称新建/编辑 | src/features/inspection-capability/ReportNameFormModal.tsx | POST/PUT /report-names | report_names | 规划 |
+| M06.F07.I03 | 报告名称删除 | src/features/inspection-capability/ReportNameList.tsx | DELETE /report-names/:code | report_names | 规划 |
+| M06.F07.I04 | 关联检测项目 | src/features/inspection-capability/ReportNameObjects.tsx；src/types/inspection/inspection-object-report-name.ts | GET/POST/DELETE /inspection-object-report-names | inspection_object_report_names | 规划 |
+| M06.F07.I05 | 关联检测依据 | src/features/inspection-capability/ReportNameStandards.tsx；src/types/inspection/inspection-report-name-standard.ts | GET/POST/DELETE /inspection-report-name-standards?role=TESTING | inspection_report_name_standards | 规划 |
+| M06.F07.I06 | 关联判定依据 | src/features/inspection-capability/ReportNameStandards.tsx；src/types/inspection/inspection-report-name-standard.ts | GET/POST/DELETE /inspection-report-name-standards?role=JUDGMENT | inspection_report_name_standards | 规划 |
+| M06.F07.I07 | 关联检测参数 | src/features/inspection-capability/ReportNameParameters.tsx；src/types/inspection/inspection-report-name-parameter.ts | GET/POST/DELETE /inspection-report-name-parameters | inspection_report_name_parameters | 规划 |
 
 ## 约定
 

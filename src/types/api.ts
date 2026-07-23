@@ -154,10 +154,10 @@ export interface CategoryStandard {
   updatedAt: string
 }
 
-/** 型号/规格/等级/牌号 码表条目（均归属报告类别） */
+/** 型号/规格/等级/牌号 码表条目（均归属检测专项，REQ-2026-005） */
 export interface CategoryDictItem {
   id: string
-  categoryCode: string
+  inspectionSpecialtyCode: string
   name: string
   remark?: string
   createdAt: string

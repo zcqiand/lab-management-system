@@ -34,13 +34,13 @@ export interface InspectionTechnicalRequirement {
   clause?: string;
   sourcePage?: number;
   sourceHash?: string;
-  /** 适用牌号（如 HRB400），空表示不限。 */
+  /** 适用牌号（FK → InspectionBrand.code），空表示不限。 */
   brand?: string;
-  /** 适用型号，空表示不限。 */
+  /** 适用型号（FK → InspectionModel.code），空表示不限。 */
   model?: string;
-  /** 适用等级，空表示不限。 */
+  /** 适用等级（FK → InspectionGrade.code），空表示不限。 */
   grade?: string;
-  /** 适用规格，空表示不限。 */
+  /** 适用规格（FK → InspectionSpec.code），空表示不限。 */
   spec?: string;
   remark?: string;
   /** 列表展示排序。 */

@@ -248,45 +248,89 @@ export const standardParametersTable = new MockTable<{
   updatedAt: string
 }>('sp')
 
-/** 型号码表（归属报告类别）：热轧带肋 / P·O 42.5 / C30 / 中砂 / 直螺纹套筒 / 闪光对焊 */
-export const modelTable = new MockTable<{
+/** 型号实体（InspectionModel，M04.F06）——按检测专项过滤 */
+export const inspectionModelTable = new MockTable<{
   id: string
-  categoryCode: string
+  inspectionSpecialtyCode: string
   name: string
   remark?: string
   createdAt: string
   updatedAt: string
-}>('mdl')
+}>('insp-mdl')
 
-/** 规格码表（归属报告类别）：Φ22 / 150×150×150mm / 5-25mm；无尺寸的类别留空 */
-export const specificationTable = new MockTable<{
+/** 规格实体（InspectionSpec，M04.F07）——按检测专项过滤 */
+export const inspectionSpecTable = new MockTable<{
   id: string
-  categoryCode: string
+  inspectionSpecialtyCode: string
   name: string
   remark?: string
   createdAt: string
   updatedAt: string
-}>('spc')
+}>('insp-spc')
 
-/** 等级码表（归属报告类别）：接头等级Ⅰ/Ⅱ/Ⅲ级、砂石类别Ⅰ/Ⅱ/Ⅲ类；型号已含等级的类别留空 */
-export const gradeTable = new MockTable<{
+/** 等级实体（InspectionGrade，M04.F08）——按检测专项过滤 */
+export const inspectionGradeTable = new MockTable<{
   id: string
-  categoryCode: string
+  inspectionSpecialtyCode: string
   name: string
   remark?: string
   createdAt: string
   updatedAt: string
-}>('grd')
+}>('insp-grd')
 
-/** 牌号码表（归属报告类别）：HRB400 等 */
-export const brandTable = new MockTable<{
+/** 牌号实体（InspectionBrand，M04.F09）——按检测专项过滤 */
+export const inspectionBrandTable = new MockTable<{
   id: string
-  categoryCode: string
+  inspectionSpecialtyCode: string
   name: string
   remark?: string
   createdAt: string
   updatedAt: string
-}>('brd')
+}>('insp-brd')
+
+/** 报告名称实体（InspectionReportName，M06.F07）——取代 M04.F02 报告模板 */
+export const inspectionReportNameTable = new MockTable<{
+  id: string
+  code: string
+  name: string
+  fullName?: string
+  templatePath?: string
+  description?: string
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
+}>('insp-rptn')
+
+/** 检测项目 ↔ 报告名称（InspectionObjectReportName）— M06.F07.I04 */
+export const inspectionObjectReportNameTable = new MockTable<{
+  id: string
+  inspectionObjectCode: string
+  reportNameCode: string
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}>('insp-obj-rptn')
+
+/** 报告名称 ↔ 检测标准（InspectionReportNameStandard，role=TESTING/JUDGMENT）— M06.F07.I05/I06 */
+export const inspectionReportNameStandardTable = new MockTable<{
+  id: string
+  reportNameCode: string
+  inspectionStandardCode: string
+  role: 'TESTING' | 'JUDGMENT'
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}>('insp-rptn-std')
+
+/** 报告名称 ↔ 检测参数（InspectionReportNameParameter）— M06.F07.I07 */
+export const inspectionReportNameParameterTable = new MockTable<{
+  id: string
+  reportNameCode: string
+  inspectionParameterCode: string
+  remark?: string
+  createdAt: string
+  updatedAt: string
+}>('insp-rptn-param')
 
 // =============================================================================
 // M06 检测能力内存表
@@ -1151,10 +1195,14 @@ export function resetMockDb() {
   reportCategoryTable.reset()
   categoryStandardTable.reset()
   standardParametersTable.reset()
-  modelTable.reset()
-  specificationTable.reset()
-  gradeTable.reset()
-  brandTable.reset()
+  inspectionModelTable.reset()
+  inspectionSpecTable.reset()
+  inspectionGradeTable.reset()
+  inspectionBrandTable.reset()
+  inspectionReportNameTable.reset()
+  inspectionObjectReportNameTable.reset()
+  inspectionReportNameStandardTable.reset()
+  inspectionReportNameParameterTable.reset()
   receiptTable.reset()
   sampleTable.reset()
   testItemTable.reset()
@@ -1497,44 +1545,32 @@ function seedCategories() {
 }
 
 function seedDicts() {
-  const seed = (table: MockTable<{ id: string; categoryCode: string; name: string; remark?: string; createdAt: string; updatedAt: string }>, prefix: string, data: Record<string, string[]>) => {
+  const seed = (table: MockTable<{ id: string; inspectionSpecialtyCode: string; name: string; remark?: string; createdAt: string; updatedAt: string }>, prefix: string, data: Record<string, string[]>) => {
     let n = 0
-    for (const [cat, names] of Object.entries(data)) {
+    for (const [specialtyCode, names] of Object.entries(data)) {
       for (const name of names) {
         n += 1
-        table.insert({ id: `${prefix}-${String(n).padStart(3, '0')}`, categoryCode: cat, name })
+        table.insert({ id: `${prefix}-${String(n).padStart(3, '0')}`, inspectionSpecialtyCode: specialtyCode, name })
       }
     }
   }
   // 型号：热轧带肋 / P·O 42.5 / C30 / 中砂 / 直螺纹套筒 / 闪光对焊
-  seed(modelTable, 'mdl', {
-    steel: ['热轧带肋钢筋', '热轧光圆钢筋'],
-    cement: ['P·O 42.5', 'P·O 42.5R', 'P·C 32.5'],
-    concrete: ['C25', 'C30', 'C35', 'C40'],
-    sand: ['中砂', '粗砂', '细砂'],
-    gravel: ['碎石', '卵石'],
-    rebar_mech: ['直螺纹套筒连接', '锥螺纹套筒连接'],
-    rebar_weld: ['闪光对焊', '电弧搭接焊', '电渣压力焊'],
+  // （原 seed 按报告类别 categoryCode；REQ-2026-005 改为按检测专项 inspectionSpecialtyCode；
+  //  历史数据按 SP01 建筑材料及构配件 专项对齐）
+  seed(inspectionModelTable, 'insp-mdl', {
+    SP01: ['热轧带肋钢筋', '热轧光圆钢筋', 'P·O 42.5', 'P·O 42.5R', 'P·C 32.5', 'C25', 'C30', 'C35', 'C40', '中砂', '粗砂', '细砂', '碎石', '卵石', '直螺纹套筒连接', '锥螺纹套筒连接', '闪光对焊', '电弧搭接焊', '电渣压力焊'],
   })
-  // 规格：尺寸/粒径/直径；无尺寸的类别留空
-  seed(specificationTable, 'spc', {
-    steel: ['Φ12', 'Φ16', 'Φ20', 'Φ22', 'Φ25'],
-    concrete: ['150×150×150mm', '100×100×100mm', '150×150×600mm'],
-    gravel: ['5-25mm', '5-31.5mm', '5-16mm'],
-    rebar_mech: ['Φ22', 'Φ25', 'd≤32'],
-    rebar_weld: ['Φ22', 'Φ25'],
+  // 规格：尺寸/粒径/直径
+  seed(inspectionSpecTable, 'insp-spc', {
+    SP01: ['Φ12', 'Φ16', 'Φ20', 'Φ22', 'Φ25', '150×150×150mm', '100×100×100mm', '150×150×600mm', '5-25mm', '5-31.5mm', '5-16mm', 'd≤32'],
   })
-  // 等级：接头Ⅰ/Ⅱ/Ⅲ级、砂石Ⅰ/Ⅱ/Ⅲ类；型号已含等级的钢材/水泥/混凝土留空
-  seed(gradeTable, 'grd', {
-    rebar_mech: ['Ⅰ级', 'Ⅱ级', 'Ⅲ级'],
-    sand: ['Ⅰ类', 'Ⅱ类', 'Ⅲ类'],
-    gravel: ['Ⅰ类', 'Ⅱ类', 'Ⅲ类'],
+  // 等级：接头Ⅰ/Ⅱ/Ⅲ级、砂石Ⅰ/Ⅱ/Ⅲ类
+  seed(inspectionGradeTable, 'insp-grd', {
+    SP01: ['Ⅰ级', 'Ⅱ级', 'Ⅲ级', 'Ⅰ类', 'Ⅱ类', 'Ⅲ类'],
   })
   // 牌号：HRB400 等
-  seed(brandTable, 'brd', {
-    steel: ['HRB400', 'HRB400E', 'HRB500', 'HRB500E', 'HPB300'],
-    rebar_mech: ['HRB400', 'HRB400E', 'HRB500'],
-    rebar_weld: ['HRB400', 'HPB300'],
+  seed(inspectionBrandTable, 'insp-brd', {
+    SP01: ['HRB400', 'HRB400E', 'HRB500', 'HRB500E', 'HPB300'],
   })
 }
 

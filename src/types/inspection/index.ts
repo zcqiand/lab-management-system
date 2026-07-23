@@ -24,6 +24,14 @@ export type {
   RequirementVerificationStatus,
   RequirementJudgmentMode,
 } from "./inspection-technical-requirement";
+export type { InspectionReportName } from "./inspection-report-name";
+export type { InspectionBrand } from "./inspection-brand";
+export type { InspectionModel } from "./inspection-model";
+export type { InspectionGrade } from "./inspection-grade";
+export type { InspectionSpec } from "./inspection-spec";
+export type { InspectionObjectReportName } from "./inspection-object-report-name";
+export type { InspectionReportNameStandard } from "./inspection-report-name-standard";
+export type { InspectionReportNameParameter } from "./inspection-report-name-parameter";
 
 export { INSPECTION_STANDARD_ROLES } from "./inspection-standard-role";
 export { INSPECTION_QUALIFICATION_LEVELS } from "./inspection-qualification-level";

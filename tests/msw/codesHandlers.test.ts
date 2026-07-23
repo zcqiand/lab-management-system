@@ -268,7 +268,7 @@ describe("MSW model/specification/grade/brand handlers", () => {
     const res = await fetch(`${API_BASE}/models`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ categoryCode: "steel", name: "热轧带肋钢筋", remark: "HRB400" }),
+      body: JSON.stringify({ inspectionSpecialtyCode: "SP01", name: "热轧带肋钢筋", remark: "HRB400" }),
     });
     expect(res.status).toBe(201);
   });
@@ -278,7 +278,7 @@ describe("MSW model/specification/grade/brand handlers", () => {
       await fetch(`${API_BASE}/models`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ categoryCode: "steel", name: "待删除型号" }),
+        body: JSON.stringify({ inspectionSpecialtyCode: "SP01", name: "待删除型号" }),
       })
     ).json();
     const del = await fetch(`${API_BASE}/models/${created.id}`, { method: "DELETE" });
@@ -294,7 +294,7 @@ describe("MSW model/specification/grade/brand handlers", () => {
     const res = await fetch(`${API_BASE}/specifications`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ categoryCode: "steel", name: "Φ22", remark: "直径22mm" }),
+      body: JSON.stringify({ inspectionSpecialtyCode: "SP01", name: "Φ22", remark: "直径22mm" }),
     });
     expect(res.status).toBe(201);
   });
@@ -304,7 +304,7 @@ describe("MSW model/specification/grade/brand handlers", () => {
       await fetch(`${API_BASE}/specifications`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ categoryCode: "steel", name: "待删除规格" }),
+        body: JSON.stringify({ inspectionSpecialtyCode: "SP01", name: "待删除规格" }),
       })
     ).json();
     const del = await fetch(`${API_BASE}/specifications/${created.id}`, { method: "DELETE" });
@@ -320,7 +320,7 @@ describe("MSW model/specification/grade/brand handlers", () => {
     const res = await fetch(`${API_BASE}/grades`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ categoryCode: "steel", name: "Ⅰ级", remark: "接头等级" }),
+      body: JSON.stringify({ inspectionSpecialtyCode: "SP01", name: "Ⅰ级", remark: "接头等级" }),
     });
     expect(res.status).toBe(201);
   });
@@ -330,7 +330,7 @@ describe("MSW model/specification/grade/brand handlers", () => {
       await fetch(`${API_BASE}/grades`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ categoryCode: "steel", name: "待删除等级" }),
+        body: JSON.stringify({ inspectionSpecialtyCode: "SP01", name: "待删除等级" }),
       })
     ).json();
     const del = await fetch(`${API_BASE}/grades/${created.id}`, { method: "DELETE" });
@@ -346,7 +346,7 @@ describe("MSW model/specification/grade/brand handlers", () => {
     const res = await fetch(`${API_BASE}/brands`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ categoryCode: "steel", name: "HRB400", remark: "热轧带肋400" }),
+      body: JSON.stringify({ inspectionSpecialtyCode: "SP01", name: "HRB400", remark: "热轧带肋400" }),
     });
     expect(res.status).toBe(201);
   });
@@ -356,7 +356,7 @@ describe("MSW model/specification/grade/brand handlers", () => {
       await fetch(`${API_BASE}/brands`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ categoryCode: "steel", name: "待删除牌号" }),
+        body: JSON.stringify({ inspectionSpecialtyCode: "SP01", name: "待删除牌号" }),
       })
     ).json();
     const del = await fetch(`${API_BASE}/brands/${created.id}`, { method: "DELETE" });

@@ -45,15 +45,13 @@ const PROCESS_MENU: MenuGroup = {
 const MASTER_MENU: MenuGroup = {
   title: '基础数据',
   items: [
-    { to: '/report-categories', label: '报告类别', permission: 'user:read' },
-    { to: '/contract-categories', label: '合同类别', permission: 'user:read' },
-    { to: '/test-standards', label: '标准管理', permission: 'user:read' },
-    { to: '/test-parameters', label: '检测参数', permission: 'user:read' },
+    { to: '/report-names', label: '报告名称', permission: 'user:read' },
     { to: '/models', label: '型号维护', permission: 'user:read' },
     { to: '/specifications', label: '规格维护', permission: 'user:read' },
     { to: '/grades', label: '等级维护', permission: 'user:read' },
     { to: '/brands', label: '牌号维护', permission: 'user:read' },
-    { to: '/report-templates', label: '报告模板', permission: 'user:read' },
+    { to: '/inspection-calculation-rules', label: '计算规则', permission: 'user:read' },
+    { to: '/inspection-technical-requirements', label: '技术要求', permission: 'user:read' },
   ],
 }
 
@@ -64,8 +62,6 @@ const INSPECTION_MENU: MenuGroup = {
     { to: '/inspection-objects', label: '检测项目', permission: 'user:read' },
     { to: '/inspection-parameters', label: '检测参数', permission: 'user:read' },
     { to: '/inspection-standards', label: '检测标准', permission: 'user:read' },
-    { to: '/inspection-calculation-rules', label: '计算规则', permission: 'user:read' },
-    { to: '/inspection-technical-requirements', label: '技术要求', permission: 'user:read' },
   ],
 }
 
