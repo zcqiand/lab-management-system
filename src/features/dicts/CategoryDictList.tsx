@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { apiClient } from '../../api/client'
 import { ConfirmModal } from '../../components/ConfirmModal'
 import type { CategoryDictItem } from '../../types/api'
-import type { InspectionSpecialty } from '../../types/inspection'
+import type { InspectionObject } from '../../types/inspection'
 
 interface Props {
   /** API 路径：models / specifications / grades / brands */
@@ -27,17 +27,17 @@ interface Props {
 // @entry M04.F08.I03
 // @entry M04.F09.I02
 // @entry M04.F09.I03
-/** 型号/规格/等级/牌号 通用码表管理页（REQ-2026-005 起按检测专项过滤） */
+/** 型号/规格/等级/牌号 通用码表管理页（REQ-2026-005 起按检测项目过滤） */
 export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, editDataFn, deleteDataFn }: Props) {
-  const [specialties, setSpecialties] = useState<InspectionSpecialty[]>([])
-  const [specialtyCode, setSpecialtyCode] = useState('')
+  const [objects, setObjects] = useState<InspectionObject[]>([])
+  const [objectCode, setObjectCode] = useState('')
   const [list, setList] = useState<CategoryDictItem[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<CategoryDictItem | null>(null)
-  const [formSpecialty, setFormSpecialty] = useState('')
+  const [formObject, setFormObject] = useState('')
   const [formName, setFormName] = useState('')
   const [formRemark, setFormRemark] = useState('')
   const [saving, setSaving] = useState(false)
@@ -46,19 +46,19 @@ export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, 
 
   useEffect(() => {
     apiClient
-      .get<{ items: InspectionSpecialty[] }>('/inspection-specialties', { params: { page: 1, pageSize: '100' } })
-      .then((r) => setSpecialties(Array.isArray(r.data?.items) ? r.data.items : []))
+      .get<{ items: InspectionObject[] }>('/inspection-objects', { params: { page: 1, pageSize: '200' } })
+      .then((r) => setObjects(Array.isArray(r.data?.items) ? r.data.items : []))
       .catch(() => {})
   }, [])
 
-  const specialtyName = (code?: string) => specialties.find((s) => s.code === code)?.name ?? code ?? '-'
+  const objectName = (code?: string) => objects.find((o) => o.code === code)?.name ?? code ?? '-'
 
   const fetchList = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
       const params: Record<string, string> = { page: '1', pageSize: '200' }
-      if (specialtyCode) params.inspectionSpecialtyCode = specialtyCode
+      if (objectCode) params.inspectionObjectCode = objectCode
       const res = await apiClient.get<{ items: CategoryDictItem[] }>(`/${endpoint}`, { params })
       setList(res.data.items)
     } catch (e: unknown) {
@@ -66,7 +66,7 @@ export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, 
     } finally {
       setLoading(false)
     }
-  }, [endpoint, specialtyCode])
+  }, [endpoint, objectCode])
 
   useEffect(() => {
     fetchList()
@@ -74,7 +74,7 @@ export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, 
 
   const openCreate = () => {
     setEditing(null)
-    setFormSpecialty(specialtyCode || specialties[0]?.code || '')
+    setFormObject(objectCode || objects[0]?.code || '')
     setFormName('')
     setFormRemark('')
     setFormOpen(true)
@@ -82,21 +82,21 @@ export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, 
 
   const openEdit = (item: CategoryDictItem) => {
     setEditing(item)
-    setFormSpecialty(item.inspectionSpecialtyCode)
+    setFormObject(item.inspectionObjectCode)
     setFormName(item.name)
     setFormRemark(item.remark ?? '')
     setFormOpen(true)
   }
 
   const handleSave = async () => {
-    if (!formSpecialty || !formName.trim()) return
+    if (!formObject || !formName.trim()) return
     setSaving(true)
     setError(null)
     try {
       if (editing) {
         await apiClient.put(`/${endpoint}/${editing.id}`, { name: formName.trim(), remark: formRemark })
       } else {
-        await apiClient.post(`/${endpoint}`, { inspectionSpecialtyCode: formSpecialty, name: formName.trim(), remark: formRemark })
+        await apiClient.post(`/${endpoint}`, { inspectionObjectCode: formObject, name: formName.trim(), remark: formRemark })
       }
       setFormOpen(false)
       await fetchList()
@@ -136,12 +136,12 @@ export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, 
       </div>
 
       <div className="flex items-center gap-2 bg-white p-3 rounded shadow-sm text-sm">
-        <label className="text-gray-600">检测专项：</label>
-        <select value={specialtyCode} onChange={(e) => setSpecialtyCode(e.target.value)} className="border rounded px-2 py-1.5">
+        <label className="text-gray-600">检测项目：</label>
+        <select value={objectCode} onChange={(e) => setObjectCode(e.target.value)} className="border rounded px-2 py-1.5">
           <option value="">全部</option>
-          {specialties.map((s) => (
-            <option key={s.code} value={s.code}>
-              {s.name}
+          {objects.map((o) => (
+            <option key={o.code} value={o.code}>
+              {o.name}
             </option>
           ))}
         </select>
@@ -157,7 +157,7 @@ export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, 
         <table className="w-full text-sm">
           <thead className="bg-gray-50 text-gray-600">
             <tr>
-              <th className="px-4 py-2 text-left">检测专项</th>
+              <th className="px-4 py-2 text-left">检测项目</th>
               <th className="px-4 py-2 text-left">名称</th>
               <th className="px-4 py-2 text-left">备注</th>
               <th className="px-4 py-2 text-right">操作</th>
@@ -172,7 +172,7 @@ export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, 
             )}
             {list.map((item) => (
               <tr key={item.id} className="border-t hover:bg-gray-50">
-                <td className="px-4 py-2">{specialtyName(item.inspectionSpecialtyCode)}</td>
+                <td className="px-4 py-2">{objectName(item.inspectionObjectCode)}</td>
                 <td className="px-4 py-2">{item.name}</td>
                 <td className="px-4 py-2 text-gray-500">{item.remark ?? ''}</td>
                 <td className="px-4 py-2 text-right space-x-2">
@@ -191,15 +191,15 @@ export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, 
         message={
           <div className="space-y-3 text-left text-sm">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">检测专项</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">检测项目</label>
               <select
-                value={formSpecialty}
-                onChange={(e) => setFormSpecialty(e.target.value)}
+                value={formObject}
+                onChange={(e) => setFormObject(e.target.value)}
                 disabled={Boolean(editing)}
                 className="w-full border rounded px-2 py-1.5 disabled:bg-gray-100"
               >
-                {specialties.map((s) => (
-                  <option key={s.code} value={s.code}>{s.name}</option>
+                {objects.map((o) => (
+                  <option key={o.code} value={o.code}>{o.name}</option>
                 ))}
               </select>
             </div>

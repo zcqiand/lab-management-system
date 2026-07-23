@@ -66,13 +66,13 @@ describe("types/api 业务实体（v3）", () => {
     };
     const dict: CategoryDictItem = {
       id: "mdl-1",
-      inspectionSpecialtyCode: "SP01",
+      inspectionObjectCode: "OBJ-SP01-P2",
       name: "热轧带肋钢筋",
       createdAt: "2026-01-01T00:00:00Z",
       updatedAt: "2026-01-01T00:00:00Z",
     };
     expect(link.categoryCode).toBe("steel");
-    expect(dict.inspectionSpecialtyCode).toBe("SP01");
+    expect(dict.inspectionObjectCode).toBe("OBJ-SP01-P2");
   });
 
   fnTest(["M03.F01.I01"], "SampleReceipt 携带报告类别与合并的报告字段", () => {

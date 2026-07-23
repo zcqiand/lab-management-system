@@ -80,18 +80,18 @@ describe('v3 /category-standards：报告类别关联标准', () => {
   })
 })
 
-describe('v3 型号/规格/等级/牌号码表（归属报告类别）', () => {
+describe('v3 型号/规格/等级/牌号码表（归属检测项目）', () => {
   it.each(['models', 'specifications', 'grades', 'brands'])('%s：CRUD + 类别过滤 + 同名去重', async (endpoint) => {
     await seedCategory('steel')
     await seedCategory('cement')
-    const created = await post(`/${endpoint}`, { inspectionSpecialtyCode: 'SP01', name: 'X-1' })
+    const created = await post(`/${endpoint}`, { inspectionObjectCode: 'OBJ-SP01-P2', name: 'X-1' })
     expect(created.status).toBe(201)
-    const dup = await post(`/${endpoint}`, { inspectionSpecialtyCode: 'SP01', name: 'X-1' })
+    const dup = await post(`/${endpoint}`, { inspectionObjectCode: 'OBJ-SP01-P2', name: 'X-1' })
     expect(dup.status).toBe(400)
-    // 不同专项可同名
-    const other = await post(`/${endpoint}`, { inspectionSpecialtyCode: 'SP02', name: 'X-1' })
+    // 不同项目可同名
+    const other = await post(`/${endpoint}`, { inspectionObjectCode: 'OBJ-SP01-P5', name: 'X-1' })
     expect(other.status).toBe(201)
-    const filtered = await (await fetch(`${API_BASE}/${endpoint}?inspectionSpecialtyCode=SP01`)).json()
+    const filtered = await (await fetch(`${API_BASE}/${endpoint}?inspectionObjectCode=OBJ-SP01-P2`)).json()
     expect(filtered.items).toHaveLength(1)
     const item = filtered.items[0]
     const upd = await fetch(`${API_BASE}/${endpoint}/${item.id}`, {

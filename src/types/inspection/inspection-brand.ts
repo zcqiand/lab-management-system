@@ -11,8 +11,8 @@ export interface InspectionBrand {
   code: string;
   /** 显示名，例如 HRB400。 */
   name: string;
-  /** 适用检测专项；为空表示不限。 */
-  inspectionSpecialtyCode?: string;
+  /** 适用检测项目；为空表示不限。 */
+  inspectionObjectCode?: string;
   /** 备注。 */
   remark?: string;
   /** 列表展示排序。 */

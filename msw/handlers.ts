@@ -492,22 +492,22 @@ export const handlers = [
   // ===========================================================
   // 型号/规格/等级/牌号 码表（归属报告类别）
   // ===========================================================
-  ...dictHandlers('models', inspectionModelTable, '型号', 'inspectionSpecialtyCode', '检测专项', (row) => {
+  ...dictHandlers('models', inspectionModelTable, '型号', 'inspectionObjectCode', '检测项目', (row) => {
     const refs = inspectionTechnicalRequirementTable.all().filter((r) => r.model === row.name).length
     if (refs > 0) return { ok: false, message: `被 ${refs} 处技术要求引用，不可删除`, references: refs }
     return { ok: true }
   }),
-  ...dictHandlers('specifications', inspectionSpecTable, '规格', 'inspectionSpecialtyCode', '检测专项', (row) => {
+  ...dictHandlers('specifications', inspectionSpecTable, '规格', 'inspectionObjectCode', '检测项目', (row) => {
     const refs = inspectionTechnicalRequirementTable.all().filter((r) => r.spec === row.name).length
     if (refs > 0) return { ok: false, message: `被 ${refs} 处技术要求引用，不可删除`, references: refs }
     return { ok: true }
   }),
-  ...dictHandlers('grades', inspectionGradeTable, '等级', 'inspectionSpecialtyCode', '检测专项', (row) => {
+  ...dictHandlers('grades', inspectionGradeTable, '等级', 'inspectionObjectCode', '检测项目', (row) => {
     const refs = inspectionTechnicalRequirementTable.all().filter((r) => r.grade === row.name).length
     if (refs > 0) return { ok: false, message: `被 ${refs} 处技术要求引用，不可删除`, references: refs }
     return { ok: true }
   }),
-  ...dictHandlers('brands', inspectionBrandTable, '牌号', 'inspectionSpecialtyCode', '检测专项', (row) => {
+  ...dictHandlers('brands', inspectionBrandTable, '牌号', 'inspectionObjectCode', '检测项目', (row) => {
     const refs = inspectionTechnicalRequirementTable.all().filter((r) => r.brand === row.name).length
     if (refs > 0) return { ok: false, message: `被 ${refs} 处技术要求引用，不可删除`, references: refs }
     return { ok: true }
