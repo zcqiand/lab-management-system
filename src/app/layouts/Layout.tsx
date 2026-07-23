@@ -64,8 +64,8 @@ const INSPECTION_MENU: MenuGroup = {
     { to: '/inspection-objects', label: '检测项目', permission: 'user:read' },
     { to: '/inspection-parameters', label: '检测参数', permission: 'user:read' },
     { to: '/inspection-standards', label: '检测标准', permission: 'user:read' },
-    { to: '/calculation-rules', label: '计算规则', permission: 'user:read' },
-    { to: '/technical-requirements', label: '技术要求', permission: 'user:read' },
+    { to: '/inspection-calculation-rules', label: '计算规则', permission: 'user:read' },
+    { to: '/inspection-technical-requirements', label: '技术要求', permission: 'user:read' },
   ],
 }
 

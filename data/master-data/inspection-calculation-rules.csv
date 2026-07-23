@@ -1,0 +1,7 @@
+inspectionObjectCode,inspectionParameterCode,testingStandardCode,algorithmType,specimenCount,conditions,roundingRule,remark,sortOrder
+OBJ-SP01-P5,IP-0055,GB/T 50081-2019,compressive_strength,3,,修约到 0.1,立方体抗压强度取算术平均,1
+OBJ-SP01-P5,IP-0056,GB/T 50081-2019,flexural_strength,3,,修约到 0.1,抗折强度,2
+OBJ-SP01-P2,IP-0086,GB/T 228.1-2021,steel_tensile,2,,修约到 1,屈服强度,3
+OBJ-SP01-P2,IP-0087,GB/T 228.1-2021,steel_tensile,2,,修约到 1,抗拉强度,4
+OBJ-SP01-P1,IP-0003,GB 175-2023,simple_avg,3,,修约到 0.1,胶砂强度,5
+OBJ-SP01-P1,IP-0001,GB 175-2023,manual,1,,,凝结时间人工读数,6

@@ -47,6 +47,8 @@ import {
   inspectionObjectStandardTable,
   inspectionStandardParameterTable,
   inspectionSpecialtyObjectTable,
+  inspectionCalculationRuleTable,
+  inspectionTechnicalRequirementTable,
 } from './db'
 
 /** v3 MSW handler 注册表
@@ -1307,16 +1309,36 @@ export const handlers = [
       const inter = sets.reduce((acc, cur) => new Set([...acc].filter((c) => cur.has(c))))
       match = (r) => inter.has(r.code)
     }
-    return HttpResponse.json(
-      inspectionParameterTable.query({
-        page: Number(url.searchParams.get('page') ?? '1'),
-        pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
-        keyword: url.searchParams.get('keyword') ?? undefined,
-        keywordFields: ['code', 'name', 'canonicalName'],
-        sortField: 'sortOrder',
-        match,
-      }),
-    )
+    const result = inspectionParameterTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['code', 'name', 'canonicalName'],
+      sortField: 'sortOrder',
+      match,
+    })
+    // 聚合列：该参数被哪些检测项目 / 检测标准引用（逗号串）
+    const objName = new Map(inspectionObjectTable.all().map((o) => [o.code, o.name]))
+    const items = result.items.map((p) => {
+      const objectNames = [
+        ...new Set(
+          inspectionObjectParameterTable
+            .all()
+            .filter((r) => r.inspectionParameterCode === p.code)
+            .map((r) => objName.get(r.inspectionObjectCode) ?? r.inspectionObjectCode),
+        ),
+      ].join('，')
+      const standardCodes = [
+        ...new Set(
+          inspectionStandardParameterTable
+            .all()
+            .filter((r) => r.inspectionParameterCode === p.code)
+            .map((r) => r.inspectionStandardCode),
+        ),
+      ].join('，')
+      return { ...p, objectNames, standardCodes }
+    })
+    return HttpResponse.json({ ...result, items })
   }),
 
   // M06.F04 检测标准
@@ -1803,6 +1825,128 @@ export const handlers = [
     const row = inspectionStandardParameterTable.all().find((r) => r.inspectionStandardCode === sc && r.inspectionParameterCode === pc)
     if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
     inspectionStandardParameterTable.remove(row.id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // ---- M06.F05 计算规则 ----
+  http.get('*/inspection-calculation-rules', ({ request }) => {
+    const url = new URL(request.url)
+    const result = inspectionCalculationRuleTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['inspectionObjectCode', 'inspectionParameterCode', 'algorithmType'],
+      sortField: 'sortOrder',
+    })
+    const objName = new Map(inspectionObjectTable.all().map((o) => [o.code, o.name]))
+    const paramName = new Map(inspectionParameterTable.all().map((p) => [p.code, p.name]))
+    const items = result.items.map((r) => ({
+      ...r,
+      objectName: objName.get(r.inspectionObjectCode) ?? r.inspectionObjectCode,
+      parameterName: paramName.get(r.inspectionParameterCode) ?? r.inspectionParameterCode,
+    }))
+    return HttpResponse.json({ ...result, items })
+  }),
+
+  // M06.F05.I02 计算规则新建
+  http.post('*/inspection-calculation-rules', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    if (!body.inspectionObjectCode || !body.inspectionParameterCode) {
+      return HttpResponse.json({ message: '检测项目/检测参数 必填' }, { status: 400 })
+    }
+    const id = `insp-calc-${new Date().getTime()}`
+    const now = new Date().toISOString()
+    inspectionCalculationRuleTable.insert({
+      id,
+      algorithmType: 'manual',
+      specimenCount: 1,
+      sortOrder: 999999,
+      ...body,
+    } as never)
+    inspectionCalculationRuleTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionCalculationRuleTable.findById(id), { status: 201 })
+  }),
+
+  // M06.F05.I02 计算规则编辑
+  http.put('*/inspection-calculation-rules/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const row = inspectionCalculationRuleTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '计算规则不存在' }, { status: 404 })
+    const body = (await request.json()) as Record<string, unknown>
+    const patch: Record<string, unknown> = {}
+    for (const key of ['inspectionObjectCode', 'inspectionParameterCode', 'testingStandardCode', 'algorithmType', 'specimenCount', 'conditions', 'roundingRule', 'remark', 'sortOrder'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    return HttpResponse.json(inspectionCalculationRuleTable.update(id, patch as never))
+  }),
+
+  // M06.F05.I03 计算规则删除
+  http.delete('*/inspection-calculation-rules/:id', ({ params }) => {
+    const id = String(params.id)
+    if (!inspectionCalculationRuleTable.findById(id)) return HttpResponse.json({ message: '计算规则不存在' }, { status: 404 })
+    inspectionCalculationRuleTable.remove(id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // ---- M06.F06 技术要求 ----
+  http.get('*/inspection-technical-requirements', ({ request }) => {
+    const url = new URL(request.url)
+    const result = inspectionTechnicalRequirementTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['inspectionObjectCode', 'inspectionParameterCode', 'brand', 'model'],
+      sortField: 'sortOrder',
+    })
+    const objName = new Map(inspectionObjectTable.all().map((o) => [o.code, o.name]))
+    const paramName = new Map(inspectionParameterTable.all().map((p) => [p.code, p.name]))
+    const items = result.items.map((r) => ({
+      ...r,
+      objectName: objName.get(r.inspectionObjectCode) ?? r.inspectionObjectCode,
+      parameterName: paramName.get(r.inspectionParameterCode) ?? r.inspectionParameterCode,
+    }))
+    return HttpResponse.json({ ...result, items })
+  }),
+
+  // M06.F06.I02 技术要求新建
+  http.post('*/inspection-technical-requirements', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    if (!body.inspectionObjectCode || !body.inspectionParameterCode || !body.judgmentStandardCode) {
+      return HttpResponse.json({ message: '检测项目/检测参数/判定标准 必填' }, { status: 400 })
+    }
+    const id = `insp-tech-${new Date().getTime()}`
+    const now = new Date().toISOString()
+    inspectionTechnicalRequirementTable.insert({
+      id,
+      valueType: 'numeric',
+      comparison: '=',
+      judgmentMode: 'manual',
+      verificationStatus: 'draft',
+      sortOrder: 999999,
+      ...body,
+    } as never)
+    inspectionTechnicalRequirementTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionTechnicalRequirementTable.findById(id), { status: 201 })
+  }),
+
+  // M06.F06.I02 技术要求编辑
+  http.put('*/inspection-technical-requirements/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const row = inspectionTechnicalRequirementTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '技术要求不存在' }, { status: 404 })
+    const body = (await request.json()) as Record<string, unknown>
+    const patch: Record<string, unknown> = {}
+    for (const key of ['inspectionObjectCode', 'inspectionParameterCode', 'judgmentStandardCode', 'brand', 'model', 'grade', 'spec', 'valueType', 'minValue', 'maxValue', 'comparison', 'judgmentMode', 'verificationStatus', 'remark', 'sortOrder'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    return HttpResponse.json(inspectionTechnicalRequirementTable.update(id, patch as never))
+  }),
+
+  // M06.F06.I03 技术要求删除
+  http.delete('*/inspection-technical-requirements/:id', ({ params }) => {
+    const id = String(params.id)
+    if (!inspectionTechnicalRequirementTable.findById(id)) return HttpResponse.json({ message: '技术要求不存在' }, { status: 404 })
+    inspectionTechnicalRequirementTable.remove(id)
     return new HttpResponse(null, { status: 204 })
   }),
 ]

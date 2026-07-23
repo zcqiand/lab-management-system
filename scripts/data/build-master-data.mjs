@@ -27,6 +27,8 @@ const FILES = {
   inspectionObjectStandards: "inspection-object-standard.json",
   inspectionStandardParameters: "inspection-standard-parameter.json",
   inspectionSpecialtyObjects: "inspection-specialty-object.json",
+  inspectionCalculationRules: "inspection-calculation-rule.json",
+  inspectionTechnicalRequirements: "inspection-technical-requirement.json",
 };
 
 function readCsv(name) {
@@ -134,6 +136,36 @@ function build() {
     inspectionObjectCode: r.inspectionObjectCode,
   }));
 
+  const calculationRules = readCsv("inspection-calculation-rules.csv").map((r, i) => ({
+    inspectionObjectCode: r.inspectionObjectCode,
+    inspectionParameterCode: r.inspectionParameterCode,
+    testingStandardCode: str(r.testingStandardCode, undefined),
+    algorithmType: str(r.algorithmType, "manual"),
+    specimenCount: num(r.specimenCount, 1),
+    conditions: str(r.conditions, undefined),
+    roundingRule: str(r.roundingRule, undefined),
+    remark: str(r.remark, undefined),
+    sortOrder: num(r.sortOrder, i + 1),
+  }));
+
+  const technicalRequirements = readCsv("inspection-technical-requirements.csv").map((r, i) => ({
+    inspectionObjectCode: r.inspectionObjectCode,
+    inspectionParameterCode: r.inspectionParameterCode,
+    judgmentStandardCode: r.judgmentStandardCode,
+    brand: str(r.brand, undefined),
+    model: str(r.model, undefined),
+    grade: str(r.grade, undefined),
+    spec: str(r.spec, undefined),
+    valueType: str(r.valueType, "numeric"),
+    minValue: r.minValue === "" || r.minValue === undefined ? undefined : num(r.minValue, undefined),
+    maxValue: r.maxValue === "" || r.maxValue === undefined ? undefined : num(r.maxValue, undefined),
+    comparison: str(r.comparison, "="),
+    judgmentMode: str(r.judgmentMode, "manual"),
+    verificationStatus: str(r.verificationStatus, "draft"),
+    remark: str(r.remark, undefined),
+    sortOrder: num(r.sortOrder, i + 1),
+  }));
+
   return {
     inspectionSpecialties: specialties,
     inspectionObjects: objects,
@@ -143,6 +175,8 @@ function build() {
     inspectionObjectStandards: objectStandards,
     inspectionStandardParameters: standardParameters,
     inspectionSpecialtyObjects: specialtyObjects,
+    inspectionCalculationRules: calculationRules,
+    inspectionTechnicalRequirements: technicalRequirements,
   };
 }
 

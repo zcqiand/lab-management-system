@@ -20,6 +20,8 @@ import generatedObjectParameters from '../src/data/generated/inspection-object-p
 import generatedObjectStandards from '../src/data/generated/inspection-object-standard.json'
 import generatedStandardParameters from '../src/data/generated/inspection-standard-parameter.json'
 import generatedSpecialtyObjects from '../src/data/generated/inspection-specialty-object.json'
+import generatedCalculationRules from '../src/data/generated/inspection-calculation-rule.json'
+import generatedTechnicalRequirements from '../src/data/generated/inspection-technical-requirement.json'
 
 export interface Timestamped {
   createdAt: string
@@ -390,6 +392,44 @@ export const inspectionSpecialtyObjectTable = new MockTable<{
   createdAt: string
   updatedAt: string
 }>('insp-sp-obj')
+
+/** 计算规则（InspectionCalculationRule）— M06.F05 */
+export const inspectionCalculationRuleTable = new MockTable<{
+  id: string
+  inspectionObjectCode: string
+  inspectionParameterCode: string
+  testingStandardCode?: string
+  algorithmType: string
+  specimenCount: number
+  conditions?: string
+  roundingRule?: string
+  remark?: string
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
+}>('insp-calc-rule')
+
+/** 技术要求（InspectionTechnicalRequirement）— M06.F06 */
+export const inspectionTechnicalRequirementTable = new MockTable<{
+  id: string
+  inspectionObjectCode: string
+  inspectionParameterCode: string
+  judgmentStandardCode: string
+  brand?: string
+  model?: string
+  grade?: string
+  spec?: string
+  valueType: string
+  minValue?: number
+  maxValue?: number
+  comparison: string
+  judgmentMode: string
+  verificationStatus: string
+  remark?: string
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
+}>('insp-tech-req')
 
 /** 接样单表（接样表与报告表合并为一张表，携带报告类别与全流程状态） */
 export const receiptTable = new MockTable<{
@@ -1133,6 +1173,8 @@ export function resetMockDb() {
   inspectionObjectStandardTable.reset()
   inspectionStandardParameterTable.reset()
   inspectionSpecialtyObjectTable.reset()
+  inspectionCalculationRuleTable.reset()
+  inspectionTechnicalRequirementTable.reset()
 }
 
 /**
@@ -1151,6 +1193,8 @@ export function seedMasterDataIntoMockDb(): void {
     inspectionObjectStandards: generatedObjectStandards ?? [],
     inspectionStandardParameters: generatedStandardParameters ?? [],
     inspectionSpecialtyObjects: generatedSpecialtyObjects ?? [],
+    inspectionCalculationRules: generatedCalculationRules ?? [],
+    inspectionTechnicalRequirements: generatedTechnicalRequirements ?? [],
   } as {
     inspectionSpecialties: Array<{ code: string; officialNo: string; name: string; isOfficial: boolean; enabled: boolean; sortOrder: number }>
     inspectionObjects: Array<{ code: string; inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean; sortOrder: number }>
@@ -1160,6 +1204,8 @@ export function seedMasterDataIntoMockDb(): void {
     inspectionObjectStandards: Array<{ inspectionObjectCode: string; inspectionStandardCode: string; role: 'TESTING' | 'JUDGMENT' }>
     inspectionStandardParameters: Array<{ inspectionStandardCode: string; inspectionParameterCode: string }>
     inspectionSpecialtyObjects: Array<{ inspectionSpecialtyCode: string; inspectionObjectCode: string }>
+    inspectionCalculationRules: Array<{ inspectionObjectCode: string; inspectionParameterCode: string; testingStandardCode?: string; algorithmType: string; specimenCount: number; conditions?: string; roundingRule?: string; remark?: string; sortOrder: number }>
+    inspectionTechnicalRequirements: Array<{ inspectionObjectCode: string; inspectionParameterCode: string; judgmentStandardCode: string; brand?: string; model?: string; grade?: string; spec?: string; valueType: string; minValue?: number; maxValue?: number; comparison: string; judgmentMode: string; verificationStatus: string; remark?: string; sortOrder: number }>
   }
   const now = new Date('2026-07-22T00:00:00Z').toISOString()
   for (const s of data.inspectionSpecialties) {
@@ -1274,6 +1320,16 @@ export function seedMasterDataIntoMockDb(): void {
       { createdAt: now, updatedAt: now },
     );
   }
+  data.inspectionCalculationRules.forEach((r, i) => {
+    const id = `insp-calc-${i + 1}`
+    inspectionCalculationRuleTable.insert({ id, ...r } as never)
+    inspectionCalculationRuleTable.update(id, { createdAt: now, updatedAt: now })
+  })
+  data.inspectionTechnicalRequirements.forEach((r, i) => {
+    const id = `insp-tech-${i + 1}`
+    inspectionTechnicalRequirementTable.insert({ id, ...r } as never)
+    inspectionTechnicalRequirementTable.update(id, { createdAt: now, updatedAt: now })
+  })
 }
 
 // =============================================================================

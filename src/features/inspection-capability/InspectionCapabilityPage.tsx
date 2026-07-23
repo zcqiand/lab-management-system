@@ -91,8 +91,10 @@ interface AggRow {
   enabled?: boolean
   sourceType?: string
   status?: string
+  unit?: string
   parameterNames?: string
   standardCodes?: string
+  objectNames?: string
 }
 
 interface Column {
@@ -102,7 +104,9 @@ interface Column {
 
 const codeCell = (i: AggRow): ReactNode => <span className="font-mono text-xs">{i.code}</span>
 const aggCell = (v?: string): ReactNode => (
-  <span className="text-xs text-gray-500 line-clamp-2">{v && v.length > 0 ? v : '-'}</span>
+  <span className="text-xs text-gray-500 line-clamp-2 inline-block max-w-75 wrap-break-word align-top">
+    {v && v.length > 0 ? v : '-'}
+  </span>
 )
 
 const COLUMNS: Record<ResourceKey, Column[]> = {
@@ -121,7 +125,9 @@ const COLUMNS: Record<ResourceKey, Column[]> = {
   parameters: [
     { header: '编码', cell: codeCell },
     { header: '名称', cell: (i) => i.name },
-    { header: '状态', cell: (i) => (i.sourceType === 'official' ? '官方' : '自定义') },
+    { header: '单位', cell: (i) => i.unit || '-' },
+    { header: '检测项目', cell: (i) => aggCell(i.objectNames) },
+    { header: '检测标准', cell: (i) => aggCell(i.standardCodes) },
   ],
   standards: [
     { header: '编码', cell: codeCell },
