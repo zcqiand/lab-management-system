@@ -22,6 +22,10 @@ import generatedStandardParameters from '../src/data/generated/inspection-standa
 import generatedSpecialtyObjects from '../src/data/generated/inspection-specialty-object.json'
 import generatedCalculationRules from '../src/data/generated/inspection-calculation-rule.json'
 import generatedTechnicalRequirements from '../src/data/generated/inspection-technical-requirement.json'
+import generatedReportNames from '../src/data/generated/inspection-report-name.json'
+import generatedObjectReportNames from '../src/data/generated/inspection-object-report-name.json'
+import generatedReportNameStandards from '../src/data/generated/inspection-report-name-standard.json'
+import generatedReportNameParameters from '../src/data/generated/inspection-report-name-parameter.json'
 
 export interface Timestamped {
   createdAt: string
@@ -287,6 +291,54 @@ export const inspectionBrandTable = new MockTable<{
   createdAt: string
   updatedAt: string
 }>('insp-brd')
+
+/** 报告名称种子（M06.F07，从 data/templates/ 30 份 docx 导入） */
+function seedReportNames(): void {
+  for (const r of generatedReportNames as Array<{
+    code: string
+    name: string
+    fullName?: string
+    templatePath?: string
+    description?: string
+    sortOrder: number
+  }>) {
+    inspectionReportNameTable.insert({
+      id: `insp-rptn-${r.code}`,
+      code: r.code,
+      name: r.name,
+      fullName: r.fullName,
+      templatePath: r.templatePath,
+      description: r.description,
+      sortOrder: r.sortOrder,
+    } as never)
+  }
+  for (const link of generatedObjectReportNames as Array<{ reportNameCode: string; inspectionObjectCode: string }>) {
+    inspectionObjectReportNameTable.insert({
+      id: `insp-obj-rptn-${link.reportNameCode}-${link.inspectionObjectCode}`,
+      inspectionObjectCode: link.inspectionObjectCode,
+      reportNameCode: link.reportNameCode,
+    } as never)
+  }
+  for (const link of generatedReportNameStandards as Array<{
+    reportNameCode: string
+    inspectionStandardCode: string
+    role: 'TESTING' | 'JUDGMENT'
+  }>) {
+    inspectionReportNameStandardTable.insert({
+      id: `insp-rptn-std-${link.reportNameCode}-${link.inspectionStandardCode}-${link.role}`,
+      reportNameCode: link.reportNameCode,
+      inspectionStandardCode: link.inspectionStandardCode,
+      role: link.role,
+    } as never)
+  }
+  for (const link of generatedReportNameParameters as Array<{ reportNameCode: string; inspectionParameterCode: string }>) {
+    inspectionReportNameParameterTable.insert({
+      id: `insp-rptn-param-${link.reportNameCode}-${link.inspectionParameterCode}`,
+      reportNameCode: link.reportNameCode,
+      inspectionParameterCode: link.inspectionParameterCode,
+    } as never)
+  }
+}
 
 /** 报告名称实体（InspectionReportName，M06.F07）——取代 M04.F02 报告模板 */
 export const inspectionReportNameTable = new MockTable<{
@@ -1736,6 +1788,7 @@ export function seedData() {
   seedOrgInfo()
   seedCategories()
   seedDicts()
+  seedReportNames()
 
   // ===== 角色 / 用户 =====
   ;[
