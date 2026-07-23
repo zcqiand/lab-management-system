@@ -20,6 +20,8 @@ interface Props {
   targetParam: string; // 如 inspectionParameterCode
   targetValueKey: string; // 目标下拉 value 字段（通常 code）
   targetTextKey: string; // 目标下拉 显示字段（通常 name）
+  /** 额外附加显示字段（如标准的 name），会跟在主文本后以 " · value" 形式追加 */
+  targetExtraTextKey?: string;
   extraFields?: ExtraField[]; // role / qualificationLevel+sortOrder
   fnId?: string; // data-fn 锚点
 }
@@ -35,6 +37,7 @@ export function AssociationManager(props: Props) {
     targetParam,
     targetValueKey,
     targetTextKey,
+    targetExtraTextKey,
     extraFields = [],
     fnId,
   } = props;
@@ -132,6 +135,7 @@ export function AssociationManager(props: Props) {
           // 行优先显示目标可读名称（如检测参数名），找不到再回退到 code
           const target = targets.find((t) => t[targetValueKey] === code);
           const display = target?.[targetTextKey] ?? code;
+          const extraText = targetExtraTextKey ? target?.[targetExtraTextKey] : undefined;
           return (
             <li
               key={code + extraFields.map((f) => r[f.name]).join("#")}
@@ -143,6 +147,7 @@ export function AssociationManager(props: Props) {
                   .map((f) => f.rowPrefix?.[r[f.name]] ?? "")
                   .join("")}
                 {display}
+                {extraText && extraText !== display ? ` · ${extraText}` : ""}
                 {extraFields
                   .filter((f) => !f.rowPrefix)
                   .map((f) => ` · ${f.label}: ${f.valueLabels?.[r[f.name]] ?? r[f.name] ?? ""}`)
@@ -170,11 +175,15 @@ export function AssociationManager(props: Props) {
             className="ml-1 border rounded px-2 py-1"
           >
             <option value="">选择{targetLabel}</option>
-            {targets.map((t) => (
-              <option key={t[targetValueKey]} value={t[targetValueKey]}>
-                {t[targetTextKey]}
-              </option>
-            ))}
+            {targets.map((t) => {
+              const extra = targetExtraTextKey ? t[targetExtraTextKey] : undefined;
+              return (
+                <option key={t[targetValueKey]} value={t[targetValueKey]}>
+                  {t[targetTextKey]}
+                  {extra && extra !== t[targetTextKey] ? ` · ${extra}` : ""}
+                </option>
+              );
+            })}
           </select>
         </label>
         {extraFields.map((f) => (

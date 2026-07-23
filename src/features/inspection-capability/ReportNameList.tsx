@@ -307,6 +307,7 @@ export function ReportNameList() {
                   targetParam="inspectionStandardCode"
                   targetValueKey="code"
                   targetTextKey="code"
+                  targetExtraTextKey="name"
                   extraFields={[{
                     name: 'role',
                     label: '角色',
