@@ -39,6 +39,16 @@ import {
   evaluateTestResult,
   syncReceiptResult,
   samplesOfReceipt,
+  inspectionSpecialtyTable,
+  inspectionObjectTable,
+  inspectionParameterTable,
+  inspectionStandardTable,
+  inspectionObjectParameterTable,
+  inspectionObjectStandardTable,
+  inspectionStandardParameterTable,
+  inspectionSpecialtyObjectTable,
+  inspectionCalculationRuleTable,
+  inspectionTechnicalRequirementTable,
 } from './db'
 
 /** v3 MSW handler 注册表
@@ -55,6 +65,25 @@ import {
  * /stats + /summary：仪表盘统计 + 按报告类别的试验报告汇总表
  * /org-info /users /roles
  */
+
+/** 统计表中某字段等于指定值的行数，用于删除前的引用计数。 */
+function countBy<T extends { id: string; createdAt: string; updatedAt: string }>(table: MockTable<T>, field: keyof T, value: string): number {
+  return table.all().filter((r) => r[field] === value).length
+}
+
+/**
+ * 检测标准 id 形如 `insp-std-<code>`，而 code 可含 `/`（如 GB/T 228.1-2021）与空格（如 GB 175-2023）。
+ * 前端按字面 id 拼 URL（不 encodeURIComponent）：对 http(s) URL，编码后的 %2F 会在发送前被规范成字面 `/`，
+ * 故 id 中的 `/` 会把 URL 裂成多段。MSW 的 path-to-regexp 中 `:id` 仅匹配 `[^/]+`，无法接住含 `/` 的 id。
+ * 因此仅检测标准（其他 3 类专项/项目/参数的 code 不含 `/`，沿用 `:id`）改用正则路由，
+ * 并从 URL pathname 中切出 `/inspection-standards/` 之后的全部内容作为 id。
+ */
+const INSPECTION_STANDARD_ID_RE = /\/inspection-standards\/.+$/
+function extractInspectionStandardId(request: Request): string {
+  const pathname = new URL(request.url).pathname
+  const tail = pathname.slice(pathname.indexOf('/inspection-standards/') + '/inspection-standards/'.length)
+  return decodeURIComponent(tail)
+}
 
 /** 通用码表 CRUD handler 工厂（归属报告类别的字典：型号/规格/等级/牌号） */
 function dictHandlers(
@@ -1184,6 +1213,740 @@ export const handlers = [
     const existing = calculationRuleTable.findById(String(params.id))
     if (!existing) return HttpResponse.json({ message: '记录不存在' }, { status: 404 })
     calculationRuleTable.remove(String(params.id))
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // ===========================================================
+  // M06 检测能力
+  // ===========================================================
+
+  // M06.F01 检测专项
+  http.get('*/inspection-specialties', ({ request }) => {
+    const url = new URL(request.url)
+    return HttpResponse.json(
+      inspectionSpecialtyTable.query({
+        page: Number(url.searchParams.get('page') ?? '1'),
+        pageSize: Number(url.searchParams.get('pageSize') ?? '20'),
+        keyword: url.searchParams.get('keyword') ?? undefined,
+        keywordFields: ['code', 'name', 'officialNo'],
+        sortField: 'sortOrder',
+      }),
+    )
+  }),
+
+  // M06.F02 检测项目
+  http.get('*/inspection-objects', ({ request }) => {
+    const url = new URL(request.url)
+    const result = inspectionObjectTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '20'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['code', 'name', 'sourceProjectName'],
+      filters: {
+        inspectionSpecialtyCode: url.searchParams.get('inspectionSpecialtyCode') ?? undefined,
+      },
+      sortField: 'sortOrder',
+    })
+    // 聚合列：该项目关联的检测参数名 / 检测标准编码（逗号串，供清单直接展示）
+    const paramNameByCode = new Map(inspectionParameterTable.all().map((p) => [p.code, p.name]))
+    const items = result.items.map((o) => {
+      const parameterNames = [
+        ...new Set(
+          inspectionObjectParameterTable
+            .all()
+            .filter((r) => r.inspectionObjectCode === o.code)
+            .map((r) => paramNameByCode.get(r.inspectionParameterCode) ?? r.inspectionParameterCode),
+        ),
+      ].join('，')
+      const standardCodes = [
+        ...new Set(
+          inspectionObjectStandardTable
+            .all()
+            .filter((r) => r.inspectionObjectCode === o.code)
+            .map((r) => r.inspectionStandardCode),
+        ),
+      ].join('，')
+      return { ...o, parameterNames, standardCodes }
+    })
+    return HttpResponse.json({ ...result, items })
+  }),
+
+  // M06.F03 检测参数（级联过滤：专项/项目 → 标准维度，多条件取交集）
+  http.get('*/inspection-parameters', ({ request }) => {
+    const url = new URL(request.url)
+    const objectCode = url.searchParams.get('inspectionObjectCode')
+    const specialtyCode = url.searchParams.get('inspectionSpecialtyCode')
+    const standardCode = url.searchParams.get('inspectionStandardCode')
+    const sets: Array<Set<string>> = []
+    if (objectCode || specialtyCode) {
+      // 项目维度：先解出涉及的检测项目编码（传 objectCode 直用；传 specialtyCode 则并集该专项下全部项目），
+      // 再经 检测项目↔检测参数 关联表解出允许的参数编码集合。
+      const objCodes = new Set<string>()
+      if (objectCode) {
+        objCodes.add(objectCode)
+      } else if (specialtyCode) {
+        for (const o of inspectionObjectTable.all()) {
+          if (o.inspectionSpecialtyCode === specialtyCode) objCodes.add(o.code)
+        }
+      }
+      const s = new Set<string>()
+      for (const r of inspectionObjectParameterTable.all()) {
+        if (objCodes.has(r.inspectionObjectCode)) s.add(r.inspectionParameterCode)
+      }
+      sets.push(s)
+    }
+    if (standardCode) {
+      // 标准维度：经 检测标准↔检测参数 关联表解出允许的参数编码集合。
+      const s = new Set<string>()
+      for (const r of inspectionStandardParameterTable.all()) {
+        if (r.inspectionStandardCode === standardCode) s.add(r.inspectionParameterCode)
+      }
+      sets.push(s)
+    }
+    let match: ((r: { code: string }) => boolean) | undefined
+    if (sets.length > 0) {
+      // 多条件取交集；任一条件空集 → 最终空集（match 全 false）。
+      const inter = sets.reduce((acc, cur) => new Set([...acc].filter((c) => cur.has(c))))
+      match = (r) => inter.has(r.code)
+    }
+    const result = inspectionParameterTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['code', 'name', 'canonicalName'],
+      sortField: 'sortOrder',
+      match,
+    })
+    // 聚合列：该参数被哪些检测项目 / 检测标准引用（逗号串）
+    const objName = new Map(inspectionObjectTable.all().map((o) => [o.code, o.name]))
+    const items = result.items.map((p) => {
+      const objectNames = [
+        ...new Set(
+          inspectionObjectParameterTable
+            .all()
+            .filter((r) => r.inspectionParameterCode === p.code)
+            .map((r) => objName.get(r.inspectionObjectCode) ?? r.inspectionObjectCode),
+        ),
+      ].join('，')
+      const standardCodes = [
+        ...new Set(
+          inspectionStandardParameterTable
+            .all()
+            .filter((r) => r.inspectionParameterCode === p.code)
+            .map((r) => r.inspectionStandardCode),
+        ),
+      ].join('，')
+      return { ...p, objectNames, standardCodes }
+    })
+    return HttpResponse.json({ ...result, items })
+  }),
+
+  // M06.F04 检测标准
+  http.get('*/inspection-standards', ({ request }) => {
+    const url = new URL(request.url)
+    const objectCode = url.searchParams.get('inspectionObjectCode')
+    const specialtyCode = url.searchParams.get('inspectionSpecialtyCode')
+    let match: ((r: { code: string }) => boolean) | undefined
+    if (objectCode || specialtyCode) {
+      // 通过 检测项目↔检测标准 关联表解出允许的标准编码集合：
+      //   - 传入 inspectionObjectCode：只取该对象关联的标准
+      //   - 传入 inspectionSpecialtyCode：先解出该专项下所有对象，再并集它们关联的标准
+      const objCodes = new Set<string>()
+      if (objectCode) {
+        objCodes.add(objectCode)
+      } else if (specialtyCode) {
+        for (const o of inspectionObjectTable.all()) {
+          if (o.inspectionSpecialtyCode === specialtyCode) objCodes.add(o.code)
+        }
+      }
+      const allowed = new Set<string>()
+      for (const r of inspectionObjectStandardTable.all()) {
+        if (objCodes.has(r.inspectionObjectCode)) allowed.add(r.inspectionStandardCode)
+      }
+      match = (r) => allowed.has(r.code)
+    }
+    const result = inspectionStandardTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['code', 'name'],
+      sortField: 'sortOrder',
+      match,
+    })
+    // 聚合列：该标准关联的检测参数名（逗号串）
+    const paramNameByCode = new Map(inspectionParameterTable.all().map((p) => [p.code, p.name]))
+    const items = result.items.map((s) => {
+      const parameterNames = [
+        ...new Set(
+          inspectionStandardParameterTable
+            .all()
+            .filter((r) => r.inspectionStandardCode === s.code)
+            .map((r) => paramNameByCode.get(r.inspectionParameterCode) ?? r.inspectionParameterCode),
+        ),
+      ].join('，')
+      return { ...s, parameterNames }
+    })
+    return HttpResponse.json({ ...result, items })
+  }),
+
+  // M06.F02.I06 检测项目-检测参数关联
+  http.get('*/inspection-object-parameters', ({ request }) => {
+    const url = new URL(request.url)
+    return HttpResponse.json(
+      inspectionObjectParameterTable.query({
+        page: Number(url.searchParams.get('page') ?? '1'),
+        pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+        filters: {
+          inspectionObjectCode: url.searchParams.get('inspectionObjectCode') ?? undefined,
+        },
+        sortField: 'inspectionParameterCode',
+      }),
+    )
+  }),
+
+  // M06.F02.I04/I05 检测项目-检测标准关联（双角色）
+  http.get('*/inspection-object-standards', ({ request }) => {
+    const url = new URL(request.url)
+    return HttpResponse.json(
+      inspectionObjectStandardTable.query({
+        page: Number(url.searchParams.get('page') ?? '1'),
+        pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+        filters: {
+          inspectionObjectCode: url.searchParams.get('inspectionObjectCode') ?? undefined,
+          role: (url.searchParams.get('role') as 'TESTING' | 'JUDGMENT' | null) ?? undefined,
+        },
+      }),
+    )
+  }),
+
+  // M06.F04.I04 检测标准-检测参数关联
+  http.get('*/inspection-standard-parameters', ({ request }) => {
+    const url = new URL(request.url)
+    return HttpResponse.json(
+      inspectionStandardParameterTable.query({
+        page: Number(url.searchParams.get('page') ?? '1'),
+        pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+        filters: {
+          inspectionStandardCode: url.searchParams.get('inspectionStandardCode') ?? undefined,
+        },
+      }),
+    )
+  }),
+
+  // M06.F02.I07 检测专项-检测项目多对多关联
+  http.get('*/inspection-specialty-objects', ({ request }) => {
+    const url = new URL(request.url)
+    return HttpResponse.json(
+      inspectionSpecialtyObjectTable.query({
+        page: Number(url.searchParams.get('page') ?? '1'),
+        pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+        filters: {
+          inspectionSpecialtyCode: url.searchParams.get('inspectionSpecialtyCode') ?? undefined,
+          inspectionObjectCode: url.searchParams.get('inspectionObjectCode') ?? undefined,
+        },
+      }),
+    )
+  }),
+
+  // ===========================================================
+  // M06 检测能力 CRUD/删除（仅 8 个 POST + 1 个 DELETE 保护）
+  // ===========================================================
+
+  // M06.F01.I02 检测专项新建
+  http.post('*/inspection-specialties', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ code: string; officialNo: string; name: string; isOfficial: boolean; enabled: boolean; sortOrder: number }>
+    if (!body.code || !body.name) {
+      return HttpResponse.json({ message: 'code/name 必填' }, { status: 400 })
+    }
+    const dup = inspectionSpecialtyTable.all().find((r) => r.code === body.code)
+    if (dup) return HttpResponse.json({ message: '检测专项编码已存在' }, { status: 400 })
+    const now = new Date().toISOString()
+    inspectionSpecialtyTable.insert({
+      id: `insp-sp-${body.code}`,
+      code: body.code,
+      officialNo: body.officialNo ?? '',
+      name: body.name,
+      isOfficial: body.isOfficial ?? false,
+      enabled: body.enabled ?? true,
+      sortOrder: body.sortOrder ?? 999999,
+    } as never)
+    inspectionSpecialtyTable.update(`insp-sp-${body.code}`, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionSpecialtyTable.findById(`insp-sp-${body.code}`), { status: 201 })
+  }),
+
+  // M06.F01.I02 检测专项编辑（code 不可变）
+  http.put('*/inspection-specialties/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const row = inspectionSpecialtyTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '检测专项不存在' }, { status: 404 })
+    const body = (await request.json()) as Partial<{ officialNo: string; name: string; isOfficial: boolean; enabled: boolean; sortOrder: number }>
+    // 仅允许白名单字段进入 patch；code/id 不可变
+    const patch: Record<string, unknown> = {}
+    for (const key of ['officialNo', 'name', 'isOfficial', 'enabled', 'sortOrder'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    const updated = inspectionSpecialtyTable.update(id, patch as Partial<{ officialNo: string; name: string; isOfficial: boolean; enabled: boolean }>)
+    if (!updated) return HttpResponse.json({ message: '检测专项不存在' }, { status: 404 })
+    return HttpResponse.json(updated)
+  }),
+
+  // M06.F01.I03 检测专项删除保护：官方/被引用不可删
+  http.delete('*/inspection-specialties/:id', ({ params }) => {
+    const row = inspectionSpecialtyTable.findById(String(params.id))
+    if (!row) return HttpResponse.json({ message: '检测专项不存在' }, { status: 404 })
+    if (row.isOfficial) {
+      return HttpResponse.json({ message: '官方检测专项不可删除' }, { status: 400 })
+    }
+    const refs =
+      countBy(inspectionObjectTable, 'inspectionSpecialtyCode', row.code) +
+      countBy(inspectionSpecialtyObjectTable, 'inspectionSpecialtyCode', row.code)
+    if (refs > 0) {
+      return HttpResponse.json({ message: `被 ${refs} 处引用，不可删除`, references: refs }, { status: 400 })
+    }
+    inspectionSpecialtyTable.remove(String(params.id))
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // M06.F02.I02 检测项目新建
+  http.post('*/inspection-objects', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ code: string; inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean; sortOrder: number }>
+    if (!body.code || !body.inspectionSpecialtyCode) {
+      return HttpResponse.json({ message: 'code/inspectionSpecialtyCode 必填' }, { status: 400 })
+    }
+    const dup = inspectionObjectTable.all().find((r) => r.code === body.code)
+    if (dup) return HttpResponse.json({ message: '检测项目编码已存在' }, { status: 400 })
+    if (!inspectionSpecialtyTable.findById(`insp-sp-${body.inspectionSpecialtyCode}`)) {
+      return HttpResponse.json({ message: '检测专项不存在' }, { status: 400 })
+    }
+    const now = new Date().toISOString()
+    inspectionObjectTable.insert({
+      id: `insp-obj-${body.code}`,
+      code: body.code,
+      inspectionSpecialtyCode: body.inspectionSpecialtyCode,
+      sourceProjectNo: body.sourceProjectNo ?? '',
+      sourceProjectName: body.sourceProjectName ?? body.name ?? '',
+      name: body.name ?? '',
+      isOptionalForQualification: body.isOptionalForQualification ?? false,
+      isOfficial: body.isOfficial ?? false,
+      enabled: body.enabled ?? true,
+      sortOrder: body.sortOrder ?? 999999,
+    } as never)
+    inspectionObjectTable.update(`insp-obj-${body.code}`, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionObjectTable.findById(`insp-obj-${body.code}`), { status: 201 })
+  }),
+
+  // M06.F02.I02 检测项目编辑（code 不可变；改专项需校验存在）
+  http.put('*/inspection-objects/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const row = inspectionObjectTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '检测项目不存在' }, { status: 404 })
+    const body = (await request.json()) as Record<string, unknown>
+    // 仅允许白名单字段进入 patch；code/id 不可变
+    const patch: Record<string, unknown> = {}
+    for (const key of ['inspectionSpecialtyCode', 'sourceProjectNo', 'sourceProjectName', 'name', 'isOptionalForQualification', 'isOfficial', 'enabled', 'sortOrder'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    if (typeof patch.inspectionSpecialtyCode === 'string' && patch.inspectionSpecialtyCode !== row.inspectionSpecialtyCode) {
+      if (!inspectionSpecialtyTable.findById(`insp-sp-${patch.inspectionSpecialtyCode}`)) {
+        return HttpResponse.json({ message: '检测专项不存在' }, { status: 400 })
+      }
+    }
+    const updated = inspectionObjectTable.update(id, patch as Partial<{ inspectionSpecialtyCode: string; sourceProjectNo: string; sourceProjectName: string; name: string; isOptionalForQualification: boolean; isOfficial: boolean; enabled: boolean; sortOrder: number }>)
+    if (!updated) return HttpResponse.json({ message: '检测项目不存在' }, { status: 404 })
+    return HttpResponse.json(updated)
+  }),
+
+  // M06.F02.I03 检测项目删除保护：官方/被引用不可删
+  http.delete('*/inspection-objects/:id', ({ params }) => {
+    const row = inspectionObjectTable.findById(String(params.id))
+    if (!row) return HttpResponse.json({ message: '检测项目不存在' }, { status: 404 })
+    if (row.isOfficial) {
+      return HttpResponse.json({ message: '官方检测项目不可删除' }, { status: 400 })
+    }
+    const refs =
+      countBy(inspectionObjectParameterTable, 'inspectionObjectCode', row.code) +
+      countBy(inspectionObjectStandardTable, 'inspectionObjectCode', row.code) +
+      countBy(inspectionSpecialtyObjectTable, 'inspectionObjectCode', row.code)
+    if (refs > 0) {
+      return HttpResponse.json({ message: `被 ${refs} 处引用，不可删除`, references: refs }, { status: 400 })
+    }
+    inspectionObjectTable.remove(String(params.id))
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // M06.F02.I06 检测项目-检测参数关联
+  http.post('*/inspection-object-parameters', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ inspectionObjectCode: string; inspectionParameterCode: string; qualificationLevel: 'QUALIFIED' | 'RESTRICTED' }>
+    if (!body.inspectionObjectCode || !body.inspectionParameterCode) {
+      return HttpResponse.json({ message: 'inspectionObjectCode/inspectionParameterCode 必填' }, { status: 400 })
+    }
+    const dup = inspectionObjectParameterTable
+      .all()
+      .find((r) => r.inspectionObjectCode === body.inspectionObjectCode && r.inspectionParameterCode === body.inspectionParameterCode)
+    if (dup) return HttpResponse.json({ message: '对象参数关联已存在' }, { status: 400 })
+    const id = `insp-obj-param-${body.inspectionObjectCode}-${body.inspectionParameterCode}`
+    const now = new Date().toISOString()
+    inspectionObjectParameterTable.insert({
+      id,
+      inspectionObjectCode: body.inspectionObjectCode,
+      inspectionParameterCode: body.inspectionParameterCode,
+      qualificationLevel: body.qualificationLevel ?? 'QUALIFIED',
+    } as never)
+    inspectionObjectParameterTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionObjectParameterTable.findById(id), { status: 201 })
+  }),
+
+  // M06.F02.I06 删除 项目-参数 关联（按复合查询参数）
+  http.delete('*/inspection-object-parameters', ({ request }) => {
+    const url = new URL(request.url)
+    const oc = url.searchParams.get('inspectionObjectCode')
+    const pc = url.searchParams.get('inspectionParameterCode')
+    if (!oc || !pc) return HttpResponse.json({ message: 'inspectionObjectCode/inspectionParameterCode 必填' }, { status: 400 })
+    const row = inspectionObjectParameterTable.all().find((r) => r.inspectionObjectCode === oc && r.inspectionParameterCode === pc)
+    if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
+    inspectionObjectParameterTable.remove(row.id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // M06.F02.I04 / I05 检测项目-检测标准关联（双角色）
+  http.post('*/inspection-object-standards', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ inspectionObjectCode: string; inspectionStandardCode: string; role: 'TESTING' | 'JUDGMENT' }>
+    if (!body.inspectionObjectCode || !body.inspectionStandardCode || !body.role) {
+      return HttpResponse.json({ message: '对象/标准/角色 必填' }, { status: 400 })
+    }
+    if (!['TESTING', 'JUDGMENT'].includes(body.role)) {
+      return HttpResponse.json({ message: 'role 仅支持 TESTING/JUDGMENT' }, { status: 400 })
+    }
+    const id = `insp-obj-std-${body.inspectionObjectCode}-${body.inspectionStandardCode}-${body.role}`
+    const dup = inspectionObjectStandardTable.findById(id)
+    if (dup) return HttpResponse.json({ message: '对象标准关联已存在' }, { status: 400 })
+    const now = new Date().toISOString()
+    inspectionObjectStandardTable.insert({
+      id,
+      inspectionObjectCode: body.inspectionObjectCode,
+      inspectionStandardCode: body.inspectionStandardCode,
+      role: body.role,
+    } as never)
+    inspectionObjectStandardTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionObjectStandardTable.findById(id), { status: 201 })
+  }),
+
+  // M06.F02.I04 / I05 删除 项目-标准 关联（按复合查询参数 + role）
+  http.delete('*/inspection-object-standards', ({ request }) => {
+    const url = new URL(request.url)
+    const oc = url.searchParams.get('inspectionObjectCode')
+    const sc = url.searchParams.get('inspectionStandardCode')
+    const role = url.searchParams.get('role') as 'TESTING' | 'JUDGMENT' | null
+    if (!oc || !sc || !role) return HttpResponse.json({ message: '对象/标准/角色 必填' }, { status: 400 })
+    if (!['TESTING', 'JUDGMENT'].includes(role)) return HttpResponse.json({ message: 'role 仅支持 TESTING/JUDGMENT' }, { status: 400 })
+    const row = inspectionObjectStandardTable.all().find((r) => r.inspectionObjectCode === oc && r.inspectionStandardCode === sc && r.role === role)
+    if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
+    inspectionObjectStandardTable.remove(row.id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // M06.F02.I07 检测专项-检测项目多对多关联
+  http.post('*/inspection-specialty-objects', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ inspectionSpecialtyCode: string; inspectionObjectCode: string }>
+    if (!body.inspectionSpecialtyCode || !body.inspectionObjectCode) {
+      return HttpResponse.json({ message: '专项/项目 必填' }, { status: 400 })
+    }
+    const id = `insp-sp-obj-${body.inspectionSpecialtyCode}-${body.inspectionObjectCode}`
+    const dup = inspectionSpecialtyObjectTable.findById(id)
+    if (dup) return HttpResponse.json({ message: '专项项目关联已存在' }, { status: 400 })
+    const now = new Date().toISOString()
+    inspectionSpecialtyObjectTable.insert({
+      id,
+      inspectionSpecialtyCode: body.inspectionSpecialtyCode,
+      inspectionObjectCode: body.inspectionObjectCode,
+    } as never)
+    inspectionSpecialtyObjectTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionSpecialtyObjectTable.findById(id), { status: 201 })
+  }),
+
+  // M06.F02.I07 删除 专项-项目 关联（按复合查询参数）
+  http.delete('*/inspection-specialty-objects', ({ request }) => {
+    const url = new URL(request.url)
+    const sp = url.searchParams.get('inspectionSpecialtyCode')
+    const oc = url.searchParams.get('inspectionObjectCode')
+    if (!sp || !oc) return HttpResponse.json({ message: '专项/项目 必填' }, { status: 400 })
+    const row = inspectionSpecialtyObjectTable.all().find((r) => r.inspectionSpecialtyCode === sp && r.inspectionObjectCode === oc)
+    if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
+    inspectionSpecialtyObjectTable.remove(row.id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // M06.F03.I02 检测参数新建
+  http.post('*/inspection-parameters', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ code: string; name: string; rawName: string; canonicalName: string; aliases: string[]; unit?: string; sourceType: 'official' | 'custom'; sortOrder: number }>
+    if (!body.code || !body.name) {
+      return HttpResponse.json({ message: 'code/name 必填' }, { status: 400 })
+    }
+    const dup = inspectionParameterTable.all().find((r) => r.code === body.code)
+    if (dup) return HttpResponse.json({ message: '检测参数编码已存在' }, { status: 400 })
+    const now = new Date().toISOString()
+    const id = `insp-param-${body.code}`
+    inspectionParameterTable.insert({
+      id,
+      code: body.code,
+      name: body.name,
+      rawName: body.rawName ?? body.name,
+      canonicalName: body.canonicalName ?? body.name,
+      methodText: undefined,
+      aliases: body.aliases ?? [],
+      unit: body.unit,
+      sourceType: body.sourceType ?? 'custom',
+      sortOrder: body.sortOrder ?? 999999,
+    } as never)
+    inspectionParameterTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionParameterTable.findById(id), { status: 201 })
+  }),
+
+  // M06.F03.I02 检测参数编辑（code 不可变）
+  http.put('*/inspection-parameters/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const row = inspectionParameterTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '检测参数不存在' }, { status: 404 })
+    const body = (await request.json()) as Record<string, unknown>
+    // 仅允许白名单字段进入 patch；code/id 不可变
+    const patch: Record<string, unknown> = {}
+    for (const key of ['name', 'rawName', 'canonicalName', 'methodText', 'aliases', 'unit', 'sourceType', 'sortOrder'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    const updated = inspectionParameterTable.update(id, patch as Partial<{ name: string; rawName: string; canonicalName: string; methodText: string; aliases: string[]; unit: string; sourceType: 'official' | 'custom'; sortOrder: number }>)
+    if (!updated) return HttpResponse.json({ message: '检测参数不存在' }, { status: 404 })
+    return HttpResponse.json(updated)
+  }),
+
+  // M06.F03.I03 检测参数删除保护：官方/被引用不可删
+  http.delete('*/inspection-parameters/:id', ({ params }) => {
+    const row = inspectionParameterTable.findById(String(params.id))
+    if (!row) return HttpResponse.json({ message: '检测参数不存在' }, { status: 404 })
+    if (row.sourceType === 'official') {
+      return HttpResponse.json({ message: '官方检测参数不可删除' }, { status: 400 })
+    }
+    const refs =
+      countBy(inspectionObjectParameterTable, 'inspectionParameterCode', row.code) +
+      countBy(inspectionStandardParameterTable, 'inspectionParameterCode', row.code)
+    if (refs > 0) {
+      return HttpResponse.json({ message: `被 ${refs} 处引用，不可删除`, references: refs }, { status: 400 })
+    }
+    inspectionParameterTable.remove(String(params.id))
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // M06.F04.I02 检测标准新建
+  http.post('*/inspection-standards', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ code: string; name: string; version?: string; status: 'active' | 'superseded' | 'draft'; sortOrder: number }>
+    if (!body.code || !body.name) {
+      return HttpResponse.json({ message: 'code/name 必填' }, { status: 400 })
+    }
+    const dup = inspectionStandardTable.all().find((r) => r.code === body.code)
+    if (dup) return HttpResponse.json({ message: '检测标准编码已存在' }, { status: 400 })
+    const now = new Date().toISOString()
+    const id = `insp-std-${body.code}`
+    inspectionStandardTable.insert({
+      id,
+      code: body.code,
+      name: body.name,
+      version: body.version,
+      status: body.status ?? 'active',
+      sortOrder: body.sortOrder ?? 999999,
+    } as never)
+    inspectionStandardTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionStandardTable.findById(id), { status: 201 })
+  }),
+
+  // 检测标准 id 形如 `insp-std-<code>`，而 code 可含 `/`（如 GB/T 228.1-2021）和空格（如 GB 175-2023）。
+  // 前端按字面 id 拼 URL（不 encodeURIComponent）：对 http(s) URL，编码后的 %2F 会在发送前被规范成字面 `/`，
+  // 故 id 中的 `/` 会把 URL 裂成多段。MSW 的 path-to-regexp 中 `:id` 仅匹配 `[^/]+`，无法接住含 `/` 的 id。
+  // 因此仅检测标准（其他 3 类专项/项目/参数的 code 不含 `/`，沿用 `:id`）改用正则路由 INSPECTION_STANDARD_ID_RE，
+  // 并用 extractInspectionStandardId 从 URL pathname 中切出 `/inspection-standards/` 之后的全部内容作为 id。
+
+  // M06.F04.I02 检测标准编辑（code 不可变）
+  http.put(INSPECTION_STANDARD_ID_RE, async ({ request }) => {
+    const id = extractInspectionStandardId(request)
+    const row = inspectionStandardTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '检测标准不存在' }, { status: 404 })
+    const body = (await request.json()) as Record<string, unknown>
+    // 仅允许白名单字段进入 patch；code/id 不可变
+    const patch: Record<string, unknown> = {}
+    for (const key of ['name', 'version', 'status', 'sourceDocumentId', 'sortOrder'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    const updated = inspectionStandardTable.update(id, patch as Partial<{ name: string; version: string; status: 'active' | 'superseded' | 'draft'; sourceDocumentId: string; sortOrder: number }>)
+    if (!updated) return HttpResponse.json({ message: '检测标准不存在' }, { status: 404 })
+    return HttpResponse.json(updated)
+  }),
+
+  // M06.F04.I03 检测标准删除保护：官方（带 sourceDocumentId）/被引用不可删
+  http.delete(INSPECTION_STANDARD_ID_RE, ({ request }) => {
+    const id = extractInspectionStandardId(request)
+    const row = inspectionStandardTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '检测标准不存在' }, { status: 404 })
+    if (row.sourceDocumentId != null) {
+      return HttpResponse.json({ message: '官方检测标准不可删除' }, { status: 400 })
+    }
+    const refs =
+      countBy(inspectionObjectStandardTable, 'inspectionStandardCode', row.code) +
+      countBy(inspectionStandardParameterTable, 'inspectionStandardCode', row.code)
+    if (refs > 0) {
+      return HttpResponse.json({ message: `被 ${refs} 处引用，不可删除`, references: refs }, { status: 400 })
+    }
+    inspectionStandardTable.remove(id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // M06.F04.I04 检测标准-检测参数关联
+  http.post('*/inspection-standard-parameters', async ({ request }) => {
+    const body = (await request.json()) as Partial<{ inspectionStandardCode: string; inspectionParameterCode: string }>
+    if (!body.inspectionStandardCode || !body.inspectionParameterCode) {
+      return HttpResponse.json({ message: '标准/参数 必填' }, { status: 400 })
+    }
+    const id = `insp-std-param-${body.inspectionStandardCode}-${body.inspectionParameterCode}`
+    const dup = inspectionStandardParameterTable.findById(id)
+    if (dup) return HttpResponse.json({ message: '标准参数关联已存在' }, { status: 400 })
+    const now = new Date().toISOString()
+    inspectionStandardParameterTable.insert({
+      id,
+      inspectionStandardCode: body.inspectionStandardCode,
+      inspectionParameterCode: body.inspectionParameterCode,
+    } as never)
+    inspectionStandardParameterTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionStandardParameterTable.findById(id), { status: 201 })
+  }),
+
+  // M06.F04.I04 删除 标准-参数 关联（按复合查询参数）
+  http.delete('*/inspection-standard-parameters', ({ request }) => {
+    const url = new URL(request.url)
+    const sc = url.searchParams.get('inspectionStandardCode')
+    const pc = url.searchParams.get('inspectionParameterCode')
+    if (!sc || !pc) return HttpResponse.json({ message: '标准/参数 必填' }, { status: 400 })
+    const row = inspectionStandardParameterTable.all().find((r) => r.inspectionStandardCode === sc && r.inspectionParameterCode === pc)
+    if (!row) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
+    inspectionStandardParameterTable.remove(row.id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // ---- M06.F05 计算规则 ----
+  http.get('*/inspection-calculation-rules', ({ request }) => {
+    const url = new URL(request.url)
+    const result = inspectionCalculationRuleTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['inspectionObjectCode', 'inspectionParameterCode', 'algorithmType'],
+      sortField: 'sortOrder',
+    })
+    const objName = new Map(inspectionObjectTable.all().map((o) => [o.code, o.name]))
+    const paramName = new Map(inspectionParameterTable.all().map((p) => [p.code, p.name]))
+    const items = result.items.map((r) => ({
+      ...r,
+      objectName: objName.get(r.inspectionObjectCode) ?? r.inspectionObjectCode,
+      parameterName: paramName.get(r.inspectionParameterCode) ?? r.inspectionParameterCode,
+    }))
+    return HttpResponse.json({ ...result, items })
+  }),
+
+  // M06.F05.I02 计算规则新建
+  http.post('*/inspection-calculation-rules', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    if (!body.inspectionObjectCode || !body.inspectionParameterCode) {
+      return HttpResponse.json({ message: '检测项目/检测参数 必填' }, { status: 400 })
+    }
+    const id = `insp-calc-${new Date().getTime()}`
+    const now = new Date().toISOString()
+    inspectionCalculationRuleTable.insert({
+      id,
+      algorithmType: 'manual',
+      specimenCount: 1,
+      sortOrder: 999999,
+      ...body,
+    } as never)
+    inspectionCalculationRuleTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionCalculationRuleTable.findById(id), { status: 201 })
+  }),
+
+  // M06.F05.I02 计算规则编辑
+  http.put('*/inspection-calculation-rules/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const row = inspectionCalculationRuleTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '计算规则不存在' }, { status: 404 })
+    const body = (await request.json()) as Record<string, unknown>
+    const patch: Record<string, unknown> = {}
+    for (const key of ['inspectionObjectCode', 'inspectionParameterCode', 'testingStandardCode', 'algorithmType', 'specimenCount', 'conditions', 'roundingRule', 'remark', 'sortOrder'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    return HttpResponse.json(inspectionCalculationRuleTable.update(id, patch as never))
+  }),
+
+  // M06.F05.I03 计算规则删除
+  http.delete('*/inspection-calculation-rules/:id', ({ params }) => {
+    const id = String(params.id)
+    if (!inspectionCalculationRuleTable.findById(id)) return HttpResponse.json({ message: '计算规则不存在' }, { status: 404 })
+    inspectionCalculationRuleTable.remove(id)
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // ---- M06.F06 技术要求 ----
+  http.get('*/inspection-technical-requirements', ({ request }) => {
+    const url = new URL(request.url)
+    const result = inspectionTechnicalRequirementTable.query({
+      page: Number(url.searchParams.get('page') ?? '1'),
+      pageSize: Number(url.searchParams.get('pageSize') ?? '50'),
+      keyword: url.searchParams.get('keyword') ?? undefined,
+      keywordFields: ['inspectionObjectCode', 'inspectionParameterCode', 'brand', 'model'],
+      sortField: 'sortOrder',
+    })
+    const objName = new Map(inspectionObjectTable.all().map((o) => [o.code, o.name]))
+    const paramName = new Map(inspectionParameterTable.all().map((p) => [p.code, p.name]))
+    const items = result.items.map((r) => ({
+      ...r,
+      objectName: objName.get(r.inspectionObjectCode) ?? r.inspectionObjectCode,
+      parameterName: paramName.get(r.inspectionParameterCode) ?? r.inspectionParameterCode,
+    }))
+    return HttpResponse.json({ ...result, items })
+  }),
+
+  // M06.F06.I02 技术要求新建
+  http.post('*/inspection-technical-requirements', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    if (!body.inspectionObjectCode || !body.inspectionParameterCode || !body.judgmentStandardCode) {
+      return HttpResponse.json({ message: '检测项目/检测参数/判定标准 必填' }, { status: 400 })
+    }
+    const id = `insp-tech-${new Date().getTime()}`
+    const now = new Date().toISOString()
+    inspectionTechnicalRequirementTable.insert({
+      id,
+      valueType: 'numeric',
+      comparison: '=',
+      judgmentMode: 'manual',
+      verificationStatus: 'draft',
+      sortOrder: 999999,
+      ...body,
+    } as never)
+    inspectionTechnicalRequirementTable.update(id, { createdAt: now, updatedAt: now })
+    return HttpResponse.json(inspectionTechnicalRequirementTable.findById(id), { status: 201 })
+  }),
+
+  // M06.F06.I02 技术要求编辑
+  http.put('*/inspection-technical-requirements/:id', async ({ params, request }) => {
+    const id = String(params.id)
+    const row = inspectionTechnicalRequirementTable.findById(id)
+    if (!row) return HttpResponse.json({ message: '技术要求不存在' }, { status: 404 })
+    const body = (await request.json()) as Record<string, unknown>
+    const patch: Record<string, unknown> = {}
+    for (const key of ['inspectionObjectCode', 'inspectionParameterCode', 'judgmentStandardCode', 'brand', 'model', 'grade', 'spec', 'valueType', 'minValue', 'maxValue', 'comparison', 'judgmentMode', 'verificationStatus', 'remark', 'sortOrder'] as const) {
+      if (body[key] !== undefined) patch[key] = body[key]
+    }
+    return HttpResponse.json(inspectionTechnicalRequirementTable.update(id, patch as never))
+  }),
+
+  // M06.F06.I03 技术要求删除
+  http.delete('*/inspection-technical-requirements/:id', ({ params }) => {
+    const id = String(params.id)
+    if (!inspectionTechnicalRequirementTable.findById(id)) return HttpResponse.json({ message: '技术要求不存在' }, { status: 404 })
+    inspectionTechnicalRequirementTable.remove(id)
     return new HttpResponse(null, { status: 204 })
   }),
 ]

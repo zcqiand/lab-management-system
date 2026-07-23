@@ -1,0 +1,70 @@
+[
+  {
+    "inspectionObjectCode": "OBJ-SP01-P2",
+    "inspectionParameterCode": "IP-0086",
+    "judgmentStandardCode": "GB 1499.2-2024",
+    "brand": "HRB400",
+    "grade": "一级",
+    "spec": "Φ22",
+    "valueType": "numeric",
+    "minValue": 400,
+    "comparison": "≥",
+    "judgmentMode": "automatic",
+    "verificationStatus": "verified",
+    "remark": "屈服强度下限",
+    "sortOrder": 1
+  },
+  {
+    "inspectionObjectCode": "OBJ-SP01-P2",
+    "inspectionParameterCode": "IP-0087",
+    "judgmentStandardCode": "GB 1499.2-2024",
+    "brand": "HRB400",
+    "spec": "Φ22",
+    "valueType": "numeric",
+    "minValue": 540,
+    "comparison": "≥",
+    "judgmentMode": "automatic",
+    "verificationStatus": "verified",
+    "remark": "抗拉强度下限",
+    "sortOrder": 2
+  },
+  {
+    "inspectionObjectCode": "OBJ-SP01-P5",
+    "inspectionParameterCode": "IP-0055",
+    "judgmentStandardCode": "GB/T 50081-2019",
+    "model": "C30",
+    "valueType": "numeric",
+    "minValue": 30,
+    "comparison": "≥",
+    "judgmentMode": "automatic",
+    "verificationStatus": "verified",
+    "remark": "立方体抗压强度标准值",
+    "sortOrder": 3
+  },
+  {
+    "inspectionObjectCode": "OBJ-SP01-P1",
+    "inspectionParameterCode": "IP-0004",
+    "judgmentStandardCode": "GB 175-2023",
+    "model": "P·O 42.5",
+    "valueType": "numeric",
+    "maxValue": 0.06,
+    "comparison": "≤",
+    "judgmentMode": "automatic",
+    "verificationStatus": "verified",
+    "remark": "氯离子含量上限",
+    "sortOrder": 4
+  },
+  {
+    "inspectionObjectCode": "OBJ-SP01-P3-细骨料",
+    "inspectionParameterCode": "IP-0171",
+    "judgmentStandardCode": "GB/T 14684-2022",
+    "grade": "Ⅱ类",
+    "valueType": "numeric",
+    "maxValue": 3,
+    "comparison": "≤",
+    "judgmentMode": "automatic",
+    "verificationStatus": "verified",
+    "remark": "含泥量上限",
+    "sortOrder": 5
+  }
+]

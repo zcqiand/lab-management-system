@@ -1,0 +1,10 @@
+code,officialNo,name,isOfficial,enabled
+SP01,一,建筑材料及构配件,true,true
+SP02,二,主体结构及装饰装修,true,true
+SP03,三,钢结构,true,true
+SP04,四,地基基础,true,true
+SP05,五,建筑节能,true,true
+SP06,六,建筑幕墙,true,true
+SP07,七,市政工程材料,true,true
+SP08,八,道路工程,true,true
+SP09,九,桥梁及地下工程,true,true

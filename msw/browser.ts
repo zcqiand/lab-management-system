@@ -10,8 +10,10 @@ export const worker = setupWorker(...handlers)
  * 测试不调用本函数，因此不影响测试隔离语义。
  */
 export async function startDevWorker() {
-  const { resetMockDb, seedData } = await import('./db')
+  const { resetMockDb, seedData, seedMasterDataIntoMockDb } = await import('./db')
   resetMockDb()
   seedData()
+  // 浏览器侧也补种 M06 检测能力 master data，否则检测专项/项目/参数/标准页会空白。
+  seedMasterDataIntoMockDb()
   await worker.start({ onUnhandledRequest: 'bypass' })
 }

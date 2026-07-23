@@ -94,6 +94,28 @@
 | M04.F09.I03 | 牌号删除 | CategoryDictList.tsx | DELETE /brands/:id | brands | 已上线 |
 | M05.F01.I01 | 汇总表 | SummaryPage.tsx | GET /summary | - | 已上线 |
 | M05.F01.I02 | 汇总类型 | SummaryPage.tsx | - | - | 已上线 |
+| M06.F01.I01 | 检测专项列表 | src/features/inspection-capability/InspectionSpecialtyList.tsx；src/types/inspection/inspection-specialty.ts | GET /inspection-specialties | inspection_specialties | 规划 |
+| M06.F01.I02 | 检测专项新建/编辑 | src/features/inspection-capability/InspectionSpecialtyFormModal.tsx | POST/PUT /inspection-specialties | inspection_specialties | 规划 |
+| M06.F01.I03 | 检测专项删除 | src/features/inspection-capability/InspectionSpecialtyList.tsx | DELETE /inspection-specialties/:code | inspection_specialties | 规划 |
+| M06.F02.I01 | 检测项目列表 | src/features/inspection-capability/InspectionObjectList.tsx；src/types/inspection/inspection-object.ts | GET /inspection-objects | inspection_objects | 规划 |
+| M06.F02.I02 | 检测项目新建/编辑 | src/features/inspection-capability/InspectionObjectFormModal.tsx | POST/PUT /inspection-objects | inspection_objects | 规划 |
+| M06.F02.I03 | 检测项目删除 | src/features/inspection-capability/InspectionObjectList.tsx | DELETE /inspection-objects/:code | inspection_objects | 规划 |
+| M06.F02.I04 | 关联检测依据 | src/features/inspection-capability/InspectionObjectStandards.tsx；src/types/inspection/inspection-object-standard.ts | GET/POST/DELETE /inspection-object-standards?role=TESTING | inspection_object_standards | 规划 |
+| M06.F02.I05 | 关联判定依据 | src/features/inspection-capability/InspectionObjectStandards.tsx；src/types/inspection/inspection-object-standard.ts | GET/POST/DELETE /inspection-object-standards?role=JUDGMENT | inspection_object_standards | 规划 |
+| M06.F02.I06 | 关联检测参数 | src/features/inspection-capability/InspectionObjectParameters.tsx；src/types/inspection/inspection-object-parameter.ts | GET/POST/DELETE /inspection-object-parameters | inspection_object_parameters | 规划 |
+| M06.F03.I01 | 检测参数列表 | src/features/inspection-capability/InspectionParameterList.tsx；src/types/inspection/inspection-parameter.ts | GET /inspection-parameters | inspection_parameters | 规划 |
+| M06.F03.I02 | 检测参数新建/编辑 | src/features/inspection-capability/InspectionParameterFormModal.tsx | POST/PUT /inspection-parameters | inspection_parameters | 规划 |
+| M06.F03.I03 | 检测参数删除 | src/features/inspection-capability/InspectionParameterList.tsx | DELETE /inspection-parameters/:code | inspection_parameters | 规划 |
+| M06.F04.I01 | 检测标准列表 | src/features/inspection-capability/InspectionStandardList.tsx；src/types/inspection/inspection-standard.ts | GET /inspection-standards | inspection_standards | 规划 |
+| M06.F04.I02 | 检测标准新建/编辑 | src/features/inspection-capability/InspectionStandardFormModal.tsx | POST/PUT /inspection-standards | inspection_standards | 规划 |
+| M06.F04.I03 | 检测标准删除 | src/features/inspection-capability/InspectionStandardList.tsx | DELETE /inspection-standards/:code | inspection_standards | 规划 |
+| M06.F04.I04 | 关联检测参数 | src/features/inspection-capability/InspectionStandardParameters.tsx；src/types/inspection/inspection-standard-parameter.ts | GET/POST/DELETE /inspection-standard-parameters | inspection_standard_parameters | 规划 |
+| M06.F05.I01 | 计算规则列表 | src/features/inspection-capability/CalculationRuleList.tsx；src/types/inspection/calculation-rule.ts | GET /calculation-rules | calculation_rules | 规划 |
+| M06.F05.I02 | 计算规则新建/编辑 | src/features/inspection-capability/CalculationRuleFormModal.tsx | POST/PUT /calculation-rules | calculation_rules | 规划 |
+| M06.F05.I03 | 计算规则删除 | src/features/inspection-capability/CalculationRuleList.tsx | DELETE /calculation-rules/:id | calculation_rules | 规划 |
+| M06.F06.I01 | 技术要求列表 | src/features/inspection-capability/TechnicalRequirementList.tsx；src/types/inspection/technical-requirement.ts | GET /technical-requirements | technical_requirements | 规划 |
+| M06.F06.I02 | 技术要求新建/编辑 | src/features/inspection-capability/TechnicalRequirementFormModal.tsx | POST/PUT /technical-requirements | technical_requirements | 规划 |
+| M06.F06.I03 | 技术要求删除 | src/features/inspection-capability/TechnicalRequirementList.tsx | DELETE /technical-requirements/:id | technical_requirements | 规划 |
 
 ## 约定
 

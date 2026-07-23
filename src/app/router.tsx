@@ -25,6 +25,9 @@ import { ReportIssuePage } from '../features/reports/ReportIssuePage'
 import { DataEntryPage } from '../features/data-entry/DataEntryPage'
 import { ReceiptDetailPage } from '../features/receipts/ReceiptDetailPage'
 import { SummaryPage } from '../features/summary/SummaryPage'
+import { InspectionCapabilityPage } from '../features/inspection-capability/InspectionCapabilityPage'
+import { CalculationRuleList as InspectionCalculationRuleList } from '../features/inspection-capability/CalculationRuleList'
+import { TechnicalRequirementList as InspectionTechnicalRequirementList } from '../features/inspection-capability/TechnicalRequirementList'
 
 // v3: single flow pipeline — receiving → task-assignment → data-entry → review → approve → issue → archive
 export const routes: RouteObject[] = [
@@ -67,6 +70,13 @@ export const routes: RouteObject[] = [
       { path: 'brands', element: <CategoryDictList key="brands" endpoint="brands" title="牌号管理" hint="指钢筋牌号：HRB400 等" data-fn="M04.F09.I01" /> },
       { path: 'report-templates', element: <ReportTemplateList /> },
       { path: 'calculation-rules', element: <CalculationRuleList /> },
+      // ----- M06 检测能力 -----
+      { path: 'inspection-specialties', element: <InspectionCapabilityPage resource="specialties" /> },
+      { path: 'inspection-objects', element: <InspectionCapabilityPage resource="objects" /> },
+      { path: 'inspection-parameters', element: <InspectionCapabilityPage resource="parameters" /> },
+      { path: 'inspection-standards', element: <InspectionCapabilityPage resource="standards" /> },
+      { path: 'inspection-calculation-rules', element: <InspectionCalculationRuleList /> },
+      { path: 'inspection-technical-requirements', element: <InspectionTechnicalRequirementList /> },
       {
         path: 'settings',
         children: [

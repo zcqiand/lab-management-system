@@ -31,19 +31,19 @@ export default function Dashboard() {
           <div className="grid grid-cols-4 gap-4">
             <div className="bg-white rounded shadow p-4">
               <p className="text-xs text-gray-500">合同数</p>
-              <p className="text-3xl font-bold mt-1">{stats.contractCount}</p>
+              <p className="text-3xl font-bold mt-1">{stats.contractCount ?? 0}</p>
             </div>
             <div className="bg-white rounded shadow p-4">
               <p className="text-xs text-gray-500">接样单数</p>
-              <p className="text-3xl font-bold mt-1">{stats.receiptCount}</p>
+              <p className="text-3xl font-bold mt-1">{stats.receiptCount ?? 0}</p>
             </div>
             <div className="bg-white rounded shadow p-4">
               <p className="text-xs text-gray-500">样品数</p>
-              <p className="text-3xl font-bold mt-1">{stats.sampleCount}</p>
+              <p className="text-3xl font-bold mt-1">{stats.sampleCount ?? 0}</p>
             </div>
             <div className="bg-white rounded shadow p-4">
               <p className="text-xs text-gray-500">待安排任务</p>
-              <p className="text-3xl font-bold mt-1 text-amber-600">{stats.pendingTaskCount}</p>
+              <p className="text-3xl font-bold mt-1 text-amber-600">{stats.pendingTaskCount ?? 0}</p>
             </div>
           </div>
 
@@ -52,8 +52,8 @@ export default function Dashboard() {
             <div className="grid grid-cols-7 gap-2">
               {FLOW_STAGE_ORDER.map((stage) => (
                 <div key={stage} className="text-center border rounded p-3">
-                  <p className="text-xs text-gray-500">{FLOW_STAGE_LABELS[stage]}</p>
-                  <p className="text-xl font-bold mt-1">{stats.receiptCountByStage[stage] ?? 0}</p>
+                  <p className="text-xs text-gray-500">{FLOW_STAGE_LABELS[stage] ?? stage}</p>
+                  <p className="text-xl font-bold mt-1">{(stats.receiptCountByStage as Record<string, number>)?.[stage] ?? 0}</p>
                 </div>
               ))}
             </div>
@@ -70,7 +70,7 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {stats.receiptCountByCategory.map((c) => (
+                {(stats.receiptCountByCategory ?? []).map((c) => (
                   <tr key={c.categoryCode} className="border-t">
                     <td className="px-3 py-2">{c.categoryName}</td>
                     <td className="px-3 py-2 text-right">{c.count}</td>

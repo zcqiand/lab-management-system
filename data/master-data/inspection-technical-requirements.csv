@@ -1,0 +1,6 @@
+inspectionObjectCode,inspectionParameterCode,judgmentStandardCode,brand,model,grade,spec,valueType,minValue,maxValue,comparison,judgmentMode,verificationStatus,remark,sortOrder
+OBJ-SP01-P2,IP-0086,GB 1499.2-2024,HRB400,,一级,Φ22,numeric,400,,≥,automatic,verified,屈服强度下限,1
+OBJ-SP01-P2,IP-0087,GB 1499.2-2024,HRB400,,,Φ22,numeric,540,,≥,automatic,verified,抗拉强度下限,2
+OBJ-SP01-P5,IP-0055,GB/T 50081-2019,,C30,,,numeric,30,,≥,automatic,verified,立方体抗压强度标准值,3
+OBJ-SP01-P1,IP-0004,GB 175-2023,,P·O 42.5,,,numeric,,0.06,≤,automatic,verified,氯离子含量上限,4
+OBJ-SP01-P3-细骨料,IP-0171,GB/T 14684-2022,,,Ⅱ类,,numeric,,3.0,≤,automatic,verified,含泥量上限,5

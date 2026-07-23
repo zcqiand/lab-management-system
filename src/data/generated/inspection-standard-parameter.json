@@ -1,0 +1,98 @@
+[
+  {
+    "inspectionStandardCode": "GB 175-2023",
+    "inspectionParameterCode": "IP-0001"
+  },
+  {
+    "inspectionStandardCode": "GB 175-2023",
+    "inspectionParameterCode": "IP-0002"
+  },
+  {
+    "inspectionStandardCode": "GB 175-2023",
+    "inspectionParameterCode": "IP-0003"
+  },
+  {
+    "inspectionStandardCode": "GB 175-2023",
+    "inspectionParameterCode": "IP-0004"
+  },
+  {
+    "inspectionStandardCode": "GB/T 228.1-2021",
+    "inspectionParameterCode": "IP-0086"
+  },
+  {
+    "inspectionStandardCode": "GB/T 228.1-2021",
+    "inspectionParameterCode": "IP-0087"
+  },
+  {
+    "inspectionStandardCode": "GB/T 228.1-2021",
+    "inspectionParameterCode": "IP-0150"
+  },
+  {
+    "inspectionStandardCode": "GB 1499.2-2024",
+    "inspectionParameterCode": "IP-0086"
+  },
+  {
+    "inspectionStandardCode": "GB 1499.2-2024",
+    "inspectionParameterCode": "IP-0087"
+  },
+  {
+    "inspectionStandardCode": "GB 1499.2-2024",
+    "inspectionParameterCode": "IP-0150"
+  },
+  {
+    "inspectionStandardCode": "GB 1499.2-2024",
+    "inspectionParameterCode": "IP-0153"
+  },
+  {
+    "inspectionStandardCode": "GB 1499.1-2024",
+    "inspectionParameterCode": "IP-0086"
+  },
+  {
+    "inspectionStandardCode": "GB 1499.1-2024",
+    "inspectionParameterCode": "IP-0087"
+  },
+  {
+    "inspectionStandardCode": "GB 1499.1-2024",
+    "inspectionParameterCode": "IP-0150"
+  },
+  {
+    "inspectionStandardCode": "GB 1499.1-2024",
+    "inspectionParameterCode": "IP-0153"
+  },
+  {
+    "inspectionStandardCode": "GB/T 1346-2024",
+    "inspectionParameterCode": "IP-0001"
+  },
+  {
+    "inspectionStandardCode": "GB/T 1346-2024",
+    "inspectionParameterCode": "IP-0002"
+  },
+  {
+    "inspectionStandardCode": "GB/T 50081-2019",
+    "inspectionParameterCode": "IP-0055"
+  },
+  {
+    "inspectionStandardCode": "GB/T 50081-2019",
+    "inspectionParameterCode": "IP-0056"
+  },
+  {
+    "inspectionStandardCode": "GB/T 14684-2022",
+    "inspectionParameterCode": "IP-0171"
+  },
+  {
+    "inspectionStandardCode": "GB/T 14684-2022",
+    "inspectionParameterCode": "IP-0172"
+  },
+  {
+    "inspectionStandardCode": "GB/T 14685-2022",
+    "inspectionParameterCode": "IP-0173"
+  },
+  {
+    "inspectionStandardCode": "JGJ 107-2016",
+    "inspectionParameterCode": "IP-0087"
+  },
+  {
+    "inspectionStandardCode": "JGJ 18-2012",
+    "inspectionParameterCode": "IP-0087"
+  }
+]
