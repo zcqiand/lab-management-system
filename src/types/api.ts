@@ -8,12 +8,16 @@
  * 按功能模块拆分为 3 个目录（参考 inspection 的"一类一文件"模式）：
  *   - common/  通用基础（ApiResult / Page / PageQuery / DateRangeFilter）
  *   - resources/  M02 资源管理（Contract / Project / ...）
- *   - process/    M03 试验过程（Flow / SampleReceipt / Sample / TestItem / Report / ...）
+ *   - process/    M03 试验过程（Flow / SampleReceipt / Sample / TestItem / ...）
  *   - system/     M01 系统管理（User / Role / Permission / OrgInfo / ...）
  *   - inspection/ M06 检测能力（已有）
  *
  * 本文件仅做 re-export，保持旧 import 路径（'../../types/api'）继续可用。
  */
+
+export type { ExtFieldDef } from './common';
+
+export type { InspectionReportName } from './inspection/inspection-report-name';
 
 export type {
   ApiResult,
@@ -39,31 +43,11 @@ export type {
   SampleStatus,
   SampleQuery,
   TestItem,
-  TaskRecord,
-  TaskStatus,
-  TaskQuery,
-  TaskCreateInput,
-  TaskUpdateInput,
-  Report,
-  ReportStatus,
-  ReviewAction,
-  ReportQuery,
-  ReportCreateInput,
-  ReportUpdateInput,
-  ReportRecord,
   TestParameter,
   TestStandard,
   StandardType,
   TechnicalRequirement,
   ComparisonOp,
-  CalculationRule,
-  AlgorithmType,
-  ReportTemplate,
-  CategoryDictItem,
-  ReportCategory,
-  ExtFieldDef,
-  SummaryType,
-  CategoryStandard,
   DashboardStats,
   SummaryColumn,
   SummaryData,

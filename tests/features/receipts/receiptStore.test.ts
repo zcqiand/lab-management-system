@@ -3,28 +3,26 @@ import { http, HttpResponse } from 'msw'
 import { server } from '../../../msw/server'
 import { useReceiptStore } from '../../../src/features/receipts/receiptStore'
 import { resetApiClient } from '../../../src/api/client'
-import { receiptTable, reportCategoryTable } from '../../../msw/db'
+import { receiptTable, inspectionReportNameTable } from '../../../msw/db'
 import { fnTest } from '../../fn'
 
 function seedCategory(code = 'steel') {
-  if (!reportCategoryTable.all().some((c) => c.code === code)) {
-    reportCategoryTable.insert({
-      id: `cat-${code}`,
+  if (!inspectionReportNameTable.all().some((c) => c.code === code)) {
+    inspectionReportNameTable.insert({
+      id: `insp-rptn-${code}`,
       code,
       name: '钢材',
-      reportTitle: '钢材检测报告',
-      summaryType: 'material',
       summaryName: '钢材试验报告汇总表',
       extFields: [],
       sortOrder: 0,
-    })
+    } as never)
   }
 }
 
 beforeEach(() => {
   localStorage.clear()
   receiptTable.reset()
-  reportCategoryTable.reset()
+  inspectionReportNameTable.reset()
   seedCategory()
   useReceiptStore.setState({ list: [], total: 0, current: null, loading: false, error: null })
   resetApiClient()

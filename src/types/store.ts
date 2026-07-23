@@ -1,6 +1,6 @@
 // Store 状态切片类型（v3）
 
-import type { User, Contract, SampleReceipt, Sample, Report, ReportRecord, TaskRecord } from './api'
+import type { User, Contract, SampleReceipt, Sample } from './api'
 
 /** 认证状态机 */
 export type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'error'
@@ -22,7 +22,7 @@ export interface ContractState {
   error: string | null
 }
 
-/** 接样单 store 状态切片 */
+/** 接样单 store 状态切片（含报告字段：reportCode/conclusion/result/issuedAt 等） */
 export interface ReceiptState {
   list: SampleReceipt[]
   total: number
@@ -40,31 +40,4 @@ export interface SampleState {
   error: string | null
 }
 
-
-/** 报告 store 状态切片 */
-export interface ReportState {
-  list: Report[]
-  total: number
-  current: Report | null
-  loading: boolean
-  error: string | null
-}
-
-/** 报告 store v2 状态切片（与 v1 共存） */
-export interface ReportStateV2 {
-  list: ReportRecord[]
-  total: number
-  current: ReportRecord | null
-  loading: boolean
-  error: string | null
-}
-
-/** 任务 store 状态切片 */
-export interface TaskState {
-  list: TaskRecord[]
-  total: number
-  current: TaskRecord | null
-  loading: boolean
-  error: string | null
-}
-
+// 注：原 ReportState / ReportStateV2 / TaskState 已删除——报告与任务数据合并到 SampleReceipt（接样单合并报告字段 + 任务安排字段）。

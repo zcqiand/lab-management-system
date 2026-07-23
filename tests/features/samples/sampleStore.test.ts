@@ -3,21 +3,19 @@ import { http, HttpResponse } from "msw";
 import { server } from "../../../msw/server";
 import { useSampleStore } from "../../../src/features/samples/sampleStore";
 import { resetApiClient } from "../../../src/api/client";
-import { receiptTable, reportCategoryTable, sampleTable } from "../../../msw/db";
+import { receiptTable, inspectionReportNameTable, sampleTable } from "../../../msw/db";
 import { fnTest } from "../../fn";
 
 function seedCategory(code = "steel") {
-  if (!reportCategoryTable.all().some((c) => c.code === code)) {
-    reportCategoryTable.insert({
-      id: `cat-${code}`,
+  if (!inspectionReportNameTable.all().some((c) => c.code === code)) {
+    inspectionReportNameTable.insert({
+      id: `insp-rptn-${code}`,
       code,
       name: "钢材",
-      reportTitle: "钢材检测报告",
-      summaryType: "material",
       summaryName: "钢材试验报告汇总表",
       extFields: [],
       sortOrder: 0,
-    });
+    } as never);
   }
 }
 
@@ -50,7 +48,7 @@ function insertSample(receiptId: string, sampleCode: string) {
 beforeEach(() => {
   localStorage.clear();
   receiptTable.reset();
-  reportCategoryTable.reset();
+  inspectionReportNameTable.reset();
   sampleTable.reset();
   seedCategory();
   insertReceipt("rc-default");

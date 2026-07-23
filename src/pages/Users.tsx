@@ -1,5 +1,3 @@
-import UserList from '../features/users/UserList'
-
 export default function Users() {
-  return <UserList />
+  return <div className="p-6 text-gray-600">用户管理（M01.F03）— 待实现</div>
 }

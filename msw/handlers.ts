@@ -14,8 +14,6 @@ import { signJwt, verifyJwt } from './jwt'
 import {
   MockTable,
   contractTable,
-  reportCategoryTable,
-  categoryStandardTable,
   standardParametersTable,
   inspectionModelTable,
   inspectionSpecTable,
@@ -28,7 +26,6 @@ import {
   testStandardTable,
   technicalRequirementTable,
   calculationRuleTable,
-  reportTemplateTable,
   orgInfoTable,
   userTable,
   roleTable,
@@ -57,8 +54,7 @@ import {
 /** v3 MSW handler 注册表
  * /auth/*：登录 / me / change-password
  * /contracts：合同 CRUD
- * /report-categories：报告类别 CRUD（含扩展属性定义）
- * /category-standards：报告类别 ↔ 检测标准 关联 CRUD
+ * /report-names：报告名称 CRUD（含 summaryName + extFields；取代原 /report-categories）
  * /models /specifications /grades /brands：型号/规格/等级/牌号 码表（归属报告类别）
  * /receipts + /receipts/flow：接样单（合并报告字段）+ 流程管线批量操作
  * /samples：样品（归属接样单）
@@ -294,122 +290,6 @@ export const handlers = [
   }),
 
   // ===========================================================
-  // /report-categories：报告类别（原「材料种类」，可维护 + 扩展属性定义）
-  // ===========================================================
-  http.get('*/report-categories', ({ request }) => {
-    const url = new URL(request.url)
-    const result = reportCategoryTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
-      keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['code', 'name', 'reportTitle'],
-    })
-    return HttpResponse.json(result)
-  }),
-
-  http.get('*/report-categories/:code', ({ params }) => {
-    const found = reportCategoryTable.all().find((c) => c.code === String(params.code))
-    if (!found) return HttpResponse.json({ message: '报告类别不存在' }, { status: 404 })
-    return HttpResponse.json(found)
-  }),
-
-  http.post('*/report-categories', async ({ request }) => {
-    const body = (await request.json()) as Partial<{
-      code: string
-      name: string
-      reportTitle: string
-      summaryType: 'material' | 'concrete' | 'connection'
-      summaryName: string
-      extFields: { key: string; label: string }[]
-      remark: string
-    }>
-    if (!body.code || !body.name) {
-      return HttpResponse.json({ message: 'code/name 必填' }, { status: 400 })
-    }
-    if (reportCategoryTable.all().some((c) => c.code === body.code)) {
-      return HttpResponse.json({ message: '类别编码已存在' }, { status: 400 })
-    }
-    const { remark, ...rest } = body
-    const created = reportCategoryTable.insert({
-      ...rest,
-      name: body.name!,
-      code: body.code!,
-      reportTitle: body.reportTitle ?? `${body.name}检测报告`,
-      summaryType: body.summaryType ?? 'material',
-      summaryName: body.summaryName ?? `${body.name}试验报告汇总表`,
-      extFields: body.extFields ?? [],
-      sortOrder: 0,
-      ...(remark !== undefined ? { remark } : {}),
-    })
-    // 新类别自动创建一份默认报告模板
-    if (!reportTemplateTable.all().some((t) => t.categoryCode === body.code)) {
-      reportTemplateTable.insert({
-        categoryCode: body.code,
-        name: `${body.name}报告模板`,
-        content: `<h1 style="text-align:center">{{category.reportTitle}}</h1>\n<p>报告编号：{{receipt.reportCode}}</p>\n<h3>样品信息</h3>\n{{samplesTable}}\n<h3>检测结果</h3>\n{{testItemsTable}}\n<h3>检测结论</h3>\n<p>{{receipt.conclusion}}（判定结果：{{receipt.resultLabel}}）</p>`,
-      })
-    }
-    return HttpResponse.json(created, { status: 201 })
-  }),
-
-  http.put('*/report-categories/:code', async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>
-    const found = reportCategoryTable.all().find((c) => c.code === String(params.code))
-    if (!found) return HttpResponse.json({ message: '报告类别不存在' }, { status: 404 })
-    delete body.code // 编码不可改（样品/接样单/码表经 code 关联）
-    return HttpResponse.json(reportCategoryTable.update(found.id, body))
-  }),
-
-  http.delete('*/report-categories/:code', ({ params }) => {
-    const code = String(params.code)
-    const found = reportCategoryTable.all().find((c) => c.code === code)
-    if (!found) return HttpResponse.json({ message: '报告类别不存在' }, { status: 404 })
-    const used = receiptTable.all().some((r) => r.categoryCode === code)
-    if (used) return HttpResponse.json({ message: '该报告类别已被接样单引用，不能删除' }, { status: 400 })
-    reportCategoryTable.remove(found.id)
-    return new HttpResponse(null, { status: 204 })
-  }),
-
-  // ===========================================================
-  // /category-standards：报告类别 ↔ 检测标准 关联
-  // ===========================================================
-  http.get('*/category-standards', ({ request }) => {
-    const url = new URL(request.url)
-    const result = categoryStandardTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '200'),
-      filters: {
-        categoryCode: url.searchParams.get('categoryCode') ?? undefined,
-        standardCode: url.searchParams.get('standardCode') ?? undefined,
-      },
-    })
-    return HttpResponse.json(result)
-  }),
-
-  http.post('*/category-standards', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ categoryCode: string; standardCode: string; remark: string }>
-    if (!body.categoryCode || !body.standardCode) {
-      return HttpResponse.json({ message: 'categoryCode/standardCode 必填' }, { status: 400 })
-    }
-    const dup = categoryStandardTable
-      .all()
-      .find((r) => r.categoryCode === body.categoryCode && r.standardCode === body.standardCode)
-    if (dup) return HttpResponse.json({ message: '该关联已存在' }, { status: 400 })
-    const created = categoryStandardTable.insert({
-      categoryCode: body.categoryCode,
-      standardCode: body.standardCode,
-      remark: body.remark,
-    })
-    return HttpResponse.json(created, { status: 201 })
-  }),
-
-  http.delete('*/category-standards/:id', ({ params }) => {
-    const ok = categoryStandardTable.remove(String(params.id))
-    if (!ok) return HttpResponse.json({ message: '关联不存在' }, { status: 404 })
-    return new HttpResponse(null, { status: 204 })
-  }),
-
-  // ===========================================================
   // /standard-parameters：检测标准 ↔ 检测参数 关联 CRUD
   // ===========================================================
   http.get('*/standard-parameters', ({ request }) => {
@@ -555,8 +435,8 @@ export const handlers = [
     if (!body.contractId || !body.commissionCode || !body.categoryCode || !body.receivedBy) {
       return HttpResponse.json({ message: 'contractId/commissionCode/categoryCode/receivedBy 必填' }, { status: 400 })
     }
-    if (!reportCategoryTable.all().some((c) => c.code === body.categoryCode)) {
-      return HttpResponse.json({ message: '报告类别不存在' }, { status: 400 })
+    if (!inspectionReportNameTable.all().some((r) => r.code === body.categoryCode)) {
+      return HttpResponse.json({ message: '报告名称不存在' }, { status: 400 })
     }
     const created = receiptTable.insert({
       contractId: body.contractId,
@@ -915,14 +795,10 @@ export const handlers = [
   // ===========================================================
   http.get('*/test-standards', ({ request }) => {
     const url = new URL(request.url)
-    // categoryCode 过滤：经关联表间接查询
+    // categoryCode 过滤：经关联表间接查询（categoryStandardTable 已删除；M04 旧 API 行为降级为直查 testStandardTable.code/name 匹配）
     const categoryCode = url.searchParams.get('categoryCode')
     if (categoryCode) {
-      const codes = categoryStandardTable
-        .all()
-        .filter((r) => r.categoryCode === categoryCode)
-        .map((r) => r.standardCode)
-      const items = testStandardTable.all().filter((s) => codes.includes(s.code))
+      const items = testStandardTable.all().filter((s) => s.code.includes(categoryCode) || s.name.includes(categoryCode))
       return HttpResponse.json({ items, total: items.length, page: 1, pageSize: items.length || 1 })
     }
     const result = testStandardTable.query({
@@ -964,8 +840,7 @@ export const handlers = [
     const found = testStandardTable.all().find((s) => s.code === String(params.code))
     if (!found) return HttpResponse.json({ message: '标准不存在' }, { status: 404 })
     testStandardTable.remove(found.id)
-    // 级联删除类别关联
-    categoryStandardTable.all().filter((r) => r.standardCode === found.code).forEach((r) => categoryStandardTable.remove(r.id))
+    // categoryStandardTable 已删除；级联关联在 M06 inspectionObjectStandard / inspectionReportNameStandard 中维护
     return new HttpResponse(null, { status: 204 })
   }),
 
@@ -1017,44 +892,6 @@ export const handlers = [
     if (!found) return HttpResponse.json({ message: '技术要求不存在' }, { status: 404 })
     technicalRequirementTable.remove(found.id)
     return new HttpResponse(null, { status: 204 })
-  }),
-
-  // ===========================================================
-  // /report-templates：报告模板（每个报告类别对应一份，可维护）
-  // ===========================================================
-  http.get('*/report-templates', ({ request }) => {
-    const url = new URL(request.url)
-    const result = reportTemplateTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
-      filters: { categoryCode: url.searchParams.get('categoryCode') ?? undefined },
-    })
-    return HttpResponse.json(result)
-  }),
-
-  http.post('*/report-templates', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ categoryCode: string; name: string; content: string }>
-    if (!body.categoryCode || !body.content) {
-      return HttpResponse.json({ message: 'categoryCode/content 必填' }, { status: 400 })
-    }
-    // 每个类别仅一份模板：已存在则更新
-    const existing = reportTemplateTable.all().find((t) => t.categoryCode === body.categoryCode)
-    if (existing) {
-      return HttpResponse.json(reportTemplateTable.update(existing.id, { name: body.name, content: body.content }))
-    }
-    const created = reportTemplateTable.insert({
-      categoryCode: body.categoryCode,
-      name: body.name ?? '报告模板',
-      content: body.content,
-    })
-    return HttpResponse.json(created, { status: 201 })
-  }),
-
-  http.put('*/report-templates/:id', async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>
-    const updated = reportTemplateTable.update(String(params.id), body)
-    if (!updated) return HttpResponse.json({ message: '模板不存在' }, { status: 404 })
-    return HttpResponse.json(updated)
   }),
 
   // ===========================================================
@@ -1516,7 +1353,7 @@ export const handlers = [
   }),
 
   http.post('*/report-names', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ code: string; name: string; fullName: string; templatePath: string; description: string; sortOrder: number }>
+    const body = (await request.json()) as Partial<{ code: string; name: string; fullName: string; templatePath: string; summaryName: string; extFields: { key: string; label: string }[]; description: string; sortOrder: number }>
     if (!body.code || !body.name) {
       return HttpResponse.json({ message: 'code/name 必填' }, { status: 400 })
     }
@@ -1529,6 +1366,8 @@ export const handlers = [
       name: body.name,
       fullName: body.fullName,
       templatePath: body.templatePath,
+      summaryName: body.summaryName,
+      extFields: body.extFields ?? [],
       description: body.description ?? '',
       sortOrder: body.sortOrder ?? 999999,
     } as never)
@@ -1540,12 +1379,12 @@ export const handlers = [
     const id = String(params.id)
     const row = inspectionReportNameTable.findById(id)
     if (!row) return HttpResponse.json({ message: '报告名称不存在' }, { status: 404 })
-    const body = (await request.json()) as Partial<{ name: string; fullName: string; templatePath: string; description: string; sortOrder: number }>
+    const body = (await request.json()) as Partial<{ name: string; fullName: string; templatePath: string; summaryName: string; extFields: { key: string; label: string }[]; description: string; sortOrder: number }>
     const patch: Record<string, unknown> = {}
-    for (const key of ['name', 'fullName', 'templatePath', 'description', 'sortOrder'] as const) {
+    for (const key of ['name', 'fullName', 'templatePath', 'summaryName', 'extFields', 'description', 'sortOrder'] as const) {
       if (body[key] !== undefined) patch[key] = body[key]
     }
-    const updated = inspectionReportNameTable.update(id, patch as Partial<{ name: string; fullName: string; templatePath: string; description: string; sortOrder: number }>)
+    const updated = inspectionReportNameTable.update(id, patch as Partial<{ name: string; fullName: string; templatePath: string; summaryName: string; extFields: { key: string; label: string }[]; description: string; sortOrder: number }>)
     if (!updated) return HttpResponse.json({ message: '报告名称不存在' }, { status: 404 })
     return HttpResponse.json(updated)
   }),

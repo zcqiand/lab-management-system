@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiClient } from '../../api/client'
-import { useCategories } from '../categories/useCategories'
-import type { Contract, SummaryData } from '../../types/api'
+import type { Contract, InspectionReportName, SummaryData } from '../../types/api'
 
-/** 统计汇总——按报告类别输出试验报告汇总表（对应线下的
- * 钢材/水泥/混凝土/砂/碎（卵）石/钢筋机械连接/钢筋焊接连接 汇总表），
+/** 统计汇总——按报告名称（已取代原报告类别）输出试验报告汇总表，
  * 行粒度为样品，只统计已生成报告的接样单，可按工程（合同）过滤。
  */
 export function SummaryPage() {
-  const { categories } = useCategories()
+  const [reportNames, setReportNames] = useState<InspectionReportName[]>([])
   const [categoryCode, setCategoryCode] = useState('')
   const [contractId, setContractId] = useState('')
   const [contracts, setContracts] = useState<Contract[]>([])
@@ -16,9 +14,17 @@ export function SummaryPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- 仅首次加载报告名称列表
   useEffect(() => {
-    if (!categoryCode && categories.length > 0) setCategoryCode(categories[0]!.code)
-  }, [categories, categoryCode])
+    apiClient.get<{ items: InspectionReportName[] }>('/report-names', { params: { page: 1, pageSize: 200 } })
+      .then((r) => {
+        const list = Array.isArray(r.data?.items) ? r.data.items : []
+        setReportNames(list)
+        if (!categoryCode && list.length > 0) setCategoryCode(list[0]!.code)
+      })
+      .catch(() => setReportNames([]))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryCode])
 
   useEffect(() => {
     apiClient
@@ -58,9 +64,9 @@ export function SummaryPage() {
         </p>
       </div>
 
-      {/* 报告类别 tabs */}
+      {/* 报告名称 tabs */}
       <div className="flex flex-wrap gap-2">
-        {categories.map((c) => (
+        {reportNames.map((c) => (
           <button
             key={c.code}
             onClick={() => setCategoryCode(c.code)}

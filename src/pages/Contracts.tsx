@@ -1,9 +1,3 @@
-import ContractList from '../features/contracts/ContractList'
-
 export default function Contracts() {
-  return (
-    <div className="space-y-6">
-      <ContractList />
-    </div>
-  )
+  return <div className="p-6 text-gray-600">合同管理（M02.F01）— 待实现</div>
 }

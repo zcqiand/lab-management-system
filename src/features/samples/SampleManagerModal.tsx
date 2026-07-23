@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiClient } from '../../api/client'
 import { ConfirmModal } from '../../components/ConfirmModal'
-import type { CategoryDictItem, ReportCategory, Sample, SampleReceipt } from '../../types/api'
+import type { InspectionReportName, Sample, SampleReceipt } from '../../types/api'
+
+// 4 字典通用行
+interface DictItem { id: string; code: string; name: string; inspectionObjectCode?: string; remark?: string; sortOrder?: number; createdAt: string; updatedAt: string }
 
 interface Props {
   receipt: SampleReceipt
@@ -68,7 +71,7 @@ const emptyForm = {
  * 型号/规格/等级/牌号可输入可选择（选项来自对应码表，按报告类别过滤）。
  */
 export function SampleManagerModal({ receipt, onClose, readOnly }: Props) {
-  const [category, setCategory] = useState<ReportCategory | null>(null)
+  const [category, setCategory] = useState<InspectionReportName | null>(null)
   const [dicts, setDicts] = useState<DictOptions>({ models: [], specifications: [], grades: [], brands: [] })
   const [samples, setSamples] = useState<Sample[]>([])
   const [loading, setLoading] = useState(false)
@@ -101,12 +104,12 @@ export function SampleManagerModal({ receipt, onClose, readOnly }: Props) {
     fetchSamples()
     // 报告类别（决定扩展属性）+ 四个码表（按类别过滤，供组合框选项）
     apiClient
-      .get<ReportCategory>(`/report-categories/${receipt.categoryCode}`)
+      .get<InspectionReportName>(`/report-names/${receipt.categoryCode}`)
       .then((res) => setCategory(res.data))
       .catch(() => setCategory(null))
     const loadDict = async (endpoint: string): Promise<string[]> => {
       try {
-        const res = await apiClient.get<{ items: CategoryDictItem[] }>(`/${endpoint}`, {
+        const res = await apiClient.get<{ items: DictItem[] }>(`/${endpoint}`, {
           params: { categoryCode: receipt.categoryCode, page: 1, pageSize: 200 },
         })
         return res.data.items.map((i) => i.name)

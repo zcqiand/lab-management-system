@@ -21,29 +21,13 @@ export type {
 } from './sample';
 export type { TestItem } from './test-item';
 export type {
-  TaskRecord,
-  TaskStatus,
-  TaskQuery,
-  TaskCreateInput,
-  TaskUpdateInput,
 } from './task';
 export type {
-  Report,
-  ReportStatus,
-  ReviewAction,
-  ReportQuery,
-  ReportCreateInput,
-  ReportUpdateInput,
-  ReportRecord,
 } from './report';
 export type { TestParameter } from './test-parameter';
 export type { TestStandard, StandardType } from './test-standard';
 export type { TechnicalRequirement, ComparisonOp } from './technical-requirement';
-export type { CalculationRule, AlgorithmType } from './calculation-rule';
-export type { ReportTemplate } from './report-template';
-export type { CategoryDictItem } from './category-dict-item';
-export type { ReportCategory, ExtFieldDef, SummaryType } from './report-category';
-export type { CategoryStandard } from './category-standard';
+// 注：原 CategoryDictItem 已删除——型号/规格/等级/牌号各自有独立类型（InspectionBrand/Model/Grade/Spec）。
 export type {
   DashboardStats,
   SummaryColumn,

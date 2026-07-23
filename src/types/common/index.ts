@@ -22,6 +22,9 @@ export interface PageQuery {
   keyword?: string;
 }
 
+/** 扩展属性定义（M06.F07 报告名称 extFields 沿用） */
+export type { ExtFieldDef } from './ext-field-def';
+
 /** 日期范围筛选 */
 export interface DateRangeFilter {
   dateFrom?: string;

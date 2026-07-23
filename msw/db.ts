@@ -197,41 +197,8 @@ export interface FlowHistoryEntry {
   reason?: string
 }
 
-/** 报告类别扩展属性定义（新建样品时按类别动态渲染） */
-export interface ExtFieldDef {
-  key: string
-  label: string
-}
-
-/** 报告类别码表（原「材料种类」升级为可维护的报告类别） */
-export const reportCategoryTable = new MockTable<{
-  id: string
-  code: string
-  name: string
-  /** 报告文档大标题，如「钢筋力学性能、工艺性能、重量偏差检测报告」 */
-  reportTitle: string
-  /** 汇总表口径：material=原材料汇总 / concrete=混凝土抗压汇总 / connection=连接接头汇总 */
-  summaryType: 'material' | 'concrete' | 'connection'
-  /** 汇总表名称，如「钢材试验报告汇总表」 */
-  summaryName: string
-  /** 样品扩展属性定义（可维护） */
-  extFields: ExtFieldDef[]
-  /** 排序号（越小越靠前），用户可维护 */
-  sortOrder: number
-  remark?: string
-  createdAt: string
-  updatedAt: string
-}>('cat')
-
-/** 报告类别 ↔ 检测标准 关联表 */
-export const categoryStandardTable = new MockTable<{
-  id: string
-  categoryCode: string
-  standardCode: string
-  remark?: string
-  createdAt: string
-  updatedAt: string
-}>('cs')
+// 注：原 reportCategoryTable / categoryStandardTable / ExtFieldDef 已删除，
+// summaryName + extFields 合并到 inspectionReportNameTable。
 
 /** 检测标准 ↔ 检测参数 关联表 */
 export const standardParametersTable = new MockTable<{
@@ -331,13 +298,15 @@ function seedReportNames(): void {
   }
 }
 
-/** 报告名称实体（InspectionReportName，M06.F07）——取代 M04.F02 报告模板 */
+/** 报告名称实体（InspectionReportName，M06.F07）——取代 M04.F02 报告模板 + M04.F01 报告类别的 summaryName/extFields */
 export const inspectionReportNameTable = new MockTable<{
   id: string
   code: string
   name: string
   fullName?: string
   templatePath?: string
+  summaryName?: string
+  extFields?: { key: string; label: string }[]
   description?: string
   sortOrder: number
   createdAt: string
@@ -1098,7 +1067,7 @@ export function computeStats() {
   const receiptCountByStage = Object.fromEntries(
     FLOW_STAGE_ORDER.map((stage) => [stage, stageCount(stage)]),
   ) as Record<FlowStage, number>
-  const categories = reportCategoryTable.all()
+  const categories = inspectionReportNameTable.all()
   const receiptCountByCategory = categories.map((c) => ({
     categoryCode: c.code,
     categoryName: c.name,
@@ -1129,8 +1098,15 @@ export interface SummaryColumn {
  * 行粒度：样品；只统计已生成报告（reportCode 非空）的接样单；可按合同过滤。
  */
 export function buildSummary(categoryCode: string, contractId?: string) {
-  const category = reportCategoryTable.all().find((c) => c.code === categoryCode)
-  if (!category) return { columns: [] as SummaryColumn[], rows: [] as Record<string, string>[], summaryName: '' }
+  const reportName = inspectionReportNameTable.all().find((r) => r.code === categoryCode)
+  if (!reportName) return { columns: [] as SummaryColumn[], rows: [] as Record<string, string>[], summaryName: '' }
+  // 从 reportName.code 派生 summaryType：RN-105 系列 → concrete；RN-102-2/3 → connection；其余 → material
+  const summaryType: 'material' | 'concrete' | 'connection' = /^RN-105/.test(reportName.code)
+    ? 'concrete'
+    : /^(RN-102-2|RN-102-3)/.test(reportName.code)
+      ? 'connection'
+      : 'material'
+  const category = { code: reportName.code, name: reportName.name, extFields: reportName.extFields ?? [], summaryName: reportName.summaryName ?? '', summaryType }
 
   const receipts = receiptTable
     .all()
@@ -1234,8 +1210,7 @@ export function buildSummary(categoryCode: string, contractId?: string) {
 
 export function resetMockDb() {
   contractTable.reset()
-  reportCategoryTable.reset()
-  categoryStandardTable.reset()
+  // reportCategoryTable / categoryStandardTable 已删除（并入 inspectionReportNameTable）
   standardParametersTable.reset()
   inspectionModelTable.reset()
   inspectionSpecTable.reset()
@@ -1251,7 +1226,6 @@ export function resetMockDb() {
   testParameterTable.reset()
   testStandardTable.reset()
   technicalRequirementTable.reset()
-  reportTemplateTable.reset()
   orgInfoTable.reset()
   userTable.reset()
   roleTable.reset()
@@ -1426,7 +1400,7 @@ export function seedMasterDataIntoMockDb(): void {
 // 种子数据
 // =============================================================================
 
-// 注：原 seedContractCategories 已删除——合同分类并入 InspectionSpecialty。
+// 注：原 seedReportCategories 已删除——summaryName/extFields 合并到 InspectionReportName。
 
 function seedOrgInfo() {
   orgInfoTable.insert({
@@ -1473,114 +1447,6 @@ export const REPORT_TEMPLATE_TAGS: { tag: string; label: string }[] = [
   { tag: '{{testItemsTable}}', label: '检测结果表' },
 ]
 
-function baseTemplate(): string {
-  return [
-    '<div style="text-align:center">',
-    '  <h2 style="margin:0">{{org.orgName}}</h2>',
-    '  <h1 style="margin:8px 0 2px">{{category.reportTitle}}</h1>',
-    '</div>',
-    '<table class="kv"><tbody>',
-    '  <tr><td>委托单位</td><td>{{contract.clientUnit}}</td><td>报告编号</td><td>{{receipt.reportCode}}</td></tr>',
-    '  <tr><td>工程名称</td><td>{{contract.projectName}}</td><td>检测类别</td><td>{{receipt.testCategory}}</td></tr>',
-    '  <tr><td>施工单位</td><td>{{contract.constructionUnit}}</td><td>委托日期</td><td>{{receipt.receivedDate}}</td></tr>',
-    '  <tr><td>见证单位</td><td>{{contract.witnessUnit}}</td><td>见证人</td><td>{{contract.witness}}</td></tr>',
-    '  <tr><td>样品来源</td><td>{{receipt.sampleSource}}</td><td>检测日期</td><td>{{receipt.reportDate}}</td></tr>',
-    '  <tr><td>检测环境</td><td>{{receipt.testEnvironment}}</td><td>主要设备</td><td>{{receipt.mainEquipment}}</td></tr>',
-    '</tbody></table>',
-    '<h3>样品信息</h3>',
-    '{{samplesTable}}',
-    '<h3>检测结果</h3>',
-    '{{testItemsTable}}',
-    '<h3>检测结论</h3>',
-    '<p>{{receipt.conclusion}}</p>',
-    '<p><strong>判定结果：{{receipt.resultLabel}}</strong></p>',
-    '<p class="sign">批准：＿＿＿＿＿　　审核：＿＿＿＿＿　　检测：{{receipt.assigneeName}}　　检测单位检测专用章（盖章）</p>',
-    '<p class="sign">签发日期：{{receipt.issuedAt}}</p>',
-    '<h4>检测单位基本信息</h4>',
-    '<p>注册地址：{{org.registeredAddress}}<br/>检测能力场所地址：{{org.testingSiteAddress}}<br/>邮政编码：{{org.postalCode}}　联系电话：{{org.contactPhone}}<br/>电子信箱：{{org.email}}　资质证书编号：{{org.qualificationCertNo}}</p>',
-    '<h4>声　明</h4>',
-    '<ol class="notes">',
-    '  <li>报告无本单位"检测专用章"或"公章"、骑缝章无效。</li>',
-    '  <li>报告无检测人员、审核人员、报告批准人签字无效。</li>',
-    '  <li>报告涂改无效。</li>',
-    '  <li>报告部分复印/复制无效。</li>',
-    '  <li>电子报告请扫描封面二维码查询真伪。</li>',
-    '  <li>委托检测仅对来样及所检工程当时状态负责。</li>',
-    '  <li>本报告依据的委托信息、工程描述、产品信息等来源于委托方，其真实性由委托方负责。</li>',
-    '  <li>对报告若有异议，请在收到报告之日起十五日内向本单位提出。</li>',
-    '</ol>',
-  ].join('\n')
-}
-
-function seedCategories() {
-  const cats: {
-    code: string
-    name: string
-    reportTitle: string
-    summaryType: 'material' | 'concrete' | 'connection'
-    summaryName: string
-    extFields: ExtFieldDef[]
-    sortOrder: number
-  }[] = [
-    {
-      code: 'steel', sortOrder: 1, name: '钢筋原材', reportTitle: '钢筋力学性能、工艺性能、重量偏差检测报告',
-      summaryType: 'material', summaryName: '钢材试验报告汇总表',
-      extFields: [
-        { key: 'qualityCertNo', label: '质保单编号' },
-      ],
-    },
-    {
-      code: 'cement', sortOrder: 0, name: '水泥', reportTitle: '水泥检测报告',
-      summaryType: 'material', summaryName: '水泥试验报告汇总表',
-      extFields: [],
-    },
-    {
-      code: 'concrete', sortOrder: 6, name: '混凝土', reportTitle: '混凝土抗压强度检测报告',
-      summaryType: 'concrete', summaryName: '（标准养护）混凝土抗压强度试验报告汇总表',
-      extFields: [
-        { key: 'castingDate', label: '浇筑时间' },
-        { key: 'volume', label: '混凝土方量（m³）' },
-        { key: 'moldingDate', label: '成型日期' },
-      ],
-    },
-    {
-      code: 'sand', sortOrder: 5, name: '砂', reportTitle: '建设用砂检测报告',
-      summaryType: 'material', summaryName: '砂试验报告汇总表',
-      extFields: [],
-    },
-    {
-      code: 'gravel', sortOrder: 4, name: '碎（卵）石', reportTitle: '建设用碎（卵）石检测报告',
-      summaryType: 'material', summaryName: '碎（卵）石试验报告汇总表',
-      extFields: [],
-    },
-    {
-      code: 'rebar_mech', sortOrder: 2, name: '钢筋机械连接', reportTitle: '钢筋机械连接接头检测报告',
-      summaryType: 'connection', summaryName: '钢筋机械连接试验报告汇总表',
-      extFields: [
-        { key: 'jointType', label: '接头类型' },
-        { key: 'concreteCastingDate', label: '对应部位混凝土浇筑时间' },
-      ],
-    },
-    {
-      code: 'rebar_weld', sortOrder: 3, name: '钢筋焊接', reportTitle: '钢筋焊接接头检测报告',
-      summaryType: 'connection', summaryName: '钢筋焊接连接试验报告汇总表',
-      extFields: [
-        { key: 'welderName', label: '焊工姓名' },
-        { key: 'welderCertNo', label: '焊工证号' },
-        { key: 'concreteCastingDate', label: '对应部位混凝土浇筑时间' },
-      ],
-    },
-  ]
-  cats.forEach((c) => {
-    reportCategoryTable.insert({ id: `cat-${c.code}`, ...c })
-    reportTemplateTable.insert({
-      id: `tpl-${c.code}`,
-      categoryCode: c.code,
-      name: `${c.name}报告模板`,
-      content: baseTemplate(),
-    })
-  })
-}
 
 function seedDicts() {
   const seed = (table: MockTable<{ id: string; inspectionObjectCode: string; name: string; remark?: string; createdAt: string; updatedAt: string }>, prefix: string, data: Record<string, string[]>) => {
@@ -1630,11 +1496,11 @@ function seedCalculationRule(parameterCode: string, algorithmType: string, speci
   })
 }
 
-function seedTestStandard(code: string, name: string, type: 'national' | 'industry' | 'local' | 'enterprise', categories: string[]) {
+function seedTestStandard(code: string, name: string, type: 'national' | 'industry' | 'local' | 'enterprise', _categories: string[]) {
   testStandardTable.insert({ id: `ts-${code}`, code, name, type })
-  categories.forEach((cat) => {
-    categoryStandardTable.insert({ categoryCode: cat, standardCode: code })
-  })
+  // categoryStandardTable 已删除；原 categories（报告类别码）已并入 inspectionReportName，
+  // 旧 categoryStandard 数据无对应物；待后续 REQ 把 inspectionObjectStandard / inspectionReportNameStandard
+  // 的 seed 数据补齐后，再补充这里的关联。
 }
 
 function seedTechnicalRequirement(req: {
@@ -1775,11 +1641,11 @@ function seedReceipt(input: {
   }
 }
 
-/** 全量种子：7 个报告类别 + 码表 + 10 合同 × 若干接样单（覆盖 7 阶段与 7 类别） */
+/** 全量种子：码表 + 10 合同 × 若干接样单（覆盖 7 阶段） */
 export function seedData() {
   // seedContractCategories 已删除
+  // seedReportCategories 已删除
   seedOrgInfo()
-  seedCategories()
   seedDicts()
   seedReportNames()
 

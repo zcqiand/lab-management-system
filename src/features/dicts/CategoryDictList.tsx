@@ -1,8 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiClient } from '../../api/client'
 import { ConfirmModal } from '../../components/ConfirmModal'
-import type { CategoryDictItem } from '../../types/api'
 import type { InspectionObject } from '../../types/inspection'
+
+/** 型号/规格/等级/牌号 通用行结构（4 个 InspectionBrand/Model/Grade/Spec 共用） */
+interface DictItem {
+  id: string;
+  code: string;
+  name: string;
+  inspectionObjectCode?: string;
+  remark?: string;
+  sortOrder?: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface Props {
   /** API 路径：models / specifications / grades / brands */
@@ -31,17 +42,17 @@ interface Props {
 export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, editDataFn, deleteDataFn }: Props) {
   const [objects, setObjects] = useState<InspectionObject[]>([])
   const [objectCode, setObjectCode] = useState('')
-  const [list, setList] = useState<CategoryDictItem[]>([])
+  const [list, setList] = useState<DictItem[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const [formOpen, setFormOpen] = useState(false)
-  const [editing, setEditing] = useState<CategoryDictItem | null>(null)
+  const [editing, setEditing] = useState<DictItem | null>(null)
   const [formObject, setFormObject] = useState('')
   const [formName, setFormName] = useState('')
   const [formRemark, setFormRemark] = useState('')
   const [saving, setSaving] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<CategoryDictItem | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<DictItem | null>(null)
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
@@ -59,7 +70,7 @@ export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, 
     try {
       const params: Record<string, string> = { page: '1', pageSize: '200' }
       if (objectCode) params.inspectionObjectCode = objectCode
-      const res = await apiClient.get<{ items: CategoryDictItem[] }>(`/${endpoint}`, { params })
+      const res = await apiClient.get<{ items: DictItem[] }>(`/${endpoint}`, { params })
       setList(res.data.items)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : '加载失败')
@@ -80,9 +91,9 @@ export function CategoryDictList({ endpoint, title, hint, dataFn, createDataFn, 
     setFormOpen(true)
   }
 
-  const openEdit = (item: CategoryDictItem) => {
+  const openEdit = (item: DictItem) => {
     setEditing(item)
-    setFormObject(item.inspectionObjectCode)
+    setFormObject(item.inspectionObjectCode ?? '')
     setFormName(item.name)
     setFormRemark(item.remark ?? '')
     setFormOpen(true)
