@@ -14,7 +14,6 @@ import { signJwt, verifyJwt } from './jwt'
 import {
   MockTable,
   contractTable,
-  contractCategoryTable,
   reportCategoryTable,
   categoryStandardTable,
   standardParametersTable,
@@ -254,7 +253,7 @@ export const handlers = [
   }),
 
   http.post('*/contracts', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ contractCode: string; projectName: string; clientUnit: string; constructionUnit: string; contractCategory?: string; buildingUnit?: string; supervisorUnit?: string; inspectionPerson?: string; inspectionPhone?: string; witnessUnit: string; witness: string }>
+    const body = (await request.json()) as Partial<{ contractCode: string; projectName: string; clientUnit: string; constructionUnit: string; inspectionSpecialtyCode?: string; buildingUnit?: string; supervisorUnit?: string; inspectionPerson?: string; inspectionPhone?: string; witnessUnit: string; witness: string }>
     if (!body.contractCode || !body.projectName) {
       return HttpResponse.json({ message: 'contractCode/projectName 必填' }, { status: 400 })
     }
@@ -263,7 +262,7 @@ export const handlers = [
       clientUnit: body.clientUnit ?? '',
       projectName: body.projectName,
       constructionUnit: body.constructionUnit ?? '',
-      contractCategory: body.contractCategory,
+      inspectionSpecialtyCode: body.inspectionSpecialtyCode,
       buildingUnit: body.buildingUnit,
       supervisorUnit: body.supervisorUnit,
       inspectionPerson: body.inspectionPerson,
@@ -291,46 +290,6 @@ export const handlers = [
   http.delete('*/contracts/:id', ({ params }) => {
     const ok = contractTable.remove(String(params.id))
     if (!ok) return HttpResponse.json({ message: '合同不存在' }, { status: 404 })
-    return new HttpResponse(null, { status: 204 })
-  }),
-
-  // ===========================================================
-  // /contract-categories：合同类别码表（M04.F10 已废弃；读路径保留供历史数据，写路径仍可用）
-  // ===========================================================
-  http.get('*/contract-categories', ({ request }) => {
-    const url = new URL(request.url)
-    const result = contractCategoryTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
-      keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['name'],
-    })
-    return HttpResponse.json(result)
-  }),
-
-  http.post('*/contract-categories', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ name: string; sortOrder: number; remark: string }>
-    if (!body.name) {
-      return HttpResponse.json({ message: 'name 必填' }, { status: 400 })
-    }
-    const created = contractCategoryTable.insert({
-      name: body.name,
-      sortOrder: body.sortOrder ?? 0,
-      remark: body.remark,
-    })
-    return HttpResponse.json(created, { status: 201 })
-  }),
-
-  http.put('*/contract-categories/:id', async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>
-    const updated = contractCategoryTable.update(String(params.id), body)
-    if (!updated) return HttpResponse.json({ message: '合同类别不存在' }, { status: 404 })
-    return HttpResponse.json(updated)
-  }),
-
-  http.delete('*/contract-categories/:id', ({ params }) => {
-    const ok = contractCategoryTable.remove(String(params.id))
-    if (!ok) return HttpResponse.json({ message: '合同类别不存在' }, { status: 404 })
     return new HttpResponse(null, { status: 204 })
   }),
 

@@ -25,12 +25,6 @@ export type {
 export type {
   Contract,
   ContractStatus,
-  ContractCategory,
-  Project,
-  ProjectStatus,
-  ProjectQuery,
-  ProjectCreateInput,
-  ProjectUpdateInput,
 } from './resources';
 
 export type {

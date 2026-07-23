@@ -6,7 +6,6 @@
 
 // ---- Contract（合同/委托） ----
 export type { Contract, ContractStatus } from './contract';
-export type { ContractCategory } from './contract-category';
 
-// ---- Project（项目） ----
-export type { Project, ProjectStatus, ProjectQuery, ProjectCreateInput, ProjectUpdateInput } from './project';
+// 注：合同类别已并入「检测专项」（InspectionSpecialty），无需独立 ContractCategory 类型。
+// 注：Project 暂无使用，从 resources/ 中移除。

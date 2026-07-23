@@ -64,7 +64,7 @@ export function ContractList() {
           projectName: values.projectName,
           clientUnit: values.clientUnit,
           constructionUnit: values.constructionUnit,
-          contractCategory: values.contractCategory,
+          inspectionSpecialtyCode: values.inspectionSpecialtyCode,
           buildingUnit: values.buildingUnit,
           supervisorUnit: values.supervisorUnit,
           inspectionPerson: values.inspectionPerson,
@@ -78,7 +78,7 @@ export function ContractList() {
           projectName: values.projectName,
           clientUnit: values.clientUnit,
           constructionUnit: values.constructionUnit,
-          contractCategory: values.contractCategory,
+          inspectionSpecialtyCode: values.inspectionSpecialtyCode,
           buildingUnit: values.buildingUnit,
           supervisorUnit: values.supervisorUnit,
           inspectionPerson: values.inspectionPerson,
@@ -198,7 +198,7 @@ export function ContractList() {
                 <td className="px-4 py-2">{c.contractCode}</td>
                 <td className="px-4 py-2">{c.projectName}</td>
                 <td className="px-4 py-2">{c.clientUnit}</td>
-                <td className="px-4 py-2">{c.contractCategory || '—'}</td>
+                <td className="px-4 py-2">{c.inspectionSpecialtyCode || '—'}</td>
                 <td className="px-4 py-2">{c.buildingUnit || '—'}</td>
                 <td className="px-4 py-2">{c.supervisorUnit || '—'}</td>
                 <td className="px-4 py-2">{c.inspectionPerson || '—'}</td>

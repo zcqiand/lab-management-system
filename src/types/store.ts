@@ -1,6 +1,6 @@
 // Store 状态切片类型（v3）
 
-import type { User, Contract, SampleReceipt, Sample, Report, Project, ReportRecord, TaskRecord } from './api'
+import type { User, Contract, SampleReceipt, Sample, Report, ReportRecord, TaskRecord } from './api'
 
 /** 认证状态机 */
 export type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'error'
@@ -46,15 +46,6 @@ export interface ReportState {
   list: Report[]
   total: number
   current: Report | null
-  loading: boolean
-  error: string | null
-}
-
-/** 项目 store 状态切片 */
-export interface ProjectState {
-  list: Project[]
-  total: number
-  current: Project | null
   loading: boolean
   error: string | null
 }

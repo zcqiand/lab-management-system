@@ -14,7 +14,6 @@ import { TestStandardList } from '../features/codes/TestStandardList'
 import { TechnicalRequirementList } from '../features/codes/TechnicalRequirementList'
 import { CalculationRuleList } from '../features/codes/CalculationRuleList'
 import { ReportCategoryList } from '../features/categories/ReportCategoryList'
-import { ContractCategoryList } from '../features/contracts/ContractCategoryList'
 import { CategoryDictList } from '../features/dicts/CategoryDictList'
 import { ReportTemplateList } from '../features/templates/ReportTemplateList'
 import { TaskAssignmentPage } from '../features/task-assignment/TaskAssignmentPage'
@@ -57,7 +56,6 @@ export const routes: RouteObject[] = [
       // ----- 基础管理 -----
       { path: 'org-info', element: <OrgInfo /> },
       { path: 'report-categories', element: <ReportCategoryList /> },
-      { path: 'contract-categories', element: <ContractCategoryList /> },
       { path: 'test-parameters', element: <TestParameterList /> },
       { path: 'test-standards', element: <TestStandardList /> },
       { path: 'technical-requirements', element: <TechnicalRequirementList /> },

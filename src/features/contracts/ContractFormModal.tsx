@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { apiClient } from "../../api/client";
 import type { Contract, ContractStatus } from "../../types/api";
-import { useContractCategories } from "./useContractCategories";
+import type { InspectionSpecialty } from "../../types/inspection";
 
 export interface ContractFormValues {
   id?: string;
@@ -8,7 +9,7 @@ export interface ContractFormValues {
   projectName: string;
   clientUnit: string;
   constructionUnit: string;
-  contractCategory?: string;
+  inspectionSpecialtyCode?: string;
   buildingUnit?: string;
   supervisorUnit?: string;
   inspectionPerson?: string;
@@ -40,13 +41,13 @@ export function ContractFormModal({
   onCancel,
   loading = false,
 }: ContractFormModalProps) {
-  const { categories } = useContractCategories();
+  const [specialties, setSpecialties] = useState<InspectionSpecialty[]>([])
 
   const [contractCode, setContractCode] = useState("");
   const [projectName, setProjectName] = useState("");
   const [clientUnit, setClientUnit] = useState("");
   const [constructionUnit, setConstructionUnit] = useState("");
-  const [contractCategory, setContractCategory] = useState("");
+  const [inspectionSpecialtyCode, setInspectionSpecialtyCode] = useState("");
   const [buildingUnit, setBuildingUnit] = useState("");
   const [supervisorUnit, setSupervisorUnit] = useState("");
   const [inspectionPerson, setInspectionPerson] = useState("");
@@ -70,7 +71,7 @@ export function ContractFormModal({
       setProjectName(initialValues?.projectName ?? "");
       setClientUnit(initialValues?.clientUnit ?? "");
       setConstructionUnit(initialValues?.constructionUnit ?? "");
-      setContractCategory(initialValues?.contractCategory ?? "");
+      setInspectionSpecialtyCode(initialValues?.inspectionSpecialtyCode ?? "");
       setBuildingUnit(initialValues?.buildingUnit ?? "");
       setSupervisorUnit(initialValues?.supervisorUnit ?? "");
       setInspectionPerson(initialValues?.inspectionPerson ?? "");
@@ -86,6 +87,13 @@ export function ContractFormModal({
       setErrors({});
     }
   }, [open, initialValues]);
+
+  useEffect(() => {
+    apiClient
+      .get<{ items: InspectionSpecialty[] }>("/inspection-specialties", { params: { page: 1, pageSize: "100" } })
+      .then((r) => setSpecialties(Array.isArray(r.data?.items) ? r.data.items : []))
+      .catch(() => setSpecialties([]))
+  }, [])
 
   if (!open) return null;
 
@@ -108,7 +116,7 @@ export function ContractFormModal({
       projectName: projectName.trim(),
       clientUnit: clientUnit.trim(),
       constructionUnit: constructionUnit.trim(),
-      contractCategory: contractCategory.trim() || undefined,
+      inspectionSpecialtyCode: inspectionSpecialtyCode.trim() || undefined,
       buildingUnit: buildingUnit.trim() || undefined,
       supervisorUnit: supervisorUnit.trim() || undefined,
       inspectionPerson: inspectionPerson.trim() || undefined,
@@ -167,21 +175,21 @@ export function ContractFormModal({
             </div>
             <div>
               <label
-                htmlFor="contract-category"
+                htmlFor="inspection-specialty"
                 className="block text-sm font-medium mb-1"
               >
-                合同类别
+                检测专项
               </label>
               <select
-                id="contract-category"
-                value={contractCategory}
-                onChange={(e) => setContractCategory(e.target.value)}
+                id="inspection-specialty"
+                value={inspectionSpecialtyCode}
+                onChange={(e) => setInspectionSpecialtyCode(e.target.value)}
                 className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">请选择</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
+                {specialties.map((s) => (
+                  <option key={s.code} value={s.code}>
+                    {s.name}
                   </option>
                 ))}
               </select>

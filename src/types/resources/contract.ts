@@ -8,8 +8,8 @@ export interface Contract {
   projectName: string;
   projectLocation?: string;
   constructionUnit: string;
-  /** 合同类别编码 */
-  contractCategory?: string;
+  /** 检测专项编码（FK → InspectionSpecialty.code）；合同按专项分类 */
+  inspectionSpecialtyCode?: string;
   /** 建设单位 */
   buildingUnit?: string;
   /** 监理单位 */

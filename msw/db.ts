@@ -143,17 +143,7 @@ export class MockTable<T extends { id: string } & Timestamped> {
 // 表定义
 // =============================================================================
 
-/** 合同类别码表 */
-export const contractCategoryTable = new MockTable<{
-  id: string
-  name: string
-  sortOrder: number
-  remark?: string
-  createdAt: string
-  updatedAt: string
-}>('cc')
-
-/** 合同/委托表 */
+/** 合同/委托表（合同分类已并入 inspectionSpecialtyCode） */
 export const contractTable = new MockTable<{
   id: string
   contractCode: string
@@ -161,7 +151,8 @@ export const contractTable = new MockTable<{
   projectName: string
   projectLocation?: string
   constructionUnit: string
-  contractCategory?: string
+  /** 检测专项编码（FK → InspectionSpecialty.code），替代原 contractCategory */
+  inspectionSpecialtyCode?: string
   buildingUnit?: string
   supervisorUnit?: string
   inspectionPerson?: string
@@ -1242,7 +1233,6 @@ export function buildSummary(categoryCode: string, contractId?: string) {
 }
 
 export function resetMockDb() {
-  contractCategoryTable.reset()
   contractTable.reset()
   reportCategoryTable.reset()
   categoryStandardTable.reset()
@@ -1436,11 +1426,7 @@ export function seedMasterDataIntoMockDb(): void {
 // 种子数据
 // =============================================================================
 
-function seedContractCategories() {
-  contractCategoryTable.insert({ id: 'cc-001', name: '常规建筑与材料检测', sortOrder: 0 })
-  contractCategoryTable.insert({ id: 'cc-002', name: '工程实体与结构检测', sortOrder: 1 })
-  contractCategoryTable.insert({ id: 'cc-003', name: '专项系统与安全性鉴定', sortOrder: 2 })
-}
+// 注：原 seedContractCategories 已删除——合同分类并入 InspectionSpecialty。
 
 function seedOrgInfo() {
   orgInfoTable.insert({
@@ -1791,7 +1777,7 @@ function seedReceipt(input: {
 
 /** 全量种子：7 个报告类别 + 码表 + 10 合同 × 若干接样单（覆盖 7 阶段与 7 类别） */
 export function seedData() {
-  seedContractCategories()
+  // seedContractCategories 已删除
   seedOrgInfo()
   seedCategories()
   seedDicts()
