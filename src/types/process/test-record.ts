@@ -1,6 +1,6 @@
 /** 单项检测记录（M03.F03）——归属样品 sampleId；自动评定 + 手工修正 */
 
-export interface TestItem {
+export interface TestRecord {
   id: string;
   sampleId: string;
   parameterCode: string;

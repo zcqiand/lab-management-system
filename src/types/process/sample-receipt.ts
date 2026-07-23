@@ -2,7 +2,7 @@ import type { FlowStage, FlowHistoryEntry } from './flow';
 
 /**
  * 接样单（M03.F01）——接样表与报告表合并为一张表。
- * 领域主链：合同 Contract → 接样单 SampleReceipt → 样品 Sample → 单项检测记录 TestItem。
+ * 领域主链：合同 Contract → 接样单 SampleReceipt → 样品 Sample → 单项检测记录 TestRecord。
  */
 
 export interface SampleReceipt {

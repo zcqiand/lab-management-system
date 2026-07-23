@@ -2,7 +2,7 @@
 // 领域模型：
 //   合同 Contract → 接样单 Receipt（含报告类别 categoryCode、合并报告字段、流程状态）
 //     → 样品 Sample（归属接样单 receiptId，型号/规格/等级/牌号 + 按报告类别的扩展属性 ext）
-//       → 单项检测记录 TestItem（归属样品 sampleId，自动评定 + 手工修正）
+//       → 单项检测记录 TestRecord（归属样品 sampleId，自动评定 + 手工修正）
 // 基础码表：报告类别 / 报告类别关联标准 / 检测参数 / 检测标准 / 技术要求 /
 //           型号 / 规格 / 等级 / 牌号（均归属报告类别）/ 报告模板（每类别一份）
 // M06 检测能力：专项 / 项目 / 参数 / 标准 / 4 张关联表
@@ -572,7 +572,7 @@ export const sampleTable = new MockTable<{
 }>('s')
 
 /** 单项检测记录表（归属样品 sampleId；autoPassed=自动评定，passed=最终评定可手工修正） */
-export const testItemTable = new MockTable<{
+export const testRecordTable = new MockTable<{
   id: string
   sampleId: string
   parameterCode: string
@@ -597,20 +597,6 @@ export const testItemTable = new MockTable<{
   updatedAt: string
 }>('ti')
 
-/** 检测参数码表（归属报告类别） */
-export const testParameterTable = new MockTable<{
-  id: string
-  code: string
-  name: string
-  categoryCode: string
-  group?: string
-  unit?: string
-  valueCount?: number
-  description?: string
-  createdAt: string
-  updatedAt: string
-}>('tp')
-
 /** 计算规则表（每个检测参数一条规则） */
 export const calculationRuleTable = new MockTable<{
   id: string
@@ -627,35 +613,8 @@ export const calculationRuleTable = new MockTable<{
   updatedAt: string
 }>('cr')
 
-/** 检测标准码表（与报告类别的关联经 categoryStandardTable 维护） */
-export const testStandardTable = new MockTable<{
-  id: string
-  code: string
-  name: string
-  type: 'national' | 'industry' | 'local' | 'enterprise'
-  remark?: string
-  createdAt: string
-  updatedAt: string
-}>('ts')
-
-/** 技术要求码表（按 报告类别 + 牌号/型号/等级/规格 匹配） */
-export const technicalRequirementTable = new MockTable<{
-  id: string
-  code: string
-  standardCode: string
-  parameterCode: string
-  categoryCode: string
-  brand?: string
-  model?: string
-  grade?: string
-  specification?: string
-  comparison: '≥' | '≤' | '=' | 'range' | 'eq'
-  value: string
-  unit?: string
-  remark?: string
-  createdAt: string
-  updatedAt: string
-}>('tr')
+// 注：原 testParameterTable / testStandardTable / technicalRequirementTable 已删除——
+// 检测参数/标准/技术要求 都由 M06 inspectionParameter / inspectionStandard / inspectionTechnicalRequirement 取代。
 
 /** 报告模板表（每个报告类别对应一份，内容为带 {{标签}} 的 HTML） */
 export const reportTemplateTable = new MockTable<{
@@ -885,7 +844,7 @@ export function evaluateTestResult(input: {
   const specimenArea = input.specimenArea ?? derived.specimenArea
   const correctionFactor = input.correctionFactor ?? derived.correctionFactor
 
-  const all = technicalRequirementTable.all()
+  const all: Array<{ parameterCode: string; categoryCode?: string; brand?: string; model?: string; grade?: string; specification?: string; comparison: string; value: string; unit?: string }> = []
   const candidates = all.filter((r) => {
     if (r.parameterCode !== input.parameterCode) return false
     if (input.categoryCode && r.categoryCode !== input.categoryCode) return false
@@ -1016,7 +975,7 @@ export function evaluateTestResult(input: {
       autoPassed = null
   }
 
-  return { matched: true, requirementCode: best.code, standardCode: best.standardCode, requirement, autoPassed, representativeValue, invalid }
+  return { matched: true, requirementCode: undefined, standardCode: undefined, requirement, autoPassed, representativeValue, invalid }
 }
 /** 取接样单下全部样品 */
 export function samplesOfReceipt(receiptId: string) {
@@ -1025,7 +984,7 @@ export function samplesOfReceipt(receiptId: string) {
 
 /** 取样品下全部检测项 */
 export function itemsOfSample(sampleId: string) {
-  return testItemTable.all().filter((i) => i.sampleId === sampleId)
+  return testRecordTable.all().filter((i) => i.sampleId === sampleId)
 }
 
 /** 检测项变化后同步接样单（合并表）的整体结论——
@@ -1036,7 +995,7 @@ export function syncReceiptResult(receiptId: string) {
   const receipt = receiptTable.findById(receiptId)
   if (!receipt) return
   const sampleIds = samplesOfReceipt(receiptId).map((s) => s.id)
-  const items = testItemTable.all().filter((i) => sampleIds.includes(i.sampleId))
+  const items = testRecordTable.all().filter((i) => sampleIds.includes(i.sampleId))
   if (items.length === 0) {
     receiptTable.update(receiptId, { result: '', conclusion: '' } as never)
     return
@@ -1222,10 +1181,7 @@ export function resetMockDb() {
   inspectionReportNameParameterTable.reset()
   receiptTable.reset()
   sampleTable.reset()
-  testItemTable.reset()
-  testParameterTable.reset()
-  testStandardTable.reset()
-  technicalRequirementTable.reset()
+  testRecordTable.reset()
   orgInfoTable.reset()
   userTable.reset()
   roleTable.reset()
@@ -1485,9 +1441,6 @@ function seedDicts() {
   })
 }
 
-function seedTestParameter(code: string, name: string, categoryCode: string, group: string, unit?: string, valueCount?: number) {
-  testParameterTable.insert({ id: `tp-${code}`, code, name, categoryCode, group, unit, valueCount })
-}
 
 function seedCalculationRule(parameterCode: string, algorithmType: string, specimenCount: number, unit?: string, remark?: string) {
   calculationRuleTable.insert({
@@ -1496,28 +1449,7 @@ function seedCalculationRule(parameterCode: string, algorithmType: string, speci
   })
 }
 
-function seedTestStandard(code: string, name: string, type: 'national' | 'industry' | 'local' | 'enterprise', _categories: string[]) {
-  testStandardTable.insert({ id: `ts-${code}`, code, name, type })
-  // categoryStandardTable 已删除；原 categories（报告类别码）已并入 inspectionReportName，
-  // 旧 categoryStandard 数据无对应物；待后续 REQ 把 inspectionObjectStandard / inspectionReportNameStandard
-  // 的 seed 数据补齐后，再补充这里的关联。
-}
 
-function seedTechnicalRequirement(req: {
-  code: string
-  standardCode: string
-  parameterCode: string
-  categoryCode: string
-  brand?: string
-  model?: string
-  grade?: string
-  specification?: string
-  comparison: '≥' | '≤' | '=' | 'range' | 'eq'
-  value: string
-  unit?: string
-}) {
-  technicalRequirementTable.insert({ id: `tr-${req.code}`, ...req })
-}
 
 // 每类样品的默认字段（业务种子用）
 const SAMPLE_DEFAULTS: Record<string, { model?: string; specification?: string; grade?: string; brand?: string; manufacturer?: string; structuralPart?: string; representQuantity?: string; ext: Record<string, string>; name: string }> = {
@@ -1626,7 +1558,7 @@ function seedReceipt(input: {
       }
       const it = itemByCat[input.categoryCode]
       if (it) {
-        testItemTable.insert({
+        testRecordTable.insert({
           id: `ti-${sid}`,
           sampleId: sid,
           parameterCode: it.p,
@@ -1659,24 +1591,6 @@ export function seedData() {
   userTable.insert({ id: 'u-tech', username: 'tech', displayName: '检测员', email: 'tech@lab.cn', roleId: 'role-tech', status: 'active', password: 'lab123' })
 
   // ===== 检测参数（归属报告类别）=====
-  seedTestParameter('STE001', '下屈服强度 ReL', 'steel', 'mechanical', 'MPa')
-  seedTestParameter('STE002', '上屈服强度 ReH', 'steel', 'mechanical', 'MPa')
-  seedTestParameter('STE003', '抗拉强度 Rm', 'steel', 'mechanical', 'MPa')
-  seedTestParameter('STE004', '断后伸长率 A', 'steel', 'mechanical', '%')
-  seedTestParameter('STE005', '最大力总延伸率 Agt', 'steel', 'mechanical', '%')
-  seedTestParameter('STE006', '屈强比 Rm/ReL', 'steel', 'mechanical', '')
-  seedTestParameter('STE008', '弯曲性能（弯曲角度/压头直径）', 'steel', 'process', '')
-  seedTestParameter('STE009', '重量偏差', 'steel', 'weight', '%')
-  seedTestParameter('CEM001', '比表面积', 'cement', 'fineness', 'm²/kg')
-  seedTestParameter('CEM003', '初凝时间', 'cement', 'setting', 'min')
-  seedTestParameter('CEM004', '终凝时间', 'cement', 'setting', 'min')
-  seedTestParameter('CEM005', '安定性（雷氏夹/试饼法）', 'cement', 'soundness', '')
-  seedTestParameter('CEM006', '三氧化硫 SO₃', 'cement', 'chemistry', '%')
-  seedTestParameter('CEM012', '3天抗压强度', 'cement', 'strength', 'MPa')
-  seedTestParameter('CEM014', '28天抗压强度', 'cement', 'strength', 'MPa')
-  seedTestParameter('CON001', '立方体抗压强度', 'concrete', 'mechanical', 'MPa')
-  seedTestParameter('CON002', '抗压强度', 'concrete', 'mechanical', 'MPa', 3)
-
   // ===== 计算规则 =====  // algorithmType: simple_avg=多样本均值, compressive_strength=混凝土±15%规则
   seedCalculationRule('STE001', 'steel_tensile', 1, 'MPa')
   seedCalculationRule('STE003', 'steel_tensile', 1, 'MPa')
@@ -1686,35 +1600,7 @@ export function seedData() {
   seedCalculationRule('CON001', 'simple_avg', 1, 'MPa')
   seedCalculationRule('CON002', 'compressive_strength', 3, 'MPa')
   seedCalculationRule('CON006', 'flexural_strength', 3, 'MPa')
-  seedTestParameter('CON006', '抗折强度', 'concrete', 'mechanical', 'MPa')
-  seedTestParameter('SND001', '颗粒级配（细度模数）', 'sand', 'gradation', '')
-  seedTestParameter('SND002', '含泥量', 'sand', 'physical', '%')
-  seedTestParameter('SND003', '泥块含量', 'sand', 'physical', '%')
-  seedTestParameter('SND008', '表观密度', 'sand', 'physical', 'kg/m³')
-  seedTestParameter('GRV001', '颗粒级配', 'gravel', 'gradation', '')
-  seedTestParameter('GRV002', '含泥量', 'gravel', 'physical', '%')
-  seedTestParameter('GRV004', '针片状颗粒含量', 'gravel', 'physical', '%')
-  seedTestParameter('GRV005', '压碎指标', 'gravel', 'physical', '%')
-  seedTestParameter('RMK001', '接头极限抗拉强度', 'rebar_mech', 'mechanical', 'MPa')
-  seedTestParameter('RMK002', '残余变形 u₀（d≤32）', 'rebar_mech', 'deformation', 'mm')
-  seedTestParameter('RMK003', '最大力下总伸长率 Agt', 'rebar_mech', 'mechanical', '%')
-  seedTestParameter('RWD001', '抗拉强度', 'rebar_weld', 'mechanical', 'MPa')
-  seedTestParameter('RWD002', '弯曲试验（90°/180°）', 'rebar_weld', 'process', '')
-  seedTestParameter('RWD003', '断口位置', 'rebar_weld', 'fracture', '')
-
   // ===== 检测标准 +（报告类别↔标准）关联 =====
-  seedTestStandard('GB/T 228.1-2021', '金属材料 拉伸试验 第1部分：室温试验方法', 'national', ['steel', 'rebar_mech', 'rebar_weld'])
-  seedTestStandard('GB 1499.2-2024', '钢筋混凝土用钢 第2部分：热轧带肋钢筋', 'national', ['steel'])
-  seedTestStandard('GB 1499.1-2024', '钢筋混凝土用钢 第1部分：热轧光圆钢筋', 'national', ['steel'])
-  seedTestStandard('GB 175-2023', '通用硅酸盐水泥', 'national', ['cement'])
-  seedTestStandard('GB/T 1346-2024', '水泥标准稠度用水量、凝结时间、安定性检验方法', 'national', ['cement'])
-  seedTestStandard('GB/T 17671-2021', '水泥胶砂强度检验方法（ISO法）', 'national', ['cement'])
-  seedTestStandard('GB/T 50081-2019', '混凝土物理力学性能试验方法标准', 'national', ['concrete'])
-  seedTestStandard('GB/T 14684-2022', '建设用砂', 'national', ['sand'])
-  seedTestStandard('GB/T 14685-2022', '建设用卵石和碎石', 'national', ['gravel'])
-  seedTestStandard('JGJ 107-2016', '钢筋机械连接技术规程', 'industry', ['rebar_mech'])
-  seedTestStandard('JGJ 18-2012', '钢筋焊接及验收规程', 'industry', ['rebar_weld'])
-
   // ===== 检测标准 ↔ 检测参数 关联 =====
   // GB/T 228.1-2021 金属材料 拉伸试验
   ;['STE001', 'STE002', 'STE003', 'STE004', 'STE005', 'STE006', 'STE008', 'STE009'].forEach((p) =>
@@ -1762,48 +1648,7 @@ export function seedData() {
   )
 
   // ===== 技术要求（报告类别 + 牌号/型号/等级/规格 维度）=====
-  // 钢材（牌号 + 规格）
-  seedTechnicalRequirement({ code: 'REQ-steel-ReL-HRB400E', standardCode: 'GB 1499.2-2024', parameterCode: 'STE001', categoryCode: 'steel', brand: 'HRB400E', comparison: '≥', value: '400', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-steel-ReL-HRB400', standardCode: 'GB 1499.2-2024', parameterCode: 'STE001', categoryCode: 'steel', brand: 'HRB400', comparison: '≥', value: '400', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-steel-ReL-HRB500E', standardCode: 'GB 1499.2-2024', parameterCode: 'STE001', categoryCode: 'steel', brand: 'HRB500E', comparison: '≥', value: '500', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-steel-Rm-HRB400E', standardCode: 'GB 1499.2-2024', parameterCode: 'STE003', categoryCode: 'steel', brand: 'HRB400E', comparison: '≥', value: '540', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-steel-Rm-HRB500E', standardCode: 'GB 1499.2-2024', parameterCode: 'STE003', categoryCode: 'steel', brand: 'HRB500E', comparison: '≥', value: '630', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-steel-A-HRB400E', standardCode: 'GB 1499.2-2024', parameterCode: 'STE004', categoryCode: 'steel', brand: 'HRB400E', comparison: '≥', value: '16', unit: '%' })
-  seedTechnicalRequirement({ code: 'REQ-steel-Agt-HRB400E', standardCode: 'GB 1499.2-2024', parameterCode: 'STE005', categoryCode: 'steel', brand: 'HRB400E', comparison: '≥', value: '9.0', unit: '%' })
-  seedTechnicalRequirement({ code: 'REQ-steel-RmReL-HRB400E', standardCode: 'GB 1499.2-2024', parameterCode: 'STE006', categoryCode: 'steel', brand: 'HRB400E', comparison: '≥', value: '1.25', unit: '' })
-  seedTechnicalRequirement({ code: 'REQ-steel-weightDev-Φ22', standardCode: 'GB 1499.2-2024', parameterCode: 'STE009', categoryCode: 'steel', specification: 'Φ22', comparison: '≤', value: '5', unit: '%' })
-  // 水泥（型号）
-  seedTechnicalRequirement({ code: 'REQ-cem-3d-PO42.5', standardCode: 'GB 175-2023', parameterCode: 'CEM012', categoryCode: 'cement', model: 'P·O 42.5', comparison: '≥', value: '17.0', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-cem-28d-PO42.5', standardCode: 'GB 175-2023', parameterCode: 'CEM014', categoryCode: 'cement', model: 'P·O 42.5', comparison: '≥', value: '42.5', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-cem-3d-PO42.5R', standardCode: 'GB 175-2023', parameterCode: 'CEM012', categoryCode: 'cement', model: 'P·O 42.5R', comparison: '≥', value: '22.0', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-cem-initSet', standardCode: 'GB/T 1346-2024', parameterCode: 'CEM003', categoryCode: 'cement', comparison: '≥', value: '45', unit: 'min' })
-  seedTechnicalRequirement({ code: 'REQ-cem-finalSet', standardCode: 'GB/T 1346-2024', parameterCode: 'CEM004', categoryCode: 'cement', comparison: '≤', value: '600', unit: 'min' })
-  seedTechnicalRequirement({ code: 'REQ-cem-SO3', standardCode: 'GB 175-2023', parameterCode: 'CEM006', categoryCode: 'cement', comparison: '≤', value: '3.5', unit: '%' })
-  // 混凝土（型号=设计强度等级 + 规格）
-  seedTechnicalRequirement({ code: 'REQ-con-C30-150', standardCode: 'GB/T 50081-2019', parameterCode: 'CON002', categoryCode: 'concrete', model: 'C30', specification: '150×150×150mm', comparison: '≥', value: '28.5', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-con-C35-150', standardCode: 'GB/T 50081-2019', parameterCode: 'CON002', categoryCode: 'concrete', model: 'C35', specification: '150×150×150mm', comparison: '≥', value: '33.5', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-con-C40-150', standardCode: 'GB/T 50081-2019', parameterCode: 'CON002', categoryCode: 'concrete', model: 'C40', specification: '150×150×150mm', comparison: '≥', value: '38.5', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-con-C30-cube', standardCode: 'GB/T 50081-2019', parameterCode: 'CON001', categoryCode: 'concrete', model: 'C30', comparison: '≥', value: '30.0', unit: 'MPa' })
-  // 混凝土抗折强度（CON006）：标准试件 150×150×550mm
-  seedTechnicalRequirement({ code: 'REQ-con-C20-FF', standardCode: 'GB/T 50081-2019', parameterCode: 'CON006', categoryCode: 'concrete', model: 'C20', specification: '150×150×550mm', comparison: '≥', value: '3.0', unit: 'MPa' })
-  // 砂 / 碎石（等级）
-  seedTechnicalRequirement({ code: 'REQ-sand-mud-Ⅰ类', standardCode: 'GB/T 14684-2022', parameterCode: 'SND002', categoryCode: 'sand', grade: 'Ⅰ类', comparison: '≤', value: '1.0', unit: '%' })
-  seedTechnicalRequirement({ code: 'REQ-sand-mud-Ⅱ类', standardCode: 'GB/T 14684-2022', parameterCode: 'SND002', categoryCode: 'sand', grade: 'Ⅱ类', comparison: '≤', value: '3.0', unit: '%' })
-  seedTechnicalRequirement({ code: 'REQ-sand-mud-Ⅲ类', standardCode: 'GB/T 14684-2022', parameterCode: 'SND002', categoryCode: 'sand', grade: 'Ⅲ类', comparison: '≤', value: '5.0', unit: '%' })
-  seedTechnicalRequirement({ code: 'REQ-sand-mudLump-Ⅱ类', standardCode: 'GB/T 14684-2022', parameterCode: 'SND003', categoryCode: 'sand', grade: 'Ⅱ类', comparison: '≤', value: '1.0', unit: '%' })
-  seedTechnicalRequirement({ code: 'REQ-sand-fineness', standardCode: 'GB/T 14684-2022', parameterCode: 'SND001', categoryCode: 'sand', model: '中砂', comparison: 'range', value: '2.3~3.0', unit: '' })
-  seedTechnicalRequirement({ code: 'REQ-grv-crush-Ⅰ类', standardCode: 'GB/T 14685-2022', parameterCode: 'GRV005', categoryCode: 'gravel', grade: 'Ⅰ类', comparison: '≤', value: '10', unit: '%' })
-  seedTechnicalRequirement({ code: 'REQ-grv-crush-Ⅱ类', standardCode: 'GB/T 14685-2022', parameterCode: 'GRV005', categoryCode: 'gravel', grade: 'Ⅱ类', comparison: '≤', value: '20', unit: '%' })
-  seedTechnicalRequirement({ code: 'REQ-grv-mud-Ⅱ类', standardCode: 'GB/T 14685-2022', parameterCode: 'GRV002', categoryCode: 'gravel', grade: 'Ⅱ类', comparison: '≤', value: '1.0', unit: '%' })
-  // 钢筋机械连接（等级 + 牌号）
-  seedTechnicalRequirement({ code: 'REQ-rmk-tensile-Ⅰ级-HRB400', standardCode: 'JGJ 107-2016', parameterCode: 'RMK001', categoryCode: 'rebar_mech', grade: 'Ⅰ级', brand: 'HRB400', comparison: '≥', value: '540', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-rmk-residual-Ⅰ级', standardCode: 'JGJ 107-2016', parameterCode: 'RMK002', categoryCode: 'rebar_mech', grade: 'Ⅰ级', specification: 'd≤32', comparison: '≤', value: '0.10', unit: 'mm' })
-  seedTechnicalRequirement({ code: 'REQ-rmk-Agt-Ⅰ级', standardCode: 'JGJ 107-2016', parameterCode: 'RMK003', categoryCode: 'rebar_mech', grade: 'Ⅰ级', comparison: '≥', value: '6.0', unit: '%' })
-  seedTechnicalRequirement({ code: 'REQ-rmk-residual-Ⅱ级', standardCode: 'JGJ 107-2016', parameterCode: 'RMK002', categoryCode: 'rebar_mech', grade: 'Ⅱ级', specification: 'd≤32', comparison: '≤', value: '0.14', unit: 'mm' })
-  // 钢筋焊接（型号=焊接方式 + 牌号）
-  seedTechnicalRequirement({ code: 'REQ-rwd-tensile-HRB400', standardCode: 'JGJ 18-2012', parameterCode: 'RWD001', categoryCode: 'rebar_weld', brand: 'HRB400', comparison: '≥', value: '540', unit: 'MPa' })
-  seedTechnicalRequirement({ code: 'REQ-rwd-bend-闪光对焊', standardCode: 'JGJ 18-2012', parameterCode: 'RWD002', categoryCode: 'rebar_weld', model: '闪光对焊', comparison: '=', value: '90°弯曲无裂纹', unit: '' })
-
+  // 钢材（牌号 + 规格）  // 水泥（型号）  // 混凝土（型号=设计强度等级 + 规格）  // 混凝土抗折强度（CON006）：标准试件 150×150×550mm  // 砂 / 碎石（等级）  // 钢筋机械连接（等级 + 牌号）  // 钢筋焊接（型号=焊接方式 + 牌号）
   // ===== 合同 + 接样单（覆盖 7 阶段 × 7 类别）=====
   seedContract({ id: 'c-001', contractCode: 'HT-2024-001', clientUnit: '石泉县城投公司', projectName: '滨江花园一期', constructionUnit: '中建三局', witnessUnit: '华监监理', witness: '张监理' })
   seedContract({ id: 'c-002', contractCode: 'HT-2024-002', clientUnit: '汉江置业', projectName: '汉江新城二标段', constructionUnit: '陕建五公司', witnessUnit: '秦监监理', witness: '李监理' })

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import { apiClient } from '../../api/client'
-import { FLOW_STAGE_LABELS, type SampleReceipt, type TestParameter } from '../../types/api'
+import { FLOW_STAGE_LABELS, type SampleReceipt, type InspectionParameter as TestParameter } from '../../types/api'
 import { ReceiptDetail } from './ReceiptDetail'
 
 // @entry M03.F09.I01

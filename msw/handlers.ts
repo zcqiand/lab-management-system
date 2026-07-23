@@ -21,11 +21,7 @@ import {
   inspectionBrandTable,
   receiptTable,
   sampleTable,
-  testItemTable,
-  testParameterTable,
-  testStandardTable,
-  technicalRequirementTable,
-  calculationRuleTable,
+  testRecordTable,  calculationRuleTable,
   orgInfoTable,
   userTable,
   roleTable,
@@ -58,8 +54,7 @@ import {
  * /models /specifications /grades /brands：型号/规格/等级/牌号 码表（归属报告类别）
  * /receipts + /receipts/flow：接样单（合并报告字段）+ 流程管线批量操作
  * /samples：样品（归属接样单）
- * /test-items：单项检测记录（归属样品，自动评定 + 手工修正）
- * /test-parameters /test-standards /technical-requirements：检测码表
+ * /test-records：单项检测记录（归属样品，自动评定 + 手工修正）
  * /report-templates：报告模板（每类别一份）
  * /stats + /summary：仪表盘统计 + 按报告类别的试验报告汇总表
  * /org-info /users /roles
@@ -513,7 +508,7 @@ export const handlers = [
     if (!ok) return HttpResponse.json({ message: '接样单不存在' }, { status: 404 })
     // 级联删除样品与其检测项
     for (const s of sampleTable.all().filter((x) => x.receiptId === id)) {
-      testItemTable.all().filter((i) => i.sampleId === s.id).forEach((i) => testItemTable.remove(i.id))
+      testRecordTable.all().filter((i) => i.sampleId === s.id).forEach((i) => testRecordTable.remove(i.id))
       sampleTable.remove(s.id)
     }
     return new HttpResponse(null, { status: 204 })
@@ -597,25 +592,25 @@ export const handlers = [
     const id = String(params.id)
     const found = sampleTable.findById(id)
     if (!found) return HttpResponse.json({ message: '样品不存在' }, { status: 404 })
-    testItemTable.all().filter((i) => i.sampleId === id).forEach((i) => testItemTable.remove(i.id))
+    testRecordTable.all().filter((i) => i.sampleId === id).forEach((i) => testRecordTable.remove(i.id))
     sampleTable.remove(id)
     syncReceiptResult(found.receiptId)
     return new HttpResponse(null, { status: 204 })
   }),
 
   // ===========================================================
-  // /test-items：单项检测记录（归属样品；自动评定 + 手工修正）
+  // /test-records：单项检测记录（归属样品；自动评定 + 手工修正）
   // ===========================================================
-  http.get('*/test-items', ({ request }) => {
+  http.get('*/test-records', ({ request }) => {
     const url = new URL(request.url)
     const receiptId = url.searchParams.get('receiptId')
     // receiptId 过滤：经样品间接查询
     if (receiptId) {
       const sampleIds = samplesOfReceipt(receiptId).map((s) => s.id)
-      const items = testItemTable.all().filter((i) => sampleIds.includes(i.sampleId))
+      const items = testRecordTable.all().filter((i) => sampleIds.includes(i.sampleId))
       return HttpResponse.json({ items, total: items.length, page: 1, pageSize: items.length || 1 })
     }
-    const result = testItemTable.query({
+    const result = testRecordTable.query({
       page: Number(url.searchParams.get('page') ?? '1'),
       pageSize: Number(url.searchParams.get('pageSize') ?? '20'),
       keyword: url.searchParams.get('keyword') ?? undefined,
@@ -630,7 +625,7 @@ export const handlers = [
 
   // 录入检测结果——按样品的 报告类别+牌号/型号/等级/规格 匹配技术要求，自动评定合格/不合格；
   // 显式传 passed 即手工判定（覆盖自动评定结果）。
-  http.post('*/test-items', async ({ request }) => {
+  http.post('*/test-records', async ({ request }) => {
     const body = (await request.json()) as Partial<{
       sampleId: string
       parameterCode: string
@@ -664,7 +659,7 @@ export const handlers = [
       correctionFactor: body.correctionFactor,
       algorithmType: rule?.algorithmType,
     })
-    const parameter = testParameterTable.all().find((p) => p.code === body.parameterCode)
+    const parameter = null as { code: string; name: string; group?: string; unit?: string } | null
     const repVal = evaluation.representativeValue
     const rawLoads = body.loads ?? body.testValues
     // compressive_strength / steel_tensile 已算出 repVal（MPa），优先显示
@@ -674,7 +669,7 @@ export const handlers = [
       : ((rawLoads && rawLoads.length > 0) ? rawLoads.join(', ') : (body.result ?? ''))
     // CON002 抗压强度、CON006 抗折强度、CEM005 安定性：由人工确认，不做自动评定
     const isManualParam = body.parameterCode === 'CON002' || body.parameterCode === 'CON006' || body.parameterCode === 'CEM005'
-    const created = testItemTable.insert({
+    const created = testRecordTable.insert({
       sampleId: body.sampleId,
       parameterCode: body.parameterCode,
       standardCode: evaluation.standardCode,
@@ -693,16 +688,16 @@ export const handlers = [
     return HttpResponse.json(created, { status: 201 })
   }),
 
-  http.get('*/test-items/:id', ({ params }) => {
-    const found = testItemTable.findById(String(params.id))
+  http.get('*/test-records/:id', ({ params }) => {
+    const found = testRecordTable.findById(String(params.id))
     if (!found) return HttpResponse.json({ message: '检测记录不存在' }, { status: 404 })
     return HttpResponse.json(found)
   }),
 
-  http.put('*/test-items/:id', async ({ params, request }) => {
+  http.put('*/test-records/:id', async ({ params, request }) => {
     const id = String(params.id)
     const body = (await request.json()) as Record<string, unknown>
-    const existing = testItemTable.findById(id)
+    const existing = testRecordTable.findById(id)
     if (!existing) return HttpResponse.json({ message: '检测记录不存在' }, { status: 404 })
     // CON002 抗压强度、CON006 抗折强度、CEM005 安定性：由人工确认，不做自动评定（passed 需显式传入）
     const isManual = existing.parameterCode === 'CON002' || existing.parameterCode === 'CON006' || existing.parameterCode === 'CEM005'
@@ -726,7 +721,7 @@ export const handlers = [
         body.standardCode = evaluation.standardCode
       }
     }
-    const updated = testItemTable.update(id, body)
+    const updated = testRecordTable.update(id, body)
     if (updated) {
       const sample = sampleTable.findById(updated.sampleId)
       if (sample) syncReceiptResult(sample.receiptId)
@@ -734,169 +729,16 @@ export const handlers = [
     return HttpResponse.json(updated)
   }),
 
-  http.delete('*/test-items/:id', ({ params }) => {
-    const found = testItemTable.findById(String(params.id))
+  http.delete('*/test-records/:id', ({ params }) => {
+    const found = testRecordTable.findById(String(params.id))
     if (!found) return HttpResponse.json({ message: '检测记录不存在' }, { status: 404 })
     const sample = sampleTable.findById(found.sampleId)
-    testItemTable.remove(found.id)
+    testRecordTable.remove(found.id)
     if (sample) syncReceiptResult(sample.receiptId)
     return new HttpResponse(null, { status: 204 })
   }),
 
-  // ===========================================================
-  // /test-parameters（归属报告类别）
-  // ===========================================================
-  http.get('*/test-parameters', ({ request }) => {
-    const url = new URL(request.url)
-    const result = testParameterTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
-      keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['code', 'name', 'group'],
-      filters: { categoryCode: url.searchParams.get('categoryCode') ?? undefined },
-    })
-    return HttpResponse.json(result)
-  }),
 
-  http.get('*/test-parameters/:code', ({ params }) => {
-    const found = testParameterTable.all().find((p) => p.code === String(params.code))
-    if (!found) return HttpResponse.json({ message: '参数不存在' }, { status: 404 })
-    return HttpResponse.json(found)
-  }),
-
-  http.post('*/test-parameters', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ code: string; name: string; categoryCode: string; group: string; unit: string; description: string }>
-    if (!body.code || !body.name || !body.categoryCode) {
-      return HttpResponse.json({ message: 'code/name/categoryCode 必填' }, { status: 400 })
-    }
-    if (testParameterTable.all().some((p) => p.code === body.code)) {
-      return HttpResponse.json({ message: '参数编码已存在' }, { status: 400 })
-    }
-    const created = testParameterTable.insert(body as never)
-    return HttpResponse.json(created, { status: 201 })
-  }),
-
-  http.put('*/test-parameters/:code', async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>
-    const found = testParameterTable.all().find((p) => p.code === String(params.code))
-    if (!found) return HttpResponse.json({ message: '参数不存在' }, { status: 404 })
-    return HttpResponse.json(testParameterTable.update(found.id, body))
-  }),
-
-  http.delete('*/test-parameters/:code', ({ params }) => {
-    const found = testParameterTable.all().find((p) => p.code === String(params.code))
-    if (!found) return HttpResponse.json({ message: '参数不存在' }, { status: 404 })
-    testParameterTable.remove(found.id)
-    return new HttpResponse(null, { status: 204 })
-  }),
-
-  // ===========================================================
-  // /test-standards（与类别的关联经 /category-standards）
-  // ===========================================================
-  http.get('*/test-standards', ({ request }) => {
-    const url = new URL(request.url)
-    // categoryCode 过滤：经关联表间接查询（categoryStandardTable 已删除；M04 旧 API 行为降级为直查 testStandardTable.code/name 匹配）
-    const categoryCode = url.searchParams.get('categoryCode')
-    if (categoryCode) {
-      const items = testStandardTable.all().filter((s) => s.code.includes(categoryCode) || s.name.includes(categoryCode))
-      return HttpResponse.json({ items, total: items.length, page: 1, pageSize: items.length || 1 })
-    }
-    const result = testStandardTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
-      keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['code', 'name'],
-      filters: { type: (url.searchParams.get('type') as 'national' | 'industry' | 'local' | 'enterprise' | null) ?? undefined },
-    })
-    return HttpResponse.json(result)
-  }),
-
-  http.get('*/test-standards/:code', ({ params }) => {
-    const found = testStandardTable.all().find((s) => s.code === String(params.code))
-    if (!found) return HttpResponse.json({ message: '标准不存在' }, { status: 404 })
-    return HttpResponse.json(found)
-  }),
-
-  http.post('*/test-standards', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ code: string; name: string; type: 'national' | 'industry' | 'local' | 'enterprise'; remark: string }>
-    if (!body.code || !body.name || !body.type) {
-      return HttpResponse.json({ message: 'code/name/type 必填' }, { status: 400 })
-    }
-    if (testStandardTable.all().some((s) => s.code === body.code)) {
-      return HttpResponse.json({ message: '标准编码已存在' }, { status: 400 })
-    }
-    const created = testStandardTable.insert(body as never)
-    return HttpResponse.json(created, { status: 201 })
-  }),
-
-  http.put('*/test-standards/:code', async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>
-    const found = testStandardTable.all().find((s) => s.code === String(params.code))
-    if (!found) return HttpResponse.json({ message: '标准不存在' }, { status: 404 })
-    return HttpResponse.json(testStandardTable.update(found.id, body))
-  }),
-
-  http.delete('*/test-standards/:code', ({ params }) => {
-    const found = testStandardTable.all().find((s) => s.code === String(params.code))
-    if (!found) return HttpResponse.json({ message: '标准不存在' }, { status: 404 })
-    testStandardTable.remove(found.id)
-    // categoryStandardTable 已删除；级联关联在 M06 inspectionObjectStandard / inspectionReportNameStandard 中维护
-    return new HttpResponse(null, { status: 204 })
-  }),
-
-  // ===========================================================
-  // /technical-requirements（报告类别 + 牌号/型号/等级/规格 维度）
-  // ===========================================================
-  http.get('*/technical-requirements', ({ request }) => {
-    const url = new URL(request.url)
-    const result = technicalRequirementTable.query({
-      page: Number(url.searchParams.get('page') ?? '1'),
-      pageSize: Number(url.searchParams.get('pageSize') ?? '100'),
-      keyword: url.searchParams.get('keyword') ?? undefined,
-      keywordFields: ['code', 'parameterCode', 'brand', 'model', 'grade'],
-      filters: {
-        categoryCode: url.searchParams.get('categoryCode') ?? undefined,
-        parameterCode: url.searchParams.get('parameterCode') ?? undefined,
-      },
-    })
-    return HttpResponse.json(result)
-  }),
-
-  http.get('*/technical-requirements/:code', ({ params }) => {
-    const found = technicalRequirementTable.all().find((r) => r.code === String(params.code))
-    if (!found) return HttpResponse.json({ message: '技术要求不存在' }, { status: 404 })
-    return HttpResponse.json(found)
-  }),
-
-  http.post('*/technical-requirements', async ({ request }) => {
-    const body = (await request.json()) as Partial<{ code: string; standardCode: string; parameterCode: string; categoryCode: string; brand: string; model: string; grade: string; specification: string; comparison: string; value: string; unit: string }>
-    if (!body.code || !body.standardCode || !body.parameterCode || !body.categoryCode || !body.comparison || body.value === undefined) {
-      return HttpResponse.json({ message: 'code/standardCode/parameterCode/categoryCode/comparison/value 必填' }, { status: 400 })
-    }
-    if (technicalRequirementTable.all().some((r) => r.code === body.code)) {
-      return HttpResponse.json({ message: '技术要求编码已存在' }, { status: 400 })
-    }
-    const created = technicalRequirementTable.insert(body as never)
-    return HttpResponse.json(created, { status: 201 })
-  }),
-
-  http.put('*/technical-requirements/:code', async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>
-    const found = technicalRequirementTable.all().find((r) => r.code === String(params.code))
-    if (!found) return HttpResponse.json({ message: '技术要求不存在' }, { status: 404 })
-    return HttpResponse.json(technicalRequirementTable.update(found.id, body))
-  }),
-
-  http.delete('*/technical-requirements/:code', ({ params }) => {
-    const found = technicalRequirementTable.all().find((r) => r.code === String(params.code))
-    if (!found) return HttpResponse.json({ message: '技术要求不存在' }, { status: 404 })
-    technicalRequirementTable.remove(found.id)
-    return new HttpResponse(null, { status: 204 })
-  }),
-
-  // ===========================================================
-  // /stats + /summary
-  // ===========================================================
   http.get('*/stats', () => {
     return HttpResponse.json(computeStats() as unknown as DashboardStats)
   }),

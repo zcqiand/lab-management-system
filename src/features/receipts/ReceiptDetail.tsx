@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiClient } from '../../api/client'
-import type { TestParameter } from '../../types/api'
+import type { InspectionParameter as TestParameter } from '../../types/api'
 
 interface ExtField { key: string; label: string }
 
-interface TestItem {
+interface TestRecord {
   id: string
   sampleId: string
   parameterCode: string
@@ -54,7 +54,7 @@ interface ReceiptDetailProps {
 
 export function ReceiptDetail({ receiptId, categoryCode }: ReceiptDetailProps) {
   const [samples, setSamples] = useState<Sample[]>([])
-  const [testItems, setTestItems] = useState<TestItem[]>([])
+  const [testItems, setTestRecords] = useState<TestRecord[]>([])
   const [parameters, setParameters] = useState<TestParameter[]>([])
   const [extFields, setExtFields] = useState<ExtField[]>([])
   const [activeSampleId, setActiveSampleId] = useState<string | null>(null)
@@ -67,14 +67,14 @@ export function ReceiptDetail({ receiptId, categoryCode }: ReceiptDetailProps) {
     try {
       const [sRes, tiRes, pRes, catRes] = await Promise.all([
         apiClient.get('/samples', { params: { receiptId, page: '1', pageSize: '200' } }),
-        apiClient.get('/test-items', { params: { receiptId, page: '1', pageSize: '500' } }),
+        apiClient.get('/test-records', { params: { receiptId, page: '1', pageSize: '500' } }),
         apiClient.get<{ items: TestParameter[] }>('/test-parameters', { params: { page: '1', pageSize: '200' } }),
         apiClient.get<{ extFields: ExtField[] }>(`/report-categories/${categoryCode}`),
       ])
       const sItems: Sample[] = sRes.data.items ?? []
-      const tiItems: TestItem[] = tiRes.data.items ?? []
+      const tiItems: TestRecord[] = tiRes.data.items ?? []
       setSamples(sItems)
-      setTestItems(tiItems)
+      setTestRecords(tiItems)
       setParameters(pRes.data.items ?? [])
       setExtFields(catRes.data.extFields ?? [])
       if (sItems.length > 0 && !activeSampleId) {

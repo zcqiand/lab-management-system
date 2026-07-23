@@ -19,14 +19,13 @@ export type {
   SampleStatus,
   SampleQuery,
 } from './sample';
-export type { TestItem } from './test-item';
+export type { TestRecord } from './test-record';
 export type {
 } from './task';
 export type {
 } from './report';
-export type { TestParameter } from './test-parameter';
-export type { TestStandard, StandardType } from './test-standard';
-export type { TechnicalRequirement, ComparisonOp } from './technical-requirement';
+// 注：原 TestParameter / TestStandard / TechnicalRequirement 已删除——
+//   检测参数/标准/技术要求 都由 M06 inspectionParameter / inspectionStandard / inspectionTechnicalRequirement 取代。
 // 注：原 CategoryDictItem 已删除——型号/规格/等级/牌号各自有独立类型（InspectionBrand/Model/Grade/Spec）。
 export type {
   DashboardStats,
